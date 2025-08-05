@@ -1,19 +1,7 @@
 import React from 'react';
+import { LayoutDashboard, CheckCircle, FileText, Cloud, ChevronDown, ChevronRight, Server, Database, Zap, Shield } from 'lucide-react';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
-import { 
-  LayoutDashboard, 
-  FileText, 
-  CheckCircle, 
-  Settings,
-  Cloud,
-  ChevronDown,
-  ChevronRight,
-  Server,
-  Database,
-  Zap,
-  Shield
-} from 'lucide-react';
 
 interface SidebarProps {
   activeTab: string;
@@ -32,7 +20,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   isMobileMenuOpen,
   setIsMobileMenuOpen,
   selectedProvider,
-  onCloudChange
+  onCloudChange,
 }) => {
   const [infrastructureOpen, setInfrastructureOpen] = React.useState(false);
 
@@ -42,19 +30,19 @@ const Sidebar: React.FC<SidebarProps> = ({
         { id: 'ec2', name: 'EC2', icon: Server },
         { id: 's3', name: 'S3', icon: Database },
         { id: 'rds', name: 'RDS', icon: Database },
-        { id: 'lambda', name: 'Lambda', icon: Zap }
+        { id: 'lambda', name: 'Lambda', icon: Zap },
       ];
     } else if (selectedProvider === 'azure') {
       return [
         { id: 'vm', name: 'Virtual Machines', icon: Server },
         { id: 'storage', name: 'Storage', icon: Database },
-        { id: 'sql', name: 'SQL Database', icon: Database }
+        { id: 'sql', name: 'SQL Database', icon: Database },
       ];
     } else if (selectedProvider === 'gcp') {
       return [
         { id: 'compute', name: 'Compute Engine', icon: Server },
         { id: 'storage', name: 'Cloud Storage', icon: Database },
-        { id: 'sql', name: 'Cloud SQL', icon: Database }
+        { id: 'sql', name: 'Cloud SQL', icon: Database },
       ];
     }
     return [];
@@ -66,32 +54,31 @@ const Sidebar: React.FC<SidebarProps> = ({
       label: 'Overview',
       icon: LayoutDashboard,
       badge: null,
-      permissions: ['view_resources']
+      permissions: ['view_resources'],
     },
     {
       id: 'approved-services',
       label: 'Approved Services',
       icon: CheckCircle,
       badge: null,
-      permissions: ['view_resources']
+      permissions: ['view_resources'],
     },
     {
       id: 'requests',
       label: 'Request History',
       icon: FileText,
       badge: null,
-      permissions: ['request_access']
-    }   
+      permissions: ['request_access'],
+    },
   ];
 
   const handleNavClick = (itemId: string) => {
+    setActiveTab(itemId);
     if (itemId === 'infrastructure') {
       setInfrastructureOpen(!infrastructureOpen);
-    } else {
-      setActiveTab(itemId);
-      if (isMobileMenuOpen) {
-        setIsMobileMenuOpen(false);
-      }
+    }
+    if (isMobileMenuOpen) {
+      setIsMobileMenuOpen(false);
     }
   };
 
@@ -100,6 +87,10 @@ const Sidebar: React.FC<SidebarProps> = ({
     if (isMobileMenuOpen) {
       setIsMobileMenuOpen(false);
     }
+  };
+
+  const handleInfrastructureToggle = () => {
+    setInfrastructureOpen(!infrastructureOpen);
   };
 
   const SidebarContent = () => (
@@ -119,7 +110,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;
-            const hasPermission = item.permissions.some(permission => 
+            const hasPermission = item.permissions.some(permission =>
               currentUser?.permissions?.includes(permission)
             );
 
@@ -130,8 +121,8 @@ const Sidebar: React.FC<SidebarProps> = ({
                 key={item.id}
                 variant={isActive ? 'default' : 'ghost'}
                 className={`w-full justify-start h-10 px-3 ${
-                  isActive 
-                    ? 'bg-primary text-primary-foreground shadow-soft' 
+                  isActive
+                    ? 'bg-primary text-primary-foreground shadow-soft'
                     : 'text-muted-foreground hover:bg-accent hover:text-foreground'
                 }`}
                 onClick={() => handleNavClick(item.id)}
@@ -139,8 +130,8 @@ const Sidebar: React.FC<SidebarProps> = ({
                 <Icon className="w-4 h-4 mr-3" />
                 <span className="flex-1 text-left">{item.label}</span>
                 {item.badge && (
-                  <Badge 
-                    variant={isActive ? 'secondary' : 'outline'} 
+                  <Badge
+                    variant={isActive ? 'secondary' : 'outline'}
                     className={`text-xs ml-2 ${
                       isActive ? 'bg-primary-foreground text-primary' : 'border-primary text-primary'
                     }`}
@@ -153,48 +144,50 @@ const Sidebar: React.FC<SidebarProps> = ({
           })}
 
           {/* Infrastructure Section */}
-          <div>
-            <Button
-              variant="ghost"
-              className={`w-full justify-start h-10 px-3 text-muted-foreground hover:bg-accent hover:text-foreground ${
-                activeTab.startsWith('infrastructure') ? 'bg-accent text-foreground' : ''
-              }`}
-              onClick={() => handleNavClick('infrastructure')}
-            >
-              <Cloud className="w-4 h-4 mr-3" />
-              <span className="flex-1 text-left">Infrastructure</span>
-              {infrastructureOpen ? 
-                <ChevronDown className="w-4 h-4" /> : 
-                <ChevronRight className="w-4 h-4" />
-              }
-            </Button>
+          {currentUser?.permissions?.includes('view_resources') && (
+            <div>
+              <Button
+                variant={activeTab === 'infrastructure' ? 'default' : 'ghost'}
+                className={`w-full justify-start h-10 px-3 ${
+                  activeTab === 'infrastructure' || activeTab.startsWith('infrastructure/')
+                    ? 'bg-primary text-primary-foreground shadow-soft'
+                    : 'text-muted-foreground hover:bg-accent hover:text-foreground'
+                }`}
+                onClick={() => handleNavClick('infrastructure')}
+              >
+                <Cloud className="w-4 h-4 mr-3" />
+                <span className="flex-1 text-left">Infrastructure</span>
+                <span onClick={(e) => { e.stopPropagation(); handleInfrastructureToggle(); }}>
+                  {infrastructureOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                </span>
+              </Button>
 
-            {infrastructureOpen && (
-              <div className="ml-6 mt-1 space-y-1">
-                {getCloudServices().map((service) => {
-                  const ServiceIcon = service.icon;
-                  const isActive = activeTab === `infrastructure/${service.id}`;
-                  
-                  return (
-                    <Button
-                      key={service.id}
-                      variant={isActive ? 'default' : 'ghost'}
-                      size="sm"
-                      className={`w-full justify-start h-8 px-3 ${
-                        isActive 
-                          ? 'bg-primary text-primary-foreground' 
-                          : 'text-muted-foreground hover:bg-accent hover:text-foreground'
-                      }`}
-                      onClick={() => handleServiceClick(service.id)}
-                    >
-                      <ServiceIcon className="w-3 h-3 mr-2" />
-                      <span className="text-sm">{service.name}</span>
-                    </Button>
-                  );
-                })}
-              </div>
-            )}
-          </div>
+              {infrastructureOpen && (
+                <div className="ml-6 mt-1 space-y-1">
+                  {getCloudServices().map((service) => {
+                    const ServiceIcon = service.icon;
+                    const isActive = activeTab === `infrastructure/${service.id}`;
+                    return (
+                      <Button
+                        key={service.id}
+                        variant={isActive ? 'default' : 'ghost'}
+                        size="sm"
+                        className={`w-full justify-start h-8 px-3 ${
+                          isActive
+                            ? 'bg-primary text-primary-foreground'
+                            : 'text-muted-foreground hover:bg-accent hover:text-foreground'
+                        }`}
+                        onClick={() => handleServiceClick(service.id)}
+                      >
+                        <ServiceIcon className="w-3 h-3 mr-2" />
+                        <span className="text-sm">{service.name}</span>
+                      </Button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
         </nav>
       </div>
     </div>

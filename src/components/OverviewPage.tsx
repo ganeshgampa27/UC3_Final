@@ -539,7 +539,7 @@ const OverviewPage: React.FC<OverviewPageProps> = ({
         title: 'View Infrastructure',
         description: 'Browse cloud resources',
         icon: Server,
-        color: 'bg-cloud-teal',
+        color: 'bg-cloud-orange',
         permission: 'view_resources',
         targetTab: 'infrastructure',
       },
