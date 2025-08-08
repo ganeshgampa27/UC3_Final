@@ -28,8 +28,11 @@ interface Role {
   provider: string;
 }
 
-const RoleManagement: React.FC<RoleManagementProps> = ({ currentUser, selectedProvider }) => {
+const RoleManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedProvider, setSelectedProvider] = useState('all');
+    const [currentUser, setCurrentUser] = useState<any>(null);
+    
   const [roles, setRoles] = useState<Role[]>([
     {
       id: 'role-1',
