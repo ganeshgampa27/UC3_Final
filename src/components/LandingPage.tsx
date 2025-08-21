@@ -20,13 +20,20 @@ import {
   accessLevels
 } from "../mock/data";
 import { useNavigate } from "react-router-dom";
-
+import LoginModal from "./LoginModal";
+import RegisterModal from "./RegisterModal";
+ 
 const LandingPage = () => {
   const [activeProvider, setActiveProvider] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const [selectedRole, setSelectedRole] = useState<number | null>(null);
+ 
+  // modal states
+  const [openLogin, setOpenLogin] = useState(false);
+  const [openRegister, setOpenRegister] = useState(false);
+ 
   const navigate = useNavigate();
-
+ 
   useEffect(() => {
     setIsVisible(true);
     const interval = setInterval(() => {
@@ -34,21 +41,24 @@ const LandingPage = () => {
     }, 3000);
     return () => clearInterval(interval);
   }, []);
-
+ 
   const handleTryDemo = () => {
     navigate("/login");
   };
-
+ 
   return (
     <div className="min-h-screen bg-gradient-hero">
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-primary text-primary-foreground border-b border-primary">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
+            {/* Logo */}
             <div className="flex items-center space-x-2">
               <Globe className="w-8 h-8 text-primary-foreground" />
-              <span className="text-xl font-semibold">UnifiedCloudControlCenter</span>
+              <span className="text-xl font-semibold">Unifyd Cloud</span>
             </div>
+ 
+            {/* Navigation */}
             <nav className="hidden md:flex space-x-8">
               <a
                 href="#features"
@@ -62,24 +72,29 @@ const LandingPage = () => {
               >
                 Roles
               </a>
-              {/* <a
-                href="#demo"
-                className="text-sm font-mono uppercase tracking-wider hover:text-primary-light transition-colors"
-              >
-                Demo
-              </a> */}
             </nav>
-            <Button
-              onClick={handleTryDemo}
-              variant="secondary"
-              className="font-mono text-sm uppercase tracking-wider"
-            >
-              Login/Sign Up
-            </Button>
+ 
+            {/* Auth Buttons */}
+            <div className="flex items-center space-x-3">
+              <Button
+                onClick={() => setOpenLogin(true)}
+                variant="secondary"
+                className="font-mono text-sm  tracking-wider bg-[#3d1f7a] text-white hover:bg-white hover:text-[#3d1f7a]"
+              >
+                Login
+              </Button>
+              <Button
+                onClick={() => setOpenRegister(true)}
+                variant="default"
+                className="font-mono text-sm  tracking-wider bg-white text-[#3d1f7a] hover:text-white"
+              >
+                Register
+              </Button>
+            </div>
           </div>
         </div>
       </header>
-
+ 
       {/* Hero Section */}
       <section className="pt-20 pb-16 min-h-screen flex items-center">
         <div className="container mx-auto px-6">
@@ -99,19 +114,19 @@ const LandingPage = () => {
                     Next-Gen Cloud Management Platform
                   </span>
                 </div>
-
+ 
                 <h1 className="text-5xl md:text-6xl font-bold leading-tight text-foreground">
                   One Portal for
                   <br />
                   <span className="text-primary">All Cloud Needs</span>
                 </h1>
-
+ 
                 <p className="text-xl text-muted-foreground max-w-lg">
                   Unified multi-cloud management platform for enterprise IT teams.
                   Control AWS, Azure, and GCP from a single interface.
                 </p>
               </div>
-
+ 
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button
                   onClick={handleTryDemo}
@@ -120,7 +135,7 @@ const LandingPage = () => {
                   Login/Sign Up <ArrowRight className="ml-2 w-4 h-4" />
                 </Button>
               </div>
-
+ 
               <div className="flex items-center space-x-8 pt-8">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-foreground">
@@ -146,7 +161,7 @@ const LandingPage = () => {
                 </div>
               </div>
             </div>
-
+ 
             {/* Animated Cloud Provider Selector */}
             <div className="relative">
               <Card className="p-8 shadow-large bg-gradient-card">
@@ -159,7 +174,7 @@ const LandingPage = () => {
                     All Connected
                   </Badge>
                 </div>
-
+ 
                 <div className="space-y-4">
                   {cloudProviders.map((provider, index) => (
                     <div
@@ -197,7 +212,7 @@ const LandingPage = () => {
           </div>
         </div>
       </section>
-
+ 
       {/* Features Section */}
       <section id="features" className="py-20 bg-background">
         <div className="container mx-auto px-6">
@@ -211,7 +226,7 @@ const LandingPage = () => {
               providers.
             </p>
           </div>
-
+ 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <Card className="p-8 hover:shadow-large transition-shadow duration-300 bg-gradient-card">
               <div className="mb-6">
@@ -242,7 +257,7 @@ const LandingPage = () => {
                 </div>
               </div>
             </Card>
-
+ 
             <Card className="p-8 hover:shadow-large transition-shadow duration-300 bg-gradient-card">
               <div className="mb-6">
                 <div className="w-12 h-12 bg-cloud-orange text-white rounded-lg flex items-center justify-center mb-4">
@@ -262,7 +277,7 @@ const LandingPage = () => {
                 <div className="text-2xl font-bold text-card-foreground">~15 mins</div>
               </div>
             </Card>
-
+ 
             <Card className="p-8 hover:shadow-large transition-shadow duration-300 bg-gradient-card">
               <div className="mb-6">
                 <div className="w-12 h-12 bg-primary text-white rounded-lg flex items-center justify-center mb-4">
@@ -288,7 +303,7 @@ const LandingPage = () => {
           </div>
         </div>
       </section>
-
+ 
       {/* Role-Based Dashboards Preview */}
       <section id="roles" className="py-20 bg-secondary">
         <div className="container mx-auto px-6">
@@ -302,7 +317,7 @@ const LandingPage = () => {
               workflows.
             </p>
           </div>
-
+ 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {userRoles.map((role, index) => (
               <Card
@@ -340,7 +355,7 @@ const LandingPage = () => {
                     }`}
                   />
                 </div>
-
+ 
                 {selectedRole === index && (
                   <div className="space-y-4 pt-4 border-t border-border">
                     <div>
@@ -375,7 +390,7 @@ const LandingPage = () => {
           </div>
         </div>
       </section>
-
+ 
       {/* Demo CTA Section */}
       <section id="demo" className="py-20 bg-primary-light">
         <div className="container mx-auto px-6 text-center">
@@ -388,7 +403,7 @@ const LandingPage = () => {
               multi-cloud scenarios. No setup required - just pick your role and
               explore.
             </p>
-
+ 
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
               <Button
                 onClick={handleTryDemo}
@@ -397,7 +412,7 @@ const LandingPage = () => {
                 Start Demo Experience
               </Button>
             </div>
-
+ 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
               <Card className="p-6 bg-gradient-card">
                 <div className="text-sm font-mono text-muted-foreground mb-2">
@@ -410,7 +425,7 @@ const LandingPage = () => {
                   Monthly cloud spend across all providers
                 </div>
               </Card>
-
+ 
               <Card className="p-6 bg-gradient-card">
                 <div className="text-sm font-mono text-muted-foreground mb-2">
                   ACTIVE REQUESTS
@@ -422,7 +437,7 @@ const LandingPage = () => {
                   Pending approval workflows
                 </div>
               </Card>
-
+ 
               <Card className="p-6 bg-gradient-card">
                 <div className="text-sm font-mono text-muted-foreground mb-2">
                   FORECAST ACCURACY
@@ -438,7 +453,7 @@ const LandingPage = () => {
           </div>
         </div>
       </section>
-
+ 
       {/* Footer */}
       <footer className="bg-primary text-primary-foreground py-12">
         <div className="container mx-auto px-6">
@@ -490,8 +505,24 @@ const LandingPage = () => {
           </div>
         </div>
       </footer>
+ 
+      {/* Login and Register Modals */}
+      <LoginModal
+  open={openLogin}
+  onOpenChange={setOpenLogin}
+  onSwitchToRegister={() => {
+    setOpenLogin(false);
+    setOpenRegister(true); // Make sure you have this state variable
+  }}
+  onForgotPassword={() => {
+    // Handle forgot password logic
+    console.log('Forgot password clicked');
+    // You could open a forgot password modal or navigate to a forgot password page
+  }}
+/>
+      <RegisterModal open={openRegister} onOpenChange={setOpenRegister} />
     </div>
   );
 };
-
+ 
 export default LandingPage;

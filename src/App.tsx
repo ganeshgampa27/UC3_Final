@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import LoginPage from "./components/LoginPage";
+import LoginPage from "./components/LoginModal";
 import DashboardPage from "./components/DashboardPage";
 import ManagerDashboard from "./components/ManagerDashboard";
 import AdminDashboard from "./components/AdminDashboard";
@@ -35,7 +35,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/login" element={<LoginPage />} />
+          {/* <Route path="/login" element={<LoginPage />} /> */}
           <Route path="/register" element={<RegistrationForm />} />
 
 
