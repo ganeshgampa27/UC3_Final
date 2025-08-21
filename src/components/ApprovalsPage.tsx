@@ -615,78 +615,9 @@ const ApprovalsPage = ( ) => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-foreground">Pending Approvals</h1>
-        <p className="text-muted-foreground">
-          Review and approve team service requests
-        </p>
-      </div>
+      
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
-                <Clock className="w-4 h-4 text-orange-600" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Pending</p>
-                <p className="text-xl font-bold text-foreground">{requests.length}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
-                <AlertCircle className="w-4 h-4 text-red-600" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">High Priority</p>
-                <p className="text-xl font-bold text-foreground">
-                  {getHighPriorityCount()}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                <Eye className="w-4 h-4 text-green-600" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Unique Services</p>
-                <p className="text-xl font-bold text-foreground">
-                  {new Set(requests.map(r => r.Service)).size}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                <Clock className="w-4 h-4 text-blue-600" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Active Providers</p>
-                <p className="text-xl font-bold text-foreground">
-                  {new Set(requests.map(r => r.Cloud)).size}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
+       
       {/* Search */}
       <Card>
         <CardContent className="p-4">

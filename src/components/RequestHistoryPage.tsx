@@ -835,7 +835,411 @@
 
 
 
+// import React, { useState, useEffect } from 'react';
+// import {
+//   Search,
+//   Calendar,
+//   User,
+//   CheckCircle,
+//   XCircle,
+//   Clock,
+//   FileText,
+//   Eye,
+//   X,
+//   Edit3
+// } from 'lucide-react';
+
+// // Interfaces
+// interface User {
+//   id: string;
+//   name: string;
+//   username: string;
+//   permissions: string[];
+// }
+
+// interface Request {
+//   RequestID: string;
+//   Username: string;
+//   Service: string;
+//   Role: string;
+//   Status: string;
+//   Reason: string;
+//   RequestTime: string;
+//   ApplicationTime: string | null;
+//   ApprovalTime: string | null;
+//   AccessLevel: string;
+//   Cloud: string;
+//   Manager: string;
+//   UserID: string;
+//   PolicyExpiry: string | null;
+//   ReminderSent: boolean;
+//   Policy?: any;
+// }
+
+
+
+// const RequestHistoryPage= () => {
+//   const [searchTerm, setSearchTerm] = useState<string>('');
+//   const [filterStatus, setFilterStatus] = useState<string>('all');
+//   const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'cost'>('newest');
+//   const [requests, setRequests] = useState<Request[]>([]);
+//   const [editRequest, setEditRequest] = useState<Request | null>(null);
+//   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+//  const [selectedProvider, setSelectedProvider] = useState('all');  
+
+//   useEffect(() => {
+//     const fetchRequests = async () => {
+//       setIsLoading(true);
+//       const fullName = localStorage.getItem("fullName");
+//       const userRole = localStorage.getItem("role");
+
+//       try {
+//         const response = await fetch(
+//           `https://9y40j38nv9.execute-api.ap-south-1.amazonaws.com/list_requests?Username=${fullName}`
+//         );
+//         if (response.ok) {
+//           const data = await response.json();
+
+//           if (Array.isArray(data.requests)) {
+//             let filtered = data.requests as Request[];
+
+//             if (userRole !== "Manager") {
+//               filtered = filtered.filter((req) => req.Username === fullName);
+//             }
+
+//             if (selectedProvider && selectedProvider !== "all") {
+//               filtered = filtered.filter(
+//                 (req) =>
+//                   req.Cloud.toLowerCase().trim() ===
+//                   selectedProvider.toLowerCase().trim()
+//               );
+//             }
+
+//             setRequests(filtered);
+//           } else {
+//             console.error("Unexpected API format:", data);
+//             setRequests([]);
+//           }
+//         } else {
+//           console.error("Failed to fetch requests");
+//           setRequests([]);
+//         }
+//       } catch (error) {
+//         console.error("Error fetching requests:", error);
+//         setRequests([]);
+//       } finally {
+//         setIsLoading(false);
+//       }
+//     };
+
+//     fetchRequests();
+//   }, [selectedProvider]);
+
+//   const getFilteredRequests = (): Request[] => {
+//     let filtered = requests;
+
+//     if (searchTerm) {
+//       filtered = filtered.filter(
+//         (request) =>
+//           request.RequestID.toLowerCase().includes(searchTerm.toLowerCase()) ||
+//           request.Username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+//           request.Service.toLowerCase().includes(searchTerm.toLowerCase()) ||
+//           request.Role.toLowerCase().includes(searchTerm.toLowerCase())
+//       );
+//     }
+
+//     if (filterStatus !== 'all') {
+//       filtered = filtered.filter((request) => request.Status.toLowerCase() === filterStatus.toLowerCase());
+//     }
+
+//     filtered.sort((a, b) => {
+//       if (sortBy === 'newest') {
+//         return new Date(b.RequestTime).getTime() - new Date(a.RequestTime).getTime();
+//       } else if (sortBy === 'oldest') {
+//         return new Date(a.RequestTime).getTime() - new Date(b.RequestTime).getTime();
+//       }
+//       return 0;
+//     });
+
+//     return filtered;
+//   };
+
+//   const filteredRequests = getFilteredRequests();
+
+//   const getStatusIcon = (status: string) => {
+//     switch (status.toLowerCase()) {
+//       case 'approved':
+//       case 'applied':
+//         return <CheckCircle className="w-4 h-4 text-green-600" />;
+//       case 'rejected':
+//         return <XCircle className="w-4 h-4 text-red-600" />;
+//       default:
+//         return <Clock className="w-4 h-4 text-yellow-600" />;
+//     }
+//   };
+
+//   const getStatusBadge = (status: string) => {
+//     const statusConfig: {
+//       [key: string]: { color: string; label: string };
+//     } = {
+//       approved: { color: 'text-green-600 border-green-500 bg-green-50', label: 'Approved' },
+//       applied: { color: 'text-blue-600 border-blue-500 bg-blue-50', label: 'Applied' },
+//       rejected: { color: 'text-red-600 border-red-500 bg-red-50', label: 'Rejected' },
+//       pending: { color: 'text-yellow-600 border-yellow-500 bg-yellow-50', label: 'Pending' },
+//     };
+
+//     const config = statusConfig[status.toLowerCase()] || statusConfig.pending;
+//     return (
+//       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${config.color}`}>
+//         {config.label}
+//       </span>
+//     );
+//   };
+
+//   const handleEditClick = (request: Request) => {
+//     setEditRequest({ ...request });
+//   };
+
+//   const handleCancel = () => {
+//     setEditRequest(null);
+//   };
+
+//   const formatDate = (dateString: string | null) => {
+//     if (!dateString) return 'N/A';
+//     return new Date(dateString).toLocaleString();
+//   };
+
+//   if (isLoading) {
+//     return (
+//       <div className="flex items-center justify-center h-64">
+//         <div className="text-center">
+//           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
+//           <p>Loading requests...</p>
+//         </div>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div className="space-y-6">
+      
+
+//       {/* Filters */}
+//       <div className="bg-white p-4 rounded-lg shadow border">
+//         <div className="flex flex-col md:flex-row gap-4">
+//           <div className="flex-1">
+//             <div className="relative">
+//               <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+//               <input
+//                 type="text"
+//                 placeholder="Search by ID, username, service, or role..."
+//                 value={searchTerm}
+//                 onChange={(e) => setSearchTerm(e.target.value)}
+//                 className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+//               />
+//             </div>
+//           </div>
+//           <div className="flex gap-2">
+//             <select
+//               value={filterStatus}
+//               onChange={(e) => setFilterStatus(e.target.value)}
+//               className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+//             >
+//               <option value="all">All Status</option>
+//               <option value="approved">Approved</option>
+//               <option value="pending">Pending</option>
+//               <option value="rejected">Rejected</option>
+//               <option value="applied">Applied</option>
+//             </select>
+//             <select
+//               value={sortBy}
+//               onChange={(e) => setSortBy(e.target.value as 'newest' | 'oldest' | 'cost')}
+//               className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+//             >
+//               <option value="newest">Newest First</option>
+//               <option value="oldest">Oldest First</option>
+//             </select>
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* Requests Table */}
+//       <div className="bg-white p-6 rounded-lg shadow border">
+//         <div className="w-full">
+//           <div className="max-h-[500px] overflow-y-auto">
+//             <table className="table-auto w-full divide-y divide-gray-200">
+//               <thead className="bg-gray-50 sticky top-0">
+//                 <tr>
+//                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                     Request ID
+//                   </th>
+//                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                     Username
+//                   </th>
+//                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                     Service
+//                   </th>
+//                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                     Cloud
+//                   </th>
+//                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                     Status
+//                   </th>
+//                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                     Actions
+//                   </th>
+//                 </tr>
+//               </thead>
+//               <tbody className="bg-white divide-y divide-gray-200">
+//                 {filteredRequests.map((request) => (
+//                   <tr key={request.RequestID} className="hover:bg-gray-50">
+//                     <td className="px-4 py-4 text-sm text-gray-500 truncate max-w-[150px]" title={request.RequestID}>
+//                       {request.RequestID}
+//                     </td>
+//                     <td className="px-4 py-4 text-sm font-medium text-gray-900">
+//                       <div className="flex items-center">
+//                         <User className="w-4 h-4 mr-2" />
+//                         {request.Username}
+//                       </div>
+//                     </td>
+//                     <td className="px-4 py-4 text-sm text-gray-500">
+//                       {request.Service}
+//                     </td>
+//                     <td className="px-4 py-4 text-sm text-gray-500 uppercase">
+//                       {request.Cloud}
+//                     </td>
+//                     <td className="px-4 py-4 text-sm text-gray-500">
+//                       <div className="flex items-center space-x-2">
+//                         {getStatusIcon(request.Status)}
+//                         {getStatusBadge(request.Status)}
+//                       </div>
+//                     </td>
+//                     <td className="px-4 py-4 text-sm text-gray-500">
+//                       <button
+//                         onClick={() => handleEditClick(request)}
+//                         className="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+//                       >
+//                         <Eye className="w-4 h-4 mr-1" />
+//                         View
+//                       </button>
+//                     </td>
+//                   </tr>
+//                 ))}
+//               </tbody>
+//             </table>
+//           </div>
+//         </div>
+
+//         {filteredRequests.length === 0 && !isLoading && (
+//           <div className="text-center py-8">
+//             <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+//             <p className="text-gray-500">No requests found matching your criteria.</p>
+//           </div>
+//         )}
+//       </div>
+
+//       {/* View Modal */}
+//       {editRequest && (
+//         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+//           <div className="bg-white w-full max-w-2xl p-6 relative max-h-[80vh] overflow-y-auto rounded-lg shadow-xl">
+//             <button
+//               onClick={handleCancel}
+//               className="absolute top-2 right-2 p-2 hover:bg-gray-100 rounded-md"
+//             >
+//               <X className="w-4 h-4" />
+//             </button>
+//             <h2 className="text-lg font-semibold text-gray-800 mb-4">Request Details</h2>
+//             <div className="space-y-4">
+//               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+//                 <div className="space-y-2">
+//                   <label className="block text-sm font-medium text-gray-700">Request ID</label>
+//                   <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded">{editRequest.RequestID}</p>
+//                 </div>
+//                 <div className="space-y-2">
+//                   <label className="block text-sm font-medium text-gray-700">Username</label>
+//                   <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded">{editRequest.Username}</p>
+//                 </div>
+//               </div>
+//               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+//                 <div className="space-y-2">
+//                   <label className="block text-sm font-medium text-gray-700">Service</label>
+//                   <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded">{editRequest.Service}</p>
+//                 </div>
+//                 <div className="space-y-2">
+//                   <label className="block text-sm font-medium text-gray-700">Cloud Provider</label>
+//                   <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded uppercase">{editRequest.Cloud}</p>
+//                 </div>
+//               </div>
+//               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+//                 <div className="space-y-2">
+//                   <label className="block text-sm font-medium text-gray-700">Role</label>
+//                   <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded">{editRequest.Role}</p>
+//                 </div>
+//                 <div className="space-y-2">
+//                   <label className="block text-sm font-medium text-gray-700">Access Level</label>
+//                   <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded">{editRequest.AccessLevel}</p>
+//                 </div>
+//               </div>
+//               <div className="space-y-2">
+//                 <label className="block text-sm font-medium text-gray-700">Status</label>
+//                 <div className="flex items-center space-x-2">
+//                   {getStatusIcon(editRequest.Status)}
+//                   {getStatusBadge(editRequest.Status)}
+//                 </div>
+//               </div>
+//               <div className="space-y-2">
+//                 <label className="block text-sm font-medium text-gray-700">Reason</label>
+//                 <p className="text-sm text-gray-600 bg-gray-50 p-3 rounded min-h-[60px]">{editRequest.Reason}</p>
+//               </div>
+//               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+//                 <div className="space-y-2">
+//                   <label className="block text-sm font-medium text-gray-700">Manager</label>
+//                   <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded">{editRequest.Manager}</p>
+//                 </div>
+//                 <div className="space-y-2">
+//                   <label className="block text-sm font-medium text-gray-700">Request Time</label>
+//                   <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded">{formatDate(editRequest.RequestTime)}</p>
+//                 </div>
+//               </div>
+//               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+//                 <div className="space-y-2">
+//                   <label className="block text-sm font-medium text-gray-700">Approval Time</label>
+//                   <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded">{formatDate(editRequest.ApprovalTime)}</p>
+//                 </div>
+//                 <div className="space-y-2">
+//                   <label className="block text-sm font-medium text-gray-700">Application Time</label>
+//                   <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded">{formatDate(editRequest.ApplicationTime)}</p>
+//                 </div>
+//               </div>
+//               {editRequest.PolicyExpiry && (
+//                 <div className="space-y-2">
+//                   <label className="block text-sm font-medium text-gray-700">Policy Expiry</label>
+//                   <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded">{formatDate(editRequest.PolicyExpiry)}</p>
+//                 </div>
+//               )}
+//               {editRequest.Policy && (
+//                 <div className="space-y-2">
+//                   <label className="block text-sm font-medium text-gray-700">Policy Details</label>
+//                   <pre className="text-xs text-gray-600 bg-gray-50 p-3 rounded overflow-auto max-h-32">
+//                     {JSON.stringify(editRequest.Policy, null, 2)}
+//                   </pre>
+//                 </div>
+//               )}
+//             </div>
+//           </div>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default RequestHistoryPage;
+
+
+
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import {
   Search,
   Calendar,
@@ -876,17 +1280,22 @@ interface Request {
   Policy?: any;
 }
 
-
-
-const RequestHistoryPage= () => {
+const RequestHistoryPage = () => {
+  const location = useLocation();
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'cost'>('newest');
   const [requests, setRequests] = useState<Request[]>([]);
   const [editRequest, setEditRequest] = useState<Request | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [selectedProvider, setSelectedProvider] = useState('all');
 
- const [selectedProvider, setSelectedProvider] = useState('all');  
+  // Handle navigation state to set default filter
+  useEffect(() => {
+    if (location.state && location.state.defaultFilter) {
+      setFilterStatus(location.state.defaultFilter);
+    }
+  }, [location.state]);
 
   useEffect(() => {
     const fetchRequests = async () => {
@@ -1023,51 +1432,7 @@ const RequestHistoryPage= () => {
 
   return (
     <div className="space-y-6">
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white p-4 rounded-lg shadow border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Total Requests</p>
-              <p className="text-2xl font-bold">{filteredRequests.length}</p>
-            </div>
-            <FileText className="w-8 h-8 text-blue-600" />
-          </div>
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Approved</p>
-              <p className="text-2xl font-bold">
-                {filteredRequests.filter((r) => r.Status.toLowerCase() === 'approved').length}
-              </p>
-            </div>
-            <CheckCircle className="w-8 h-8 text-green-600" />
-          </div>
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Pending</p>
-              <p className="text-2xl font-bold">
-                {filteredRequests.filter((r) => r.Status.toLowerCase() === 'pending').length}
-              </p>
-            </div>
-            <Clock className="w-8 h-8 text-yellow-600" />
-          </div>
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Rejected</p>
-              <p className="text-2xl font-bold">
-                {filteredRequests.filter((r) => r.Status.toLowerCase() === 'rejected').length}
-              </p>
-            </div>
-            <XCircle className="w-8 h-8 text-red-600" />
-          </div>
-        </div>
-      </div>
+      
 
       {/* Filters */}
       <div className="bg-white p-4 rounded-lg shadow border">
