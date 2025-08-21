@@ -520,7 +520,14 @@ const LandingPage = () => {
     // You could open a forgot password modal or navigate to a forgot password page
   }}
 />
-      <RegisterModal open={openRegister} onOpenChange={setOpenRegister} />
+      <RegisterModal 
+      open={openRegister} 
+      onOpenChange={setOpenRegister}
+      onSwitchToLogin={() => {
+          setOpenRegister(false);
+          setOpenLogin(true);
+        }}
+       />
     </div>
   );
 };

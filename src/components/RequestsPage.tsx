@@ -1315,7 +1315,7 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from './ui/dialog';
 import { useNavigate } from 'react-router-dom';
 import {
   Search,
@@ -1333,7 +1333,7 @@ import {
   AlertCircle,
   Plus
 } from 'lucide-react';
- 
+
 // API Response interfaces
 interface APIRequest {
   RequestID: string;
@@ -1353,13 +1353,13 @@ interface APIRequest {
   Policy?: any;
   ReminderSent: boolean;
 }
- 
+
 interface APIResponse {
   requests: APIRequest[];
   lastEvaluatedKey: string | null;
   message: string;
 }
- 
+
 // New Request Form interfaces
 interface NewRequest {
   cloud: string;
@@ -1368,7 +1368,7 @@ interface NewRequest {
   manager: string;
   justification: string;
 }
- 
+
 interface FormErrors {
   cloud?: string;
   resourceType?: string;
@@ -1376,7 +1376,7 @@ interface FormErrors {
   manager?: string;
   justification?: string;
 }
- 
+
 const RequestsPage = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [filterStatus, setFilterStatus] = useState<string>('all');
@@ -1385,7 +1385,7 @@ const RequestsPage = () => {
   const [selectedRequest, setSelectedRequest] = useState<APIRequest | null>(null);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
- 
+
   // New Request Dialog states
   const [isNewRequestOpen, setIsNewRequestOpen] = useState(false);
   const [newRequest, setNewRequest] = useState<NewRequest>({
@@ -1398,73 +1398,72 @@ const RequestsPage = () => {
   const [formErrors, setFormErrors] = useState<FormErrors>({});
   const [showCustomResourceInput, setShowCustomResourceInput] = useState(false);
   const [customResourceInput, setCustomResourceInput] = useState('');
-  const [customResources, setCustomResources] = useState<{[key: string]: string[]}>({});
+  const [customResources, setCustomResources] = useState<{ [key: string]: string[] }>({});
   const [selectedProvider] = useState('all'); // Assuming this comes from props or context
- 
+
   // Static data - you might want to fetch these from API
   const cloudProviders = [
     { id: 'aws', name: 'Amazon Web Services' },
     { id: 'azure', name: 'Microsoft Azure' },
     { id: 'gcp', name: 'Google Cloud Platform' },
   ];
- 
-  const resourceTypeLabels: {[key: string]: string} = {
-    's3': 'S3 Bucket',
-    'ec2': 'EC2 Instance',
-    'rds': 'RDS Database',
-    'vm': 'Virtual Machine',
-    'storage': 'Storage Account',
-    'compute': 'Compute Engine',
+
+  const resourceTypeLabels: { [key: string]: string } = {
+    s3: 'S3 Bucket',
+    ec2: 'EC2 Instance',
+    rds: 'RDS Database',
+    vm: 'Virtual Machine',
+    storage: 'Storage Account',
+    compute: 'Compute Engine',
   };
- 
-  const baseResourceTypes: {[key: string]: string[]} = {
+
+  const baseResourceTypes: { [key: string]: string[] } = {
     aws: ['s3', 'ec2', 'rds'],
     azure: ['vm', 'storage'],
     gcp: ['compute', 'storage'],
   };
- 
+
   const userRoles = [
-    { id: 'manager', credentials: { username: 'john.manager' } },
+    { id: 'manager', credentials: { username: 'Muthyam_Harshitha' } },
     { id: 'manager', credentials: { username: 'jane.supervisor' } },
     { id: 'manager', credentials: { username: 'mike.lead' } },
   ];
- 
+
   useEffect(() => {
     const fetchRequests = async () => {
       setIsLoading(true);
       setError(null);
       const fullName = localStorage.getItem("fullName");
       const userRole = localStorage.getItem("role");
- 
+
       try {
         const response = await fetch(
           `https://9y40j38nv9.execute-api.ap-south-1.amazonaws.com/list_requests?Username=${fullName}`
         );
-       
-        if (response.ok) {
-          const data: APIResponse = await response.json();
-          if (Array.isArray(data.requests)) {
-            // Filter requests based on user role
-            const filteredRequests = userRole === "Manager"
-              ? data.requests
-              : data.requests.filter((req: APIRequest) => req.Username === fullName);
- 
-            setRequests(filteredRequests);
-          }
-        } else {
-          setError('Failed to fetch requests');
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Failed to fetch requests');
         }
-      } catch (error) {
+
+        const data: APIResponse = await response.json();
+        if (Array.isArray(data.requests)) {
+          const filteredRequests = userRole === "Manager"
+            ? data.requests
+            : data.requests.filter((req: APIRequest) => req.Username === fullName);
+          setRequests(filteredRequests);
+        }
+      } catch (error: any) {
         console.error("Error fetching requests:", error);
-        setError('Error loading requests. Please try again.');
+        setError(error.message || 'Error loading requests. Please try again.');
       } finally {
         setIsLoading(false);
       }
     };
- 
+
     fetchRequests();
   }, []);
- 
+
   // New Request Form handlers
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -1480,7 +1479,7 @@ const RequestsPage = () => {
       }));
     }
   };
- 
+
   const handleSelectChange = (field: keyof NewRequest, value: string) => {
     setNewRequest(prev => ({
       ...prev,
@@ -1494,17 +1493,17 @@ const RequestsPage = () => {
       }));
     }
   };
- 
+
   const getResourceOptions = () => {
     if (!newRequest.cloud) return [];
     const baseTypes = baseResourceTypes[newRequest.cloud] || [];
     const customTypes = customResources[newRequest.cloud] || [];
     return [...baseTypes, ...customTypes];
   };
- 
+
   const validateForm = (): boolean => {
     const errors: FormErrors = {};
- 
+
     if (!newRequest.cloud) {
       errors.cloud = 'Cloud provider is required';
     }
@@ -1520,20 +1519,53 @@ const RequestsPage = () => {
     if (!newRequest.justification.trim()) {
       errors.justification = 'Justification is required';
     }
- 
+
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
- 
+
+  
   const handleSubmitRequest = async () => {
-    if (!validateForm()) {
-      return;
-    }
- 
-    try {
-      // Here you would typically make an API call to submit the request
-      console.log('Submitting request:', newRequest);
-     
+  if (!validateForm()) {
+    return;
+  }
+
+  try {
+    setIsLoading(true); // Add loading state for better UX
+    
+    // Transform the form data to match API expectations
+    const requestBody = {
+      Username: localStorage.getItem("fullName"),
+      Cloud: newRequest.cloud, // maps to your cloud field
+      Service: newRequest.resourceType, // maps to your resourceType field
+      AccessLevel: newRequest.accessLevel, // maps to your accessLevel field
+      Role: localStorage.getItem("role"),
+      Manager: newRequest.manager, // maps to your manager field
+      Reason: newRequest.justification, // maps to your justification field
+    };
+
+    console.log('Submitting request:', requestBody);
+
+    const response = await fetch(
+      'https://lp6t2xn0q4.execute-api.ap-south-1.amazonaws.com/prod/request_access',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // Add any additional headers your API might need
+          // 'Authorization': 'Bearer ' + token, // if authentication is required
+        },
+        body: JSON.stringify(requestBody),
+      }
+    );
+
+    if (response.ok) {
+      const responseData = await response.json();
+      console.log('Request submitted successfully:', responseData);
+      
+      // Show success message (you might want to add a toast notification)
+      alert('Request submitted successfully!');
+      
       // Reset form
       setNewRequest({
         cloud: '',
@@ -1544,18 +1576,27 @@ const RequestsPage = () => {
       });
       setFormErrors({});
       setIsNewRequestOpen(false);
-     
-      // Optionally refresh the requests list
+      
+      // Refresh the requests list
       window.location.reload();
-    } catch (error) {
-      console.error('Error submitting request:', error);
+    } else {
+      // Handle HTTP errors
+      const errorData = await response.json().catch(() => null);
+      const errorMessage = errorData?.message || `HTTP ${response.status}: ${response.statusText}`;
+      console.error('Failed to submit request:', errorMessage);
+      alert(`Failed to submit request: ${errorMessage}`);
     }
-  };
- 
+  } catch (error) {
+    console.error('Error submitting request:', error);
+    alert(`Error submitting request: ${error.message}`);
+  } finally {
+    setIsLoading(false);
+  }
+};
+
   const getFilteredRequests = (): APIRequest[] => {
     let filtered = requests;
- 
-    // Filter by search term
+
     if (searchTerm) {
       filtered = filtered.filter(
         (request) =>
@@ -1565,22 +1606,20 @@ const RequestsPage = () => {
           request.Reason.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
- 
-    // Filter by status
+
     if (filterStatus !== 'all') {
       filtered = filtered.filter((request) => request.Status === filterStatus);
     }
- 
-    // Sort by newest first (default)
+
     filtered.sort((a, b) => {
       return new Date(b.RequestTime).getTime() - new Date(a.RequestTime).getTime();
     });
- 
+
     return filtered;
   };
- 
+
   const filteredRequests = getFilteredRequests();
- 
+
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'approved':
@@ -1593,7 +1632,7 @@ const RequestsPage = () => {
         return <Clock className="w-4 h-4 text-orange-500" />;
     }
   };
- 
+
   const getStatusBadge = (status: string) => {
     const statusConfig: {
       [key: string]: { color: string; label: string };
@@ -1603,7 +1642,7 @@ const RequestsPage = () => {
       rejected: { color: 'text-red-600 border-red-600 bg-red-50', label: 'Rejected' },
       pending: { color: 'text-orange-600 border-orange-600 bg-orange-50', label: 'Pending' },
     };
- 
+
     const config = statusConfig[status] || statusConfig.pending;
     return (
       <Badge variant="outline" className={`text-xs ${config.color}`}>
@@ -1611,7 +1650,7 @@ const RequestsPage = () => {
       </Badge>
     );
   };
- 
+
   const getCloudIcon = (cloud: string) => {
     const cloudIcons: { [key: string]: string } = {
       aws: '🚀',
@@ -1620,15 +1659,15 @@ const RequestsPage = () => {
     };
     return cloudIcons[cloud.toLowerCase()] || '☁️';
   };
- 
+
   const handleViewRequest = (request: APIRequest) => {
     setSelectedRequest(request);
   };
- 
+
   const handleCloseModal = () => {
     setSelectedRequest(null);
   };
- 
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -1638,8 +1677,8 @@ const RequestsPage = () => {
       minute: '2-digit'
     });
   };
- 
-  if (isLoading) {
+
+  if (isLoading && !requests.length) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
@@ -1649,8 +1688,8 @@ const RequestsPage = () => {
       </div>
     );
   }
- 
-  if (error) {
+
+  if (error && !requests.length) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
@@ -1664,71 +1703,10 @@ const RequestsPage = () => {
       </div>
     );
   }
- 
+
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Request History</h1>
-      </div>
- 
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <Card className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">Total Requests</p>
-              <p className="text-2xl font-bold">{filteredRequests.length}</p>
-            </div>
-            <FileText className="w-8 h-8 text-blue-500" />
-          </div>
-        </Card>
-        <Card className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">Applied</p>
-              <p className="text-2xl font-bold">
-                {filteredRequests.filter((r) => r.Status === 'applied').length}
-              </p>
-            </div>
-            <Shield className="w-8 h-8 text-green-500" />
-          </div>
-        </Card>
-        <Card className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">Approved</p>
-              <p className="text-2xl font-bold">
-                {filteredRequests.filter((r) => r.Status === 'approved').length}
-              </p>
-            </div>
-            <CheckCircle className="w-8 h-8 text-blue-500" />
-          </div>
-        </Card>
-        <Card className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">Pending</p>
-              <p className="text-2xl font-bold">
-                {filteredRequests.filter((r) => r.Status === 'pending').length}
-              </p>
-            </div>
-            <Clock className="w-8 h-8 text-orange-500" />
-          </div>
-        </Card>
-        <Card className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">Rejected</p>
-              <p className="text-2xl font-bold">
-                {filteredRequests.filter((r) => r.Status === 'rejected').length}
-              </p>
-            </div>
-            <XCircle className="w-8 h-8 text-red-500" />
-          </div>
-        </Card>
-      </div>
- 
+     
       {/* Simplified Filters */}
       <Card className="p-4">
         <div className="flex flex-col md:flex-row gap-4">
@@ -1755,7 +1733,7 @@ const RequestsPage = () => {
               <option value="pending">Pending</option>
               <option value="rejected">Rejected</option>
             </select>
-           
+
             {/* New Request Dialog */}
             <Dialog open={isNewRequestOpen} onOpenChange={setIsNewRequestOpen}>
               <DialogTrigger asChild>
@@ -1767,10 +1745,15 @@ const RequestsPage = () => {
               <DialogContent className="sm:max-w-[600px]">
                 <DialogHeader>
                   <DialogTitle>New Access Request</DialogTitle>
-                  <p className="text-sm text-muted-foreground">
+                  <DialogDescription>
                     Fill in the details below to request access to a cloud resource.
-                  </p>
+                  </DialogDescription>
                 </DialogHeader>
+                {error && (
+                  <div className="p-4 bg-red-100 text-red-700 rounded-lg mb-4">
+                    {error}
+                  </div>
+                )}
                 <div className="grid grid-cols-2 gap-4 py-4">
                   {/* Cloud Provider */}
                   <div className="space-y-2">
@@ -1824,7 +1807,6 @@ const RequestsPage = () => {
                         </SelectItem>
                       </SelectContent>
                     </Select>
-                    {/* Inline input for custom resource */}
                     {showCustomResourceInput && (
                       <div className="flex gap-2 mt-1">
                         <Input
@@ -1930,11 +1912,18 @@ const RequestsPage = () => {
                   </div>
                 </div>
                 <div className="flex justify-end space-x-2">
-                  <Button variant="outline" onClick={() => setIsNewRequestOpen(false)}>
+                  <Button variant="outline" onClick={() => setIsNewRequestOpen(false)} disabled={isLoading}>
                     Cancel
                   </Button>
-                  <Button onClick={handleSubmitRequest} className="bg-primary hover:bg-primary/90">
-                    Submit Request
+                  <Button onClick={handleSubmitRequest} disabled={isLoading} className="bg-primary hover:bg-primary/90">
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Submitting...
+                      </>
+                    ) : (
+                      'Submit Request'
+                    )}
                   </Button>
                 </div>
               </DialogContent>
@@ -1942,7 +1931,7 @@ const RequestsPage = () => {
           </div>
         </div>
       </Card>
- 
+
       {/* Requests Table */}
       <Card className="p-6">
         <div className="overflow-x-auto">
@@ -2024,7 +2013,7 @@ const RequestsPage = () => {
             </tbody>
           </table>
         </div>
- 
+
         {filteredRequests.length === 0 && (
           <div className="text-center py-8">
             <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
@@ -2032,7 +2021,7 @@ const RequestsPage = () => {
           </div>
         )}
       </Card>
- 
+
       {/* View Request Modal */}
       {selectedRequest && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -2045,7 +2034,7 @@ const RequestsPage = () => {
             >
               <X className="w-4 h-4" />
             </Button>
-           
+
             <div className="mb-6">
               <h2 className="text-xl font-semibold text-gray-800 mb-2">Request Details</h2>
               <div className="flex items-center space-x-2 mb-4">
@@ -2053,7 +2042,7 @@ const RequestsPage = () => {
                 {getStatusBadge(selectedRequest.Status)}
               </div>
             </div>
- 
+
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -2070,7 +2059,7 @@ const RequestsPage = () => {
                   </div>
                 </div>
               </div>
- 
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-gray-700 font-medium">Cloud Provider</Label>
@@ -2086,7 +2075,7 @@ const RequestsPage = () => {
                   </div>
                 </div>
               </div>
- 
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-gray-700 font-medium">Access Level</Label>
@@ -2101,14 +2090,14 @@ const RequestsPage = () => {
                   </div>
                 </div>
               </div>
- 
+
               <div className="space-y-2">
                 <Label className="text-gray-700 font-medium">Reason</Label>
                 <div className="p-3 bg-gray-100 rounded-lg text-sm">
                   {selectedRequest.Reason}
                 </div>
               </div>
- 
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-gray-700 font-medium">Request Time</Label>
@@ -2127,7 +2116,7 @@ const RequestsPage = () => {
                   </div>
                 )}
               </div>
- 
+
               {selectedRequest.PolicyExpiry && (
                 <div className="space-y-2">
                   <Label className="text-gray-700 font-medium">Policy Expiry</Label>
@@ -2137,7 +2126,7 @@ const RequestsPage = () => {
                   </div>
                 </div>
               )}
- 
+
               {selectedRequest.Policy && (
                 <div className="space-y-2">
                   <Label className="text-gray-700 font-medium">Policy Details</Label>
@@ -2147,7 +2136,7 @@ const RequestsPage = () => {
                 </div>
               )}
             </div>
- 
+
             <div className="flex justify-end mt-6">
               <Button onClick={handleCloseModal}>
                 Close
@@ -2159,6 +2148,5 @@ const RequestsPage = () => {
     </div>
   );
 };
- 
+
 export default RequestsPage;
- 

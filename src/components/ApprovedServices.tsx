@@ -571,47 +571,7 @@ const ApprovedServicesPage = ({
  
   return (
     <div className="space-y-6">
-      {/* Summary Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Total Services</p>
-              <p className="text-2xl font-bold">{sortedServices.length}</p>
-            </div>
-            <CheckCircle className="w-8 h-8 text-green-600" />
-          </div>
-        </Card>
-        <Card className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Active Access</p>
-              <p className="text-2xl font-bold">{activeServices.length}</p>
-            </div>
-            <Shield className="w-8 h-8 text-blue-600" />
-          </div>
-        </Card>
-        <Card className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Applied Services</p>
-              <p className="text-2xl font-bold">
-                {sortedServices.filter(s => s.Status === 'applied').length}
-              </p>
-            </div>
-            <DollarSign className="w-8 h-8 text-purple-600" />
-          </div>
-        </Card>
-        <Card className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">This Month</p>
-              <p className="text-2xl font-bold">{thisMonthServices.length}</p>
-            </div>
-            <Calendar className="w-8 h-8 text-orange-600" />
-          </div>
-        </Card>
-      </div>
+     
  
       {/* Filters */}
       <Card className="p-4">
