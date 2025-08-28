@@ -2544,76 +2544,69 @@ const OverviewPage = () => {
           </CardContent>
         </Card>
       </div>
-
-            {/* Quick Actions */}
+      
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Filter className="w-5 h-5 text-primary" />
-            <span>Quick Actions</span>
-          </CardTitle>
-          <CardDescription>
-            Common actions for managing requests and your team
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="cursor-pointer hover:shadow-md transition-shadow" 
-                  onClick={() => navigate('/manager-dashboard/approvals')}>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <AlertTriangle className="w-5 h-5 text-orange-500" />
-                  <span>Review Pending Requests</span>
-                </CardTitle>
-                <CardDescription>
-                  {stats.pending} requests need your attention
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
+      <CardHeader>
+        <CardTitle className="flex items-center space-x-2">
+          <Filter className="w-5 h-5 text-primary" />
+          <span>Quick Actions</span>
+        </CardTitle>
+        <CardDescription>
+          Common actions for managing requests and your team
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <Card className="cursor-pointer hover:shadow-md transition-shadow p-4" 
+                onClick={() => navigate('/manager-dashboard/approvals')}>
+            <div className="flex items-start space-x-3">
+              <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <AlertTriangle className="w-5 h-5 text-orange-500" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-base mb-1">Review Pending Requests</h3>
+                <p className="text-sm text-gray-600 mb-3">{stats.pending} requests need your attention</p>
                 <Button className="w-full">
                   Go to Approvals
                 </Button>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
+          </Card>
 
-            <Card className="cursor-pointer hover:shadow-md transition-shadow"
-                  onClick={() => navigate('/manager-dashboard/team-management')}>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Users className="w-5 h-5 text-blue-500" />
-                  <span>Manage Team</span>
-                </CardTitle>
-                <CardDescription>
-                  View and manage team members
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
+          <Card className="cursor-pointer hover:shadow-md transition-shadow p-4"
+                onClick={() => navigate('/manager-dashboard/team-management')}>
+            <div className="flex items-start space-x-3">
+              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Users className="w-5 h-5 text-blue-500" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-base mb-1">Manage Team</h3>
+                <p className="text-sm text-gray-600 mb-3">View and manage team members</p>
                 <Button variant="outline" className="w-full">
                   Team Management
                 </Button>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
+          </Card>
 
-            <Card className="cursor-pointer hover:shadow-md transition-shadow"
-                  onClick={() => navigate('/manager-dashboard/request-history')}>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <TrendingUp className="w-5 h-5 text-purple-500" />
-                  <span>View Analytics</span>
-                </CardTitle>
-                <CardDescription>
-                  Request history and trends
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
+          <Card className="cursor-pointer hover:shadow-md transition-shadow p-4"
+                onClick={() => navigate('/manager-dashboard/request-history')}>
+            <div className="flex items-start space-x-3">
+              <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <TrendingUp className="w-5 h-5 text-purple-500" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-base mb-1">View Analytics</h3>
+                <p className="text-sm text-gray-600 mb-3">Request history and trends</p>
                 <Button variant="outline" className="w-full">
                   View History
                 </Button>
-              </CardContent>
-            </Card>
-          </div>
-        </CardContent>
-      </Card>
+              </div>
+            </div>
+          </Card>
+        </div>
+      </CardContent>
+    </Card>
 
 
       {/* Recent Requests */}

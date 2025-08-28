@@ -899,16 +899,188 @@
 // export default TeamManagementPage;
 
 
+// import React, { useState, useEffect } from "react";
+// import { Button } from "./ui/button";
+// import { Card } from "./ui/card";
+// import { Badge } from "./ui/badge";
+// import { Input } from "./ui/input";
+// import { Label } from "./ui/label";
+// import {
+//   Users,
+//   UserPlus,
+//   Search,
+//   CheckCircle,
+//   TrendingUp,
+//   BarChart3,
+//   Edit3,
+//   Trash2,
+//   X
+// } from "lucide-react";
+
+// // Interface for team member (adjust as needed):
+// interface TeamMember {
+//   id: string;
+//   fullName: string;
+//   email: string;
+//   role: string;
+//   createdAt: string;
+// }
+
+// const TeamManagementPage: React.FC = () => {
+//   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+//   const [loading, setLoading] = useState(true);
+//   const [searchTerm, setSearchTerm] = useState("");
+//   const [showAddForm, setShowAddForm] = useState(false);
+//   const [newMember, setNewMember] = useState({ fullName: "", email: "", role: "" });
+
+//   useEffect(() => {
+//     async function fetchTeamMembers() {
+//       try {
+//         const res = await fetch(
+//           "https://dmsntmbne5.execute-api.ap-south-1.amazonaws.com/registerget"
+//         );
+//         const data = await res.json();
+//         console.log(data)
+//         const normalized = data.map((u: any) => ({
+//           id: u.UserID,
+//           fullName: u.FullName,
+//           email: u.Email,
+//           role: u.Role,
+//           createdAt: u.CreatedAt,
+//         }));
+//         setTeamMembers(normalized);
+//       } catch (error) {
+//         console.error("Failed to fetch team members:", error);
+//       } finally {
+//         setLoading(false);
+//       }
+//     }
+//     fetchTeamMembers();
+//   }, []);
+
+//   const filtered = teamMembers.filter(
+//     (m) =>
+//       m.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+//       m.email.toLowerCase().includes(searchTerm.toLowerCase())
+//   );
+
+//   if (loading) return <div className="p-6 text-center">Loading team members…</div>;
+
+//   return (
+//     <div className="space-y-4">
+//       {/* Header */}
+//       <div className="flex justify-between items-center">
+//         <h1 className="text-2xl font-semibold">Team Members</h1>
+//         <Button onClick={() => setShowAddForm(true)}>
+//           <UserPlus className="mr-2 h-4 w-4" /> Add Member
+//         </Button>
+//       </div>
+
+//       {/* Search */}
+//       <div className="relative">
+//         <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+//         <Input
+//           placeholder="Search members…"
+//           value={searchTerm}
+//           onChange={(e) => setSearchTerm(e.target.value)}
+//           className="pl-9"
+//         />
+//       </div>
+
+//       {/* Stats */}
+//       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+//         <Card className="p-4">
+//           <div className="flex items-center justify-between">
+//             <div>
+//               <p className="text-sm text-gray-600">Total Members</p>
+//               <p className="text-xl font-bold">{teamMembers.length}</p>
+//             </div>
+//             <Users className="text-blue-500 h-6 w-6" />
+//           </div>
+//         </Card>
+//         {/* Add stats like created date or other metrics if needed */}
+//       </div>
+
+//       {/* Members List */}
+//       <div className="space-y-2">
+//         {filtered.map((member) => (
+//           <Card key={member.id} className="p-4 flex justify-between items-center">
+//             <div>
+//               <div className="font-medium">{member.fullName}</div>
+//               <div className="text-sm text-gray-500">{member.email}</div>
+//             </div>
+//             <div className="flex space-x-2">
+//               <Button variant="outline" size="sm" onClick={() => {/* edit logic */}}>
+//                 <Edit3 className="h-4 w-4" />
+//               </Button>
+//               <Button variant="destructive" size="sm" onClick={() => {/* delete logic */}}>
+//                 <Trash2 className="h-4 w-4" />
+//               </Button>
+//             </div>
+//           </Card>
+//         ))}
+//       </div>
+
+//       {/* Add Member Modal */}
+//       {showAddForm && (
+//         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+//           <Card className="w-full max-w-md p-6 relative">
+//             <Button className="absolute top-2 right-2" variant="ghost" onClick={() => setShowAddForm(false)}>
+//               <X className="h-4 w-4" />
+//             </Button>
+//             <h2 className="text-lg font-semibold mb-4">Add New Member</h2>
+//             <form
+//               onSubmit={(e) => {
+//                 e.preventDefault();
+//                 // Add logic to call backend POST and update state
+//                 setShowAddForm(false);
+//               }}
+//               className="space-y-4"
+//             >
+//               <div>
+//                 <Label>Full Name</Label>
+//                 <Input value={newMember.fullName} onChange={(e) => setNewMember({ ...newMember, fullName: e.target.value })} required />
+//               </div>
+//               <div>
+//                 <Label>Email</Label>
+//                 <Input type="email" value={newMember.email} onChange={(e) => setNewMember({ ...newMember, email: e.target.value })} required />
+//               </div>
+//               <div>
+//                 <Label>Role</Label>
+//                 <Input value={newMember.role} onChange={(e) => setNewMember({ ...newMember, role: e.target.value })} required />
+//               </div>
+//               <div className="flex justify-end space-x-2">
+//                 <Button variant="outline" onClick={() => setShowAddForm(false)}>Cancel</Button>
+//                 <Button type="submit">Add</Button>
+//               </div>
+//             </form>
+//           </Card>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default TeamManagementPage;
+
+
+
 import React, { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Badge } from "./ui/badge";
+import { Badge } from "./ui/badge";
 import {
   Users,
   UserPlus,
   Search,
+  Edit3,
+  Trash2,
+  X,
+  Mail,
+  Calendar,
   Edit3,
   Trash2,
   X,
@@ -926,13 +1098,18 @@ interface TeamMember {
   email: string;
   role: string;
   status: "active" | "inactive" | "pending";
+  status: "active" | "inactive" | "pending";
   createdAt: string;
   performance: {
     approvalRate: number;
     productivity: number;
   };
+  performance: {
+    approvalRate: number;
+    productivity: number;
+  };
 }
-
+ 
 const TeamManagementPage: React.FC = () => {
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [loading, setLoading] = useState(true);
@@ -951,15 +1128,21 @@ const TeamManagementPage: React.FC = () => {
           "https://dmsntmbne5.execute-api.ap-south-1.amazonaws.com/registerget"
         );
         if (!res.ok) throw new Error("Failed to fetch team members");
+        if (!res.ok) throw new Error("Failed to fetch team members");
         const data = await res.json();
-        console.log(data);
+        console.log(data);;
         const normalized = data.map((u: any) => ({
           id: u.UserID,
           fullName: u.FullName,
           email: u.Email,
           role: u.Role,
           status: ["active", "inactive", "pending"][Math.floor(Math.random() * 3)], // Simulate status
+          status: ["active", "inactive", "pending"][Math.floor(Math.random() * 3)], // Simulate status
           createdAt: u.CreatedAt,
+          performance: {
+            approvalRate: Math.floor(Math.random() * 31) + 70, // Simulate 70-100%
+            productivity: Math.floor(Math.random() * 31) + 70, // Simulate 70-100%
+          },
           performance: {
             approvalRate: Math.floor(Math.random() * 31) + 70, // Simulate 70-100%
             productivity: Math.floor(Math.random() * 31) + 70, // Simulate 70-100%
@@ -968,6 +1151,7 @@ const TeamManagementPage: React.FC = () => {
         setTeamMembers(normalized);
       } catch (error) {
         console.error("Failed to fetch team members:", error);
+        setError("Failed to load team members. Please try again.");
         setError("Failed to load team members. Please try again.");
       } finally {
         setLoading(false);
@@ -1119,6 +1303,13 @@ const TeamManagementPage: React.FC = () => {
           className="bg-cloud-purple text-white hover:bg-cloud-purple-600"
         >
           <UserPlus className="w-4 h-4 mr-2" /> Add Member
+        <h1 className="text-2xl font-semibold text-gray-900">Team Members</h1>
+        <Button
+          size="sm"
+          onClick={() => setShowAddForm(true)}
+          className="bg-cloud-purple text-white hover:bg-cloud-purple-600"
+        >
+          <UserPlus className="w-4 h-4 mr-2" /> Add Member
         </Button>
       </div>
 
@@ -1261,6 +1452,15 @@ const TeamManagementPage: React.FC = () => {
 
       {/* Add Member Modal */}
       {showAddForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <Card className="w-full max-w-lg p-6 relative">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="absolute top-2 right-2"
+              onClick={() => setShowAddForm(false)}
+            >
+              <X className="w-4 h-4" />
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <Card className="w-full max-w-lg p-6 relative">
             <Button
@@ -1447,8 +1647,98 @@ const TeamManagementPage: React.FC = () => {
                   <option value="inactive">Inactive</option>
                   <option value="pending">Pending</option>
                 </select>
+            >
+              <X className="w-4 h-4" />
+            </Button>
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">Edit Member</h2>
+            <form onSubmit={handleEditMember} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="edit-fullName" className="text-gray-700">
+                    Full Name
+                  </Label>
+                  <Input
+                    id="edit-fullName"
+                    type="text"
+                    value={editMember.fullName}
+                    onChange={(e) =>
+                      setEditMember({ ...editMember, fullName: e.target.value })
+                    }
+                    placeholder="Enter full name"
+                    className="h-10 border-gray-300 focus:border-cloud-purple focus:ring-cloud-purple"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-email" className="text-gray-700">
+                    Email
+                  </Label>
+                  <Input
+                    id="edit-email"
+                    type="email"
+                    value={editMember.email}
+                    onChange={(e) =>
+                      setEditMember({ ...editMember, email: e.target.value })
+                    }
+                    placeholder="Enter email"
+                    className="h-10 border-gray-300 focus:border-cloud-purple focus:ring-cloud-purple"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-role" className="text-gray-700">
+                  Role
+                </Label>
+                <select
+                  id="edit-role"
+                  value={editMember.role}
+                  onChange={(e) =>
+                    setEditMember({ ...editMember, role: e.target.value })
+                  }
+                  className="w-full h-10 border border-gray-300 rounded-lg text-sm focus:border-cloud-purple focus:ring-cloud-purple"
+                >
+                  <option value="employee">Employee</option>
+                  <option value="manager">Manager</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-status" className="text-gray-700">
+                  Status
+                </Label>
+                <select
+                  id="edit-status"
+                  value={editMember.status}
+                  onChange={(e) =>
+                    setEditMember({ ...editMember, status: e.target.value as "active" | "inactive" | "pending" })
+                  }
+                  className="w-full h-10 border border-gray-300 rounded-lg text-sm focus:border-cloud-purple focus:ring-cloud-purple"
+                >
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                  <option value="pending">Pending</option>
+                </select>
               </div>
               <div className="flex justify-end space-x-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setEditMember(null);
+                    setShowEditForm(false);
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  size="sm"
+                  className="bg-cloud-purple text-white hover:bg-cloud-purple-600"
+                >
+                  Save Changes
+                </Button>
                 <Button
                   type="button"
                   variant="outline"
@@ -1475,5 +1765,5 @@ const TeamManagementPage: React.FC = () => {
     </div>
   );
 };
-
+ 
 export default TeamManagementPage;

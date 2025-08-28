@@ -1,205 +1,219 @@
-// import React, { useState } from 'react';
-// import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-// import { Button } from './ui/button';
-// import { Badge } from './ui/badge';
-// import { Input } from './ui/input';
-// import { Textarea } from './ui/textarea';
-// import { 
-//   Search, 
-//   Clock, 
-//   CheckCircle, 
+
+// import React, { useState, useEffect } from "react";
+// import {
+//   Card,
+//   CardContent,
+//   CardHeader,
+//   CardTitle,
+// } from "./ui/card";
+// import { Button } from "./ui/button";
+// import { Badge } from "./ui/badge";
+// import { Input } from "./ui/input";
+// import { Textarea } from "./ui/textarea";
+// import {
+//   Search,
+//   CheckCircle,
 //   XCircle,
 //   Eye,
-//   AlertCircle,
-//   DollarSign
-// } from 'lucide-react';
+//   Cloud,
+//   Shield,
+//   Users,
+// } from "lucide-react";
 // import {
 //   Dialog,
 //   DialogContent,
 //   DialogHeader,
 //   DialogTitle,
 //   DialogTrigger,
-// } from './ui/dialog';
+// } from "./ui/dialog";
+// import {
+//   Tabs,
+//   TabsContent,
+//   TabsList,
+//   TabsTrigger,
+// } from "./ui/tabs";
 
-// interface ApprovalsPageProps {
-//   currentUser: any;
-//   selectedProvider: string;
+// interface Request {
+//   RequestID: string;
+//   Username: string;
+//   Service: string;
+//   Role: string;
+//   Status: string;
+//   Reason: string;
+//   RequestTime: string;
+//   AccessLevel: string;
+//   Cloud: string;
+//   Policy?: any;
 // }
 
-// const ApprovalsPage: React.FC<ApprovalsPageProps> = ({ currentUser, selectedProvider }) => {
-//   const [searchTerm, setSearchTerm] = useState('');
-//   const [selectedRequest, setSelectedRequest] = useState<any>(null);
-//   const [approvalComment, setApprovalComment] = useState('');
+// const ApprovalsPage = () => {
+//   const [searchTerm, setSearchTerm] = useState("");
+//   const [selectedRequest, setSelectedRequest] = useState<Request | null>(null);
+//   const [approvalComment, setApprovalComment] = useState("");
+//   const [requests, setRequests] = useState<Request[]>([]);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState("");
+//   const [selectedProvider, setSelectedProvider] = useState("all");
 
-//   const mockPendingRequests = [
-//     {
-//       id: 'REQ-005',
-//       requester: 'Alice Johnson',
-//       requesterEmail: 'alice.johnson@company.com',
-//       service: 'AWS EC2',
-//       provider: 'aws',
-//       description: 'High-performance compute instance for machine learning workloads',
-//       justification: 'Need additional compute power for training ML models. Current instances are insufficient for the dataset size.',
-//       estimatedCost: '$350/month',
-//       submittedDate: '2024-01-16',
-//       priority: 'high',
-//       AccessLevel: 'Read-Only'
-//     },
-//     {
-//       id: 'REQ-006',
-//       requester: 'Bob Smith',
-//       requesterEmail: 'bob.smith@company.com',
-//       service: 'Azure Cosmos DB',
-//       provider: 'azure',
-//       description: 'NoSQL database for real-time analytics',
-//       justification: 'Replacing legacy database to improve performance and enable real-time analytics for customer insights.',
-//       estimatedCost: '$200/month',
-//       submittedDate: '2024-01-15',
-//       priority: 'medium',
-//       AccessLevel: 'Read-Write'
-//     },
-//     {
-//       id: 'REQ-007',
-//       requester: 'Carol Davis',
-//       requesterEmail: 'carol.davis@company.com',
-//       service: 'GCP BigQuery',
-//       provider: 'gcp',
-//       description: 'Data warehouse for analytics',
-//       justification: 'Need to migrate from on-premise data warehouse to cloud for better scalability and performance.',
-//       estimatedCost: '$180/month',
-//       submittedDate: '2024-01-14',
-//       priority: 'low',
-//       AccessLevel: 'Full Access'
-//     },
-//     {
-//       id: 'REQ-008',
-//       requester: 'David Wilson',
-//       requesterEmail: 'david.wilson@company.com',
-//       service: 'AWS Lambda Functions',
-//       provider: 'aws',
-//       description: 'Serverless functions for API processing',
-//       justification: 'Migrating from monolithic architecture to serverless to reduce costs and improve scalability.',
-//       estimatedCost: '$75/month',
-//       submittedDate: '2024-01-13',
-//       priority: 'medium',
-//       AccessLevel: 'Read-Only'
-//     }
-//   ];
+//   // Fetch requests
+//   useEffect(() => {
+//     const fetchRequests = async () => {
+//       try {
+//         setLoading(true);
+//         const res = await fetch(
+//           "https://9y40j38nv9.execute-api.ap-south-1.amazonaws.com/list_requests"
+//         );
+//         if (!res.ok) throw new Error("Failed to fetch requests");
+//         const data = await res.json();
 
-//   const getPriorityColor = (priority: string) => {
-//     switch (priority) {
-//       case 'high':
-//         return 'bg-red-500 text-white';
-//       case 'medium':
-//         return 'bg-orange-500 text-white';
-//       case 'low':
-//         return 'bg-green-500 text-white';
-//       default:
-//         return 'bg-gray-500 text-white';
+//         const filtered = data.requests.filter(
+//           (req: Request) =>
+//             req.Status === "pending" &&
+//             (selectedProvider === "all" ||
+//               req.Cloud.toLowerCase() === selectedProvider.toLowerCase())
+//         );
+//         setRequests(filtered);
+//       } catch (err) {
+//         setError("Unable to load requests. Please try again later.");
+//         console.error("Error fetching requests:", err);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     fetchRequests();
+//   }, [selectedProvider]);
+
+//   // Helpers
+//   const getPriorityColor = (accessLevel: string) => {
+//     const level = accessLevel.toLowerCase();
+//     if (level.includes("full") || level.includes("admin")) {
+//       return "bg-red-500 text-white";
+//     } else if (level.includes("write") || level.includes("modify")) {
+//       return "bg-orange-500 text-white";
+//     } else if (level.includes("read")) {
+//       return "bg-green-500 text-white";
+//     } else {
+//       return "bg-gray-500 text-white";
 //     }
 //   };
 
-//   const getProviderColor = (provider: string) => {
-//     switch (provider) {
-//       case 'aws':
-//         return 'bg-orange-500';
-//       case 'azure':
-//         return 'bg-blue-500';
-//       case 'gcp':
-//         return 'bg-green-500';
-//       default:
-//         return 'bg-gray-500';
+//   const formatDate = (dateString: string) => {
+//     const date = new Date(dateString);
+//     return date.toLocaleString("en-IN", {
+//       month: "short",
+//       day: "numeric",
+//       year: "numeric",
+//       hour: "2-digit",
+//       minute: "2-digit",
+//       hour12: true,
+//     });
+//   };
+
+//   const handleApprove = async (request: Request) => {
+//     try {
+//       const payload = {
+//         ...request,
+//         Status: "approved",
+//         Notes: approvalComment,
+//       };
+
+//       const res = await fetch(
+//         `https://zfn7ztag31.execute-api.ap-south-1.amazonaws.com/dev/approve_access/${request.RequestID}`,
+//         {
+//           method: "POST",
+//           headers: { "Content-Type": "application/json" },
+//           body: JSON.stringify(payload),
+//         }
+//       );
+
+//       if (!res.ok) throw new Error("Failed to approve request");
+
+//       setRequests((prev) =>
+//         prev.filter((r) => r.RequestID !== request.RequestID)
+//       );
+//       setSelectedRequest(null);
+//       setApprovalComment("");
+//     } catch (error) {
+//       console.error("Approval error:", error);
 //     }
 //   };
 
-//   const filteredRequests = mockPendingRequests.filter(request => {
-//     const matchesSearch = request.service.toLowerCase().includes(searchTerm.toLowerCase()) ||
-//                          request.requester.toLowerCase().includes(searchTerm.toLowerCase()) ||
-//                          request.AccessLevel.toLowerCase().includes(searchTerm.toLowerCase());
-//     const matchesProvider = selectedProvider === 'all' || request.provider === selectedProvider;
-//     return matchesSearch && matchesProvider;
+//   const handleReject = async (request: Request) => {
+//     try {
+//       const payload = {
+//         ...request,
+//         Status: "rejected",
+//         Notes: approvalComment,
+//       };
+
+//       const res = await fetch(
+//         `https://zfn7ztag31.execute-api.ap-south-1.amazonaws.com/dev/approve_access/${request.RequestID}`,
+//         {
+//           method: "POST",
+//           headers: { "Content-Type": "application/json" },
+//           body: JSON.stringify(payload),
+//         }
+//       );
+
+//       if (!res.ok) throw new Error("Failed to reject request");
+
+//       setRequests((prev) =>
+//         prev.filter((r) => r.RequestID !== request.RequestID)
+//       );
+//       setSelectedRequest(null);
+//       setApprovalComment("");
+//     } catch (error) {
+//       console.error("Rejection error:", error);
+//     }
+//   };
+
+//   // Derived Data
+//   const highPriorityCount = requests.filter((r) =>
+//     r.AccessLevel.toLowerCase().includes("full")
+//   ).length;
+
+//   const filteredRequests = requests.filter((request) => {
+//     return (
+//       request.Service.toLowerCase().includes(searchTerm.toLowerCase()) ||
+//       request.Username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+//       request.AccessLevel.toLowerCase().includes(searchTerm.toLowerCase())
+//     );
 //   });
 
-//   const handleApprove = (request: any) => {
-//     console.log('Approving request:', request.id, 'Comment:', approvalComment);
-//     setSelectedRequest(null);
-//     setApprovalComment('');
-//   };
-
-//   const handleReject = (request: any) => {
-//     console.log('Rejecting request:', request.id, 'Comment:', approvalComment);
-//     setSelectedRequest(null);
-//     setApprovalComment('');
-//   };
+//   // UI
+//   if (loading) return <p>Loading requests...</p>;
+//   if (error) return <p className="text-red-500">{error}</p>;
 
 //   return (
-//     <div className="space-y-6">
-//       <div>
-//         <h1 className="text-3xl font-bold text-foreground">Pending Approvals</h1>
-//         <p className="text-muted-foreground">
-//           Review and approve team service requests
-//         </p>
-//       </div>
-
-//       {/* Summary Cards */}
-//       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+//     <div className="space-y-8">
+//       {/* Dashboard Header */}
+//       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 //         <Card>
-//           <CardContent className="p-4">
-//             <div className="flex items-center space-x-2">
-//               <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
-//                 <Clock className="w-4 h-4 text-orange-600" />
-//               </div>
-//               <div>
-//                 <p className="text-sm text-muted-foreground">Pending</p>
-//                 <p className="text-xl font-bold text-foreground">{mockPendingRequests.length}</p>
-//               </div>
+//           <CardContent className="flex items-center justify-between p-6">
+//             <div>
+//               <p className="text-sm text-muted-foreground">Total Pending</p>
+//               <h2 className="text-2xl font-bold">{requests.length}</h2>
 //             </div>
+//             <Cloud className="w-8 h-8 text-blue-500" />
 //           </CardContent>
 //         </Card>
-
 //         <Card>
-//           <CardContent className="p-4">
-//             <div className="flex items-center space-x-2">
-//               <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
-//                 <AlertCircle className="w-4 h-4 text-red-600" />
-//               </div>
-//               <div>
-//                 <p className="text-sm text-muted-foreground">High Priority</p>
-//                 <p className="text-xl font-bold text-foreground">
-//                   {mockPendingRequests.filter(r => r.priority === 'high').length}
-//                 </p>
-//               </div>
+//           <CardContent className="flex items-center justify-between p-6">
+//             <div>
+//               <p className="text-sm text-muted-foreground">High Priority</p>
+//               <h2 className="text-2xl font-bold">{highPriorityCount}</h2>
 //             </div>
+//             <Shield className="w-8 h-8 text-red-500" />
 //           </CardContent>
 //         </Card>
-
 //         <Card>
-//           <CardContent className="p-4">
-//             <div className="flex items-center space-x-2">
-//               <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-//                 <DollarSign className="w-4 h-4 text-green-600" />
-//               </div>
-//               <div>
-//                 <p className="text-sm text-muted-foreground">Total Cost</p>
-//                 <p className="text-xl font-bold text-foreground">
-//                   ${mockPendingRequests.reduce((sum, r) => sum + parseInt(r.estimatedCost.replace(/[^\d]/g, '')), 0)}
-//                 </p>
-//               </div>
+//           <CardContent className="flex items-center justify-between p-6">
+//             <div>
+//               <p className="text-sm text-muted-foreground">Requesters</p>
+//               <h2 className="text-2xl font-bold">{requests.length}</h2>
 //             </div>
-//           </CardContent>
-//         </Card>
-
-//         <Card>
-//           <CardContent className="p-4">
-//             <div className="flex items-center space-x-2">
-//               <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-//                 <Clock className="w-4 h-4 text-blue-600" />
-//               </div>
-//               <div>
-//                 <p className="text-sm text-muted-foreground">Avg. Wait Time</p>
-//                 <p className="text-xl font-bold text-foreground">2.3 days</p>
-//               </div>
-//             </div>
+//             <Users className="w-8 h-8 text-green-500" />
 //           </CardContent>
 //         </Card>
 //       </div>
@@ -208,9 +222,9 @@
 //       <Card>
 //         <CardContent className="p-4">
 //           <div className="relative">
-//             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+//             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
 //             <Input
-//               placeholder="Search pending requests..."
+//               placeholder="Search requests by service, user, or access..."
 //               value={searchTerm}
 //               onChange={(e) => setSearchTerm(e.target.value)}
 //               className="pl-10"
@@ -219,153 +233,138 @@
 //         </CardContent>
 //       </Card>
 
-//       {/* Requests List */}
-//       <div className="space-y-4">
-//         {filteredRequests.map((request) => (
-//           <Card key={request.id} className="hover:shadow-medium transition-shadow">
-//             <CardContent className="p-6">
-//               <div className="flex items-start justify-between">
-//                 <div className="flex-1">
-//                   <div className="flex items-center space-x-4 mb-3">
-//                     <span className="text-sm font-mono text-muted-foreground">
-//                       {request.id}
-//                     </span>
-//                     <Badge className={getPriorityColor(request.priority)}>
-//                       {request.priority} priority
+//       {/* Requests Table */}
+//       {filteredRequests.length > 0 ? (
+//         <div className="overflow-x-auto">
+//           <table className="w-full border-collapse border border-gray-200">
+//             <thead className="bg-gray-100">
+//               <tr className="text-left">
+//                 <th className="p-3">Service</th>
+//                 <th className="p-3">User</th>
+//                 <th className="p-3">Role</th>
+//                 <th className="p-3">Access</th>
+//                 <th className="p-3">Cloud</th>
+//                 <th className="p-3">Requested</th>
+//                 <th className="p-3">Action</th>
+//               </tr>
+//             </thead>
+//             <tbody>
+//               {filteredRequests.map((req) => (
+//                 <tr key={req.RequestID} className="border-b hover:bg-gray-50">
+//                   <td className="p-3 font-medium uppercase">{req.Service}</td>
+//                   <td className="p-3">{req.Username}</td>
+//                   <td className="p-3">{req.Role}</td>
+//                   <td className="p-3">
+//                     <Badge className={getPriorityColor(req.AccessLevel)}>
+//                       {req.AccessLevel}
 //                     </Badge>
-//                     <div className="flex items-center space-x-1">
-//                       <div className={`w-3 h-3 rounded-full ${getProviderColor(request.provider)}`} />
-//                       <span className="text-xs text-muted-foreground uppercase">
-//                         {request.provider}
-//                       </span>
-//                     </div>
-//                   </div>
-                  
-//                   <h3 className="text-lg font-semibold text-foreground mb-2">
-//                     {request.service}
-//                   </h3>
-                  
-//                   <p className="text-muted-foreground mb-3">
-//                     {request.description}
-//                   </p>
-                  
-//                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
-//                     <div>
-//                       <span className="font-medium text-foreground">Requester:</span>
-//                       <br />
-//                       <span className="text-muted-foreground">{request.requester}</span>
-//                     </div>
-//                     <div>
-//                       <span className="font-medium text-foreground">Access Level:</span>
-//                       <br />
-//                       <span className="text-muted-foreground">{request.AccessLevel}</span>
-//                     </div>
-//                     <div>
-//                       <span className="font-medium text-foreground">Submitted:</span>
-//                       <br />
-//                       <span className="text-muted-foreground">{request.submittedDate}</span>
-//                     </div>
-//                     <div>
-//                       <span className="font-medium text-foreground">Est. Cost:</span>
-//                       <br />
-//                       <span className="text-muted-foreground">{request.estimatedCost}</span>
-//                     </div>
-//                   </div>
-//                 </div>
-                
-//                 <div className="flex space-x-2 ml-4">
-//                   <Dialog>
-//                     <DialogTrigger asChild>
-//                       <Button variant="outline" size="sm" onClick={() => setSelectedRequest(request)}>
-//                         <Eye className="w-4 h-4 mr-1" />
-//                         Review
-//                       </Button>
-//                     </DialogTrigger>
-//                     <DialogContent className="max-w-2xl">
-//                       <DialogHeader>
-//                         <DialogTitle>Review Request: {request?.id}</DialogTitle>
-//                       </DialogHeader>
-//                       {selectedRequest && (
-//                         <div className="space-y-6">
-//                           <div className="grid grid-cols-2 gap-4">
-//                             <div>
-//                               <h4 className="font-medium mb-2">Request Details</h4>
-//                               <div className="space-y-2 text-sm">
-//                                 <div><strong>Service:</strong> {selectedRequest.service}</div>
-//                                 <div><strong>Provider:</strong> {selectedRequest.provider.toUpperCase()}</div>
-//                                 <div><strong>Cost:</strong> {selectedRequest.estimatedCost}</div>
-//                                 <div><strong>Priority:</strong> {selectedRequest.priority}</div>
-//                               </div>
-//                             </div>
-//                             <div>
-//                               <h4 className="font-medium mb-2">Requester Info</h4>
-//                               <div className="space-y-2 text-sm">
-//                                 <div><strong>Name:</strong> {selectedRequest.requester}</div>
-//                                 <div><strong>Email:</strong> {selectedRequest.requesterEmail}</div>
-//                                 <div><strong>Department:</strong> {selectedRequest.department}</div>
-//                                 <div><strong>Submitted:</strong> {selectedRequest.submittedDate}</div>
-//                               </div>
-//                             </div>
-//                           </div>
-                          
-//                           <div>
-//                             <h4 className="font-medium mb-2">Description</h4>
-//                             <p className="text-sm text-muted-foreground">{selectedRequest.description}</p>
-//                           </div>
-                          
-//                           <div>
-//                             <h4 className="font-medium mb-2">Business Justification</h4>
-//                             <p className="text-sm text-muted-foreground">{selectedRequest.justification}</p>
-//                           </div>
-                          
-//                           <div>
-//                             <h4 className="font-medium mb-2">Approval Comments (Optional)</h4>
-//                             <Textarea
-//                               value={approvalComment}
-//                               onChange={(e) => setApprovalComment(e.target.value)}
-//                               placeholder="Add comments about your decision..."
-//                               className="min-h-20"
-//                             />
-//                           </div>
-                          
-//                           <div className="flex space-x-3">
-//                             <Button 
-//                               onClick={() => handleApprove(selectedRequest)}
-//                               className="flex-1 bg-green-600 hover:bg-green-700"
-//                             >
-//                               <CheckCircle className="w-4 h-4 mr-2" />
-//                               Approve
-//                             </Button>
-//                             <Button 
-//                               onClick={() => handleReject(selectedRequest)}
-//                               variant="destructive"
-//                               className="flex-1"
-//                             >
-//                               <XCircle className="w-4 h-4 mr-2" />
-//                               Reject
-//                             </Button>
-//                           </div>
-//                         </div>
-//                       )}
-//                     </DialogContent>
-//                   </Dialog>
-//                 </div>
-//               </div>
-//             </CardContent>
-//           </Card>
-//         ))}
-//       </div>
+//                   </td>
+//                   <td className="p-3">{req.Cloud}</td>
+//                   <td className="p-3">{formatDate(req.RequestTime)}</td>
+//                   <td className="p-3">
+//                     <Dialog>
+//                       <DialogTrigger asChild>
+//                         <Button
+//                           size="sm"
+//                           variant="outline"
+//                           onClick={() => setSelectedRequest(req)}
+//                         >
+//                           <Eye className="w-4 h-4 mr-1" />
+//                           Review
+//                         </Button>
+//                       </DialogTrigger>
+//                       <DialogContent className="max-w-2xl">
+//                         <DialogHeader>
+//                           <DialogTitle>
+//                             Review Request: {req.Service.toUpperCase()}
+//                           </DialogTitle>
+//                         </DialogHeader>
 
-//       {/* Empty State */}
-//       {filteredRequests.length === 0 && (
+//                         {selectedRequest && (
+//                           <><Tabs defaultValue="details" className="mt-4">
+//                             <TabsList>
+//                               <TabsTrigger value="details">Details</TabsTrigger>
+//                               <TabsTrigger value="policy">Policy</TabsTrigger>
+//                               <TabsTrigger value="comments">Comments</TabsTrigger>
+//                             </TabsList>
+
+//                             <TabsContent value="details" className="space-y-3">
+//                               <div className="grid grid-cols-2 gap-4 text-sm">
+//                                 <div>
+//                                   <strong>Service:</strong> {req.Service}
+//                                   <br />
+//                                   <strong>Cloud:</strong> {req.Cloud}
+//                                   <br />
+//                                   <strong>Access:</strong> {req.AccessLevel}
+//                                 </div>
+//                                 <div>
+//                                   <strong>User:</strong> {req.Username}
+//                                   <br />
+//                                   <strong>Role:</strong> {req.Role}
+//                                   <br />
+//                                   <strong>Requested:</strong>{" "}
+//                                   {formatDate(req.RequestTime)}
+//                                 </div>
+//                               </div>
+//                               <div>
+//                                 <strong>Business Justification:</strong>
+//                                 <p className="mt-1 p-2 bg-gray-100 rounded text-sm">
+//                                   {req.Reason}
+//                                 </p>
+//                               </div>
+//                             </TabsContent>
+
+//                             <TabsContent value="policy">
+//                               {req.Policy ? (
+//                                 <pre className="text-xs bg-gray-100 p-3 rounded overflow-auto max-h-48">
+//                                   {JSON.stringify(req.Policy, null, 2)}
+//                                 </pre>
+//                               ) : (
+//                                 <p className="text-sm text-muted-foreground">
+//                                   No policy generated.
+//                                 </p>
+//                               )}
+//                             </TabsContent>
+
+//                             <TabsContent value="comments">
+//                               <Textarea
+//                                 value={approvalComment}
+//                                 onChange={(e) => setApprovalComment(e.target.value)}
+//                                 placeholder="Add comments about your decision..." />
+//                             </TabsContent>
+//                           </Tabs><div className="flex space-x-3 mt-6">
+//                               <Button
+//                                 onClick={() => handleApprove(req)}
+//                                 className="flex-1 bg-green-600 hover:bg-green-700"
+//                               >
+//                                 <CheckCircle className="w-4 h-4 mr-2" />
+//                                 Approve
+//                               </Button>
+//                               <Button
+//                                 onClick={() => handleReject(req)}
+//                                 variant="destructive"
+//                                 className="flex-1"
+//                               >
+//                                 <XCircle className="w-4 h-4 mr-2" />
+//                                 Reject
+//                               </Button>
+//                             </div></>
+//                         )}
+//                       </DialogContent>
+//                     </Dialog>
+//                   </td>
+//                 </tr>
+//               ))}
+//             </tbody>
+//           </table>
+//         </div>
+//       ) : (
 //         <Card>
 //           <CardContent className="p-12 text-center">
 //             <CheckCircle className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-//             <h3 className="text-lg font-medium text-foreground mb-2">
-//               No pending approvals
-//             </h3>
+//             <h3 className="text-lg font-medium">No pending approvals</h3>
 //             <p className="text-muted-foreground">
-//               All requests have been processed. Great job!
+//               All requests have been processed. 🎉
 //             </p>
 //           </CardContent>
 //         </Card>
@@ -377,29 +376,14 @@
 // export default ApprovalsPage;
 
 
-
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Button } from './ui/button';
-import { Badge } from './ui/badge';
-import { Input } from './ui/input';
-import { Textarea } from './ui/textarea';
-import { 
-  Search, 
-  Clock, 
-  CheckCircle, 
-  XCircle,
-  Eye,
-  AlertCircle,
-  DollarSign
-} from 'lucide-react';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from './ui/dialog';
+import React, { useState, useEffect } from "react";
+import { Card, CardContent } from "./ui/card";
+import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
+import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
+import { Search, CheckCircle, XCircle, Eye } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
 
 interface Request {
   RequestID: string;
@@ -409,44 +393,32 @@ interface Request {
   Status: string;
   Reason: string;
   RequestTime: string;
-  ApplicationTime: string;
-  ApprovalTime: string;
   AccessLevel: string;
   Cloud: string;
-  Policy?: any;
 }
 
-interface ApprovalsPageProps {
-  currentUser: any;
-  selectedProvider: string;
-}
-
-const ApprovalsPage = ( ) => {
-  const [searchTerm, setSearchTerm] = useState('');
+const ApprovalsPage = () => {
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedRequest, setSelectedRequest] = useState<Request | null>(null);
-  const [approvalComment, setApprovalComment] = useState('');
+  const [approvalComment, setApprovalComment] = useState("");
   const [requests, setRequests] = useState<Request[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [selectedProvider, setSelectedProvider] = useState('all');
-  const [currentUser, setCurrentUser] = useState<any>(null);
-  // Fetch requests from API
+  const [error, setError] = useState("");
+
+  // Fetch requests
   useEffect(() => {
     const fetchRequests = async () => {
       try {
         setLoading(true);
-        const res = await fetch("https://9y40j38nv9.execute-api.ap-south-1.amazonaws.com/list_requests");
+        const res = await fetch(
+          "https://9y40j38nv9.execute-api.ap-south-1.amazonaws.com/list_requests"
+        );
         if (!res.ok) throw new Error("Failed to fetch requests");
         const data = await res.json();
 
-        
-
-        // Filter by pending status and selected cloud provider
-        const filtered = data.requests.filter((req: Request) =>
-          req.Status === "pending" &&
-          (selectedProvider === "all" || req.Cloud.toLowerCase() === selectedProvider.toLowerCase())
+        const filtered = data.requests.filter(
+          (req: Request) => req.Status === "pending"
         );
-
         setRequests(filtered);
       } catch (err) {
         setError("Unable to load requests. Please try again later.");
@@ -457,51 +429,39 @@ const ApprovalsPage = ( ) => {
     };
 
     fetchRequests();
-  }, [selectedProvider]);
+  }, []);
 
+  // Helpers
   const getPriorityColor = (accessLevel: string) => {
     const level = accessLevel.toLowerCase();
-    if (level.includes('full') || level.includes('admin')) {
-      return 'bg-red-500 text-white';
-    } else if (level.includes('write') || level.includes('modify')) {
-      return 'bg-orange-500 text-white';
-    } else if (level.includes('read')) {
-      return 'bg-green-500 text-white';
+    if (level.includes("full") || level.includes("admin")) {
+      return "bg-red-500 text-white";
+    } else if (level.includes("write") || level.includes("modify")) {
+      return "bg-orange-500 text-white";
+    } else if (level.includes("read")) {
+      return "bg-green-500 text-white";
     } else {
-      return 'bg-gray-500 text-white';
+      return "bg-gray-500 text-white";
     }
   };
 
-  const getProviderColor = (provider: string) => {
-    switch (provider.toLowerCase()) {
-      case 'aws':
-        return 'bg-orange-500';
-      case 'azure':
-        return 'bg-blue-500';
-      case 'gcp':
-        return 'bg-green-500';
-      default:
-        return 'bg-gray-500';
-    }
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleString("en-IN", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
   };
-
-  const filteredRequests = requests.filter(request => {
-    const matchesSearch = request.Service.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         request.Username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         request.AccessLevel.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesProvider = selectedProvider === 'all' || request.Cloud.toLowerCase() === selectedProvider.toLowerCase();
-    return matchesSearch && matchesProvider;
-  });
 
   const handleApprove = async (request: Request) => {
     try {
       const payload = {
-        RequestID: request.RequestID,
-        Username: request.Username,
-        Role: request.Role,
-        Service: request.Service,
+        ...request,
         Status: "approved",
-        AccessLevel: request.AccessLevel,
         Notes: approvalComment,
       };
 
@@ -509,40 +469,28 @@ const ApprovalsPage = ( ) => {
         `https://zfn7ztag31.execute-api.ap-south-1.amazonaws.com/dev/approve_access/${request.RequestID}`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         }
       );
 
-      if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(`Failed to approve request: ${res.status} ${errorText}`);
-      }
+      if (!res.ok) throw new Error("Failed to approve request");
 
-      // Remove the approved request from the list
-      setRequests(prev => prev.filter(r => r.RequestID !== request.RequestID));
+      setRequests((prev) =>
+        prev.filter((r) => r.RequestID !== request.RequestID)
+      );
       setSelectedRequest(null);
-      setApprovalComment('');
-      
-      // You might want to add a toast notification here
-      console.log('Request approved successfully:', request.RequestID);
+      setApprovalComment("");
     } catch (error) {
-      console.error('Approval error:', error);
-      // You might want to add error handling/toast here
+      console.error("Approval error:", error);
     }
   };
 
   const handleReject = async (request: Request) => {
     try {
       const payload = {
-        RequestID: request.RequestID,
-        Username: request.Username,
-        Role: request.Role,
-        Service: request.Service,
+        ...request,
         Status: "rejected",
-        AccessLevel: request.AccessLevel,
         Notes: approvalComment,
       };
 
@@ -550,81 +498,45 @@ const ApprovalsPage = ( ) => {
         `https://zfn7ztag31.execute-api.ap-south-1.amazonaws.com/dev/approve_access/${request.RequestID}`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         }
       );
 
-      if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(`Failed to reject request: ${res.status} ${errorText}`);
-      }
+      if (!res.ok) throw new Error("Failed to reject request");
 
-      // Remove the rejected request from the list
-      setRequests(prev => prev.filter(r => r.RequestID !== request.RequestID));
+      setRequests((prev) =>
+        prev.filter((r) => r.RequestID !== request.RequestID)
+      );
       setSelectedRequest(null);
-      setApprovalComment('');
-      
-      // You might want to add a toast notification here
-      console.log('Request rejected successfully:', request.RequestID);
+      setApprovalComment("");
     } catch (error) {
-      console.error('Rejection error:', error);
-      // You might want to add error handling/toast here
+      console.error("Rejection error:", error);
     }
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleString('en-IN', {
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true,
-    });
-  };
-
-  const getHighPriorityCount = () => {
-    return requests.filter(r => r.AccessLevel.toLowerCase() === 'full access').length;
-  };
-
-  if (loading) {
+  // Derived Data
+  const filteredRequests = requests.filter((request) => {
     return (
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Pending Approvals</h1>
-          <p className="text-muted-foreground">Loading requests...</p>
-        </div>
-      </div>
+      request.Service.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      request.Username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      request.AccessLevel.toLowerCase().includes(searchTerm.toLowerCase())
     );
-  }
+  });
 
-  if (error) {
-    return (
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Pending Approvals</h1>
-          <p className="text-red-600">{error}</p>
-        </div>
-      </div>
-    );
-  }
+  // UI
+  if (loading) return <p>Loading requests...</p>;
+  if (error) return <p className="text-red-500">{error}</p>;
 
   return (
-    <div className="space-y-6">
-      
-
-       
+    <div className="space-y-8">
       {/* Search */}
       <Card>
         <CardContent className="p-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
             <Input
-              placeholder="Search pending requests..."
+              placeholder="Search requests by service, user, or access..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -633,159 +545,139 @@ const ApprovalsPage = ( ) => {
         </CardContent>
       </Card>
 
-      {/* Requests List */}
-      <div className="space-y-4">
-        {filteredRequests.map((request) => (
-          <Card key={request.RequestID} className="hover:shadow-medium transition-shadow">
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center space-x-4 mb-3">
-                    <span className="text-sm font-mono text-muted-foreground">
-                      {request.RequestID}
-                    </span>
-                    <Badge className={getPriorityColor(request.AccessLevel)}>
-                      {request.AccessLevel}
+      {/* Requests Table */}
+      {filteredRequests.length > 0 ? (
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse border border-gray-200">
+            <thead className="bg-gray-100">
+              <tr className="text-left">
+                <th className="p-3">Service</th>
+                <th className="p-3">User</th>
+                <th className="p-3">Access</th>
+                <th className="p-3">Requested</th>
+                <th className="p-3">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredRequests.map((req) => (
+                <tr key={req.RequestID} className="border-b hover:bg-gray-50">
+                  <td className="p-3 font-medium">
+                    {req.Service.replace(/\b\w/g, (char) => char.toUpperCase())}
+                  </td>
+                  <td className="p-3">{req.Username}</td>
+                  <td className="p-3">
+                    <Badge className={getPriorityColor(req.AccessLevel)}>
+                      {req.AccessLevel}
                     </Badge>
-                    <div className="flex items-center space-x-1">
-                      <div className={`w-3 h-3 rounded-full ${getProviderColor(request.Cloud)}`} />
-                      <span className="text-xs text-muted-foreground uppercase">
-                        {request.Cloud}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <h3 className="text-lg font-semibold text-foreground mb-2">
-                    {request.Service}
-                  </h3>
-                  
-                  <p className="text-muted-foreground mb-3">
-                    {request.Reason}
-                  </p>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
-                    <div>
-                      <span className="font-medium text-foreground">Requester:</span>
-                      <br />
-                      <span className="text-muted-foreground">{request.Username}</span>
-                    </div>
-                    <div>
-                      <span className="font-medium text-foreground">Access Level:</span>
-                      <br />
-                      <span className="text-muted-foreground">{request.AccessLevel}</span>
-                    </div>
-                    <div>
-                      <span className="font-medium text-foreground">Submitted:</span>
-                      <br />
-                      <span className="text-muted-foreground">{formatDate(request.RequestTime)}</span>
-                    </div>
-                    <div>
-                      <span className="font-medium text-foreground">Role:</span>
-                      <br />
-                      <span className="text-muted-foreground">{request.Role}</span>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="flex space-x-2 ml-4">
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button variant="outline" size="sm" onClick={() => setSelectedRequest(request)}>
-                        <Eye className="w-4 h-4 mr-1" />
-                        Review
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-2xl">
-                      <DialogHeader>
-                        <DialogTitle>Review Request: {request?.RequestID}</DialogTitle>
-                      </DialogHeader>
-                      {selectedRequest && (
-                        <div className="space-y-6">
-                          <div className="grid grid-cols-2 gap-4">
-                            <div>
-                              <h4 className="font-medium mb-2">Request Details</h4>
-                              <div className="space-y-2 text-sm">
-                                <div><strong>Service:</strong> {selectedRequest.Service}</div>
-                                <div><strong>Provider:</strong> {selectedRequest.Cloud}</div>
-                                <div><strong>Access Level:</strong> {selectedRequest.AccessLevel}</div>
-                                <div><strong>Role:</strong> {selectedRequest.Role}</div>
+                  </td>
+                  <td className="p-3">{formatDate(req.RequestTime)}</td>
+                  <td className="p-3">
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setSelectedRequest(req)}
+                        >
+                          <Eye className="w-4 h-4 mr-1" />
+                          Review
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-2xl"> {/* wider modal */}
+                        <DialogHeader>
+                          <DialogTitle>
+                            Access Request for {req.Username}
+                          </DialogTitle>
+                        </DialogHeader>
+
+                        {selectedRequest && (
+                          <div className="space-y-6 text-sm mt-2">
+                            {/* Grid layout */}
+                            <div className="grid grid-cols-2 gap-y-3 gap-x-6">
+                              <div>
+                                <strong>Requester:</strong> {req.Username}
+                              </div>
+                              <div>
+                                <strong>Request Date:</strong>{" "}
+                                {formatDate(req.RequestTime)}
+                              </div>
+                              <div>
+                                <strong>Cloud Service:</strong> {req.Cloud}
+                              </div>
+                              <div>
+                                <strong>Resource Type:</strong>{" "}
+                                {req.Service.charAt(0).toUpperCase() +
+                                  req.Service.slice(1)}
+                              </div>
+                              <div>
+                                <strong>Access Level:</strong> {req.AccessLevel}
+                              </div>
+                              <div>
+                                <strong>Role:</strong> {req.Role}
                               </div>
                             </div>
+
+                            {/* Business Justification */}
                             <div>
-                              <h4 className="font-medium mb-2">Requester Info</h4>
-                              <div className="space-y-2 text-sm">
-                                <div><strong>Username:</strong> {selectedRequest.Username}</div>
-                                <div><strong>Request ID:</strong> {selectedRequest.RequestID}</div>
-                                <div><strong>Status:</strong> {selectedRequest.Status}</div>
-                                <div><strong>Submitted:</strong> {formatDate(selectedRequest.RequestTime)}</div>
-                              </div>
+                              <strong>Business Justification:</strong>
+                              <p className="mt-1 p-2 bg-gray-100 rounded">
+                                {req.Reason}
+                              </p>
+                            </div>
+
+                            {/* Manager Comment */}
+                            <div>
+                              <strong>Manager Comment:</strong>
+                              <Textarea
+                                placeholder="Add your comments here..."
+                                value={approvalComment}
+                                onChange={(e) =>
+                                  setApprovalComment(e.target.value)
+                                }
+                                className="mt-1"
+                              />
+                            </div>
+
+                            {/* Action buttons */}
+                            <div className="flex justify-end space-x-3 pt-4">
+                              <Button
+                                variant="outline"
+                                onClick={() => setSelectedRequest(null)}
+                              >
+                                Cancel
+                              </Button>
+                              <Button
+                                onClick={() => handleReject(req)}
+                                variant="destructive"
+                              >
+                                <XCircle className="w-4 h-4 mr-2" />
+                                Reject
+                              </Button>
+                              <Button
+                                onClick={() => handleApprove(req)}
+                                className="bg-green-600 hover:bg-green-700 text-white"
+                              >
+                                <CheckCircle className="w-4 h-4 mr-2" />
+                                Approve
+                              </Button>
                             </div>
                           </div>
-                          
-                          <div>
-                            <h4 className="font-medium mb-2">Business Justification</h4>
-                            <p className="text-sm text-muted-foreground bg-gray-50 p-3 rounded-md">
-                              {selectedRequest.Reason}
-                            </p>
-                          </div>
-
-                          {selectedRequest.Policy && (
-                            <div>
-                              <h4 className="font-medium mb-2">Generated Policy</h4>
-                              <pre className="text-xs bg-gray-100 p-3 rounded overflow-auto max-h-48">
-                                {JSON.stringify(selectedRequest.Policy, null, 2)}
-                              </pre>
-                            </div>
-                          )}
-                          
-                          <div>
-                            <h4 className="font-medium mb-2">Approval Comments (Optional)</h4>
-                            <Textarea
-                              value={approvalComment}
-                              onChange={(e) => setApprovalComment(e.target.value)}
-                              placeholder="Add comments about your decision..."
-                              className="min-h-20"
-                            />
-                          </div>
-                          
-                          <div className="flex space-x-3">
-                            <Button 
-                              onClick={() => handleApprove(selectedRequest)}
-                              className="flex-1 bg-green-600 hover:bg-green-700"
-                            >
-                              <CheckCircle className="w-4 h-4 mr-2" />
-                              Approve
-                            </Button>
-                            <Button 
-                              onClick={() => handleReject(selectedRequest)}
-                              variant="destructive"
-                              className="flex-1"
-                            >
-                              <XCircle className="w-4 h-4 mr-2" />
-                              Reject
-                            </Button>
-                          </div>
-                        </div>
-                      )}
-                    </DialogContent>
-                  </Dialog>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {/* Empty State */}
-      {filteredRequests.length === 0 && !loading && (
+                        )}
+                      </DialogContent>
+                    </Dialog>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
         <Card>
           <CardContent className="p-12 text-center">
             <CheckCircle className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-foreground mb-2">
-              No pending approvals
-            </h3>
+            <h3 className="text-lg font-medium">No pending approvals</h3>
             <p className="text-muted-foreground">
-              All requests have been processed. Great job!
+              All requests have been processed. 🎉
             </p>
           </CardContent>
         </Card>
@@ -795,3 +687,5 @@ const ApprovalsPage = ( ) => {
 };
 
 export default ApprovalsPage;
+
+
