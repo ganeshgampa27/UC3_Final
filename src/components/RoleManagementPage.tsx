@@ -31,7 +31,7 @@
 // const RoleManagement = () => {
 //   const [searchTerm, setSearchTerm] = useState('');
 //   const [selectedProvider, setSelectedProvider] = useState('all');
-//     const [currentUser, setCurrentUser] = useState<any>(null);
+//   const [currentUser, setCurrentUser] = useState<any>(null);
     
 //   const [roles, setRoles] = useState<Role[]>([
 //     {
@@ -175,17 +175,17 @@
 //                   <Label htmlFor="add-name" className="text-gray-700">
 //                     Name
 //                   </Label>
-//                   <Input
-//                     id="add-name"
-//                     type="text"
-//                     value={newRole.name}
-//                     onChange={(e) =>
-//                       setNewRole({ ...newRole, name: e.target.value })
-//                     }
-//                     placeholder="Enter role name"
-//                     className="h-10 border-gray-300 focus:border-cloud-purple focus:ring-cloud-purple"
-//                     required
-//                   />
+//                     <Input
+//                       id="add-name"
+//                       type="text"
+//                       value={newRole.name}
+//                       onChange={(e) =>
+//                         setNewRole({ ...newRole, name: e.target.value })
+//                       }
+//                       placeholder="Enter role name"
+//                       className="h-10 border-gray-300 focus:border-cloud-purple focus:ring-cloud-purple"
+//                       required
+//                     />
 //                 </div>
 //                 <div className="space-y-2">
 //                   <Label htmlFor="add-description" className="text-gray-700">
@@ -367,27 +367,25 @@
 //         </div>
 //       )}
 
-//       <div className="flex justify-between items-center">
-//         <div>
-//           <h1 className="text-3xl font-bold text-foreground">Role Management</h1>
-//           <p className="text-muted-foreground">Manage user roles and permissions</p>
-//         </div>
-//         <Button onClick={() => setShowAddForm(true)}>
-//           <UserPlus className="w-4 h-4 mr-2" />
-//           Create Role
-//         </Button>
-//       </div>
+      
 
 //       <Card>
 //         <CardContent className="p-4">
-//           <div className="relative">
-//             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-//             <Input
-//               placeholder="Search roles..."
-//               value={searchTerm}
-//               onChange={(e) => setSearchTerm(e.target.value)}
-//               className="pl-10"
-//             />
+//           {/* Search + Create Role button side-by-side */}
+//           <div className="flex items-center gap-2">
+//             <div className="relative flex-1">
+//               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+//               <Input
+//                 placeholder="Search roles..."
+//                 value={searchTerm}
+//                 onChange={(e) => setSearchTerm(e.target.value)}
+//                 className="pl-10"
+//               />
+//             </div>
+//             <Button onClick={() => setShowAddForm(true)} className="shrink-0">
+//               <UserPlus className="w-4 h-4 mr-2" />
+//               Create Role
+//             </Button>
 //           </div>
 //         </CardContent>
 //       </Card>
@@ -993,10 +991,13 @@ const RoleManagement = () => {
     const newRoleData: Role = {
       id: `role-${Date.now()}`,
       name: newRole.name,
-      description: newRole.description,
-      permissions: newRole.permissions.split(',').map(p => p.trim()).filter(p => p),
+      description: newRole.description || `Custom role: ${newRole.name}`,
+      permissions: newRole.permissions
+        .split(",")
+        .map((p) => p.trim())
+        .filter((p) => p),
       userCount: 0,
-      provider: newRole.provider
+      provider: newRole.provider,
     };
 
     try {
@@ -1064,7 +1065,7 @@ const RoleManagement = () => {
     <div className="space-y-6">
       {/* Add Form */}
       {showAddForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <Card className="w-full max-w-lg p-6 relative">
             <Button variant="ghost" size="sm" className="absolute top-2 right-2" onClick={handleCancel}>
               <X className="w-4 h-4" />
@@ -1107,7 +1108,7 @@ const RoleManagement = () => {
 
       {/* Edit Form */}
       {showEditForm && editRole && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <Card className="w-full max-w-lg p-6 relative">
             <Button variant="ghost" size="sm" className="absolute top-2 right-2" onClick={handleCancel}>
               <X className="w-4 h-4" />
@@ -1188,6 +1189,7 @@ const RoleManagement = () => {
                     Edit
                   </Button>
                   <Button variant="destructive" size="sm" onClick={() => handleDeleteRole(role.id)}>
+                  <Button variant="destructive" size="sm" onClick={() => handleDeleteRole(role.id)}>
                     <Trash2 className="w-4 h-4 mr-1" />
                     Delete
                   </Button>
@@ -1212,6 +1214,12 @@ const RoleManagement = () => {
             </CardContent>
           </Card>
         ))}
+
+        {!loading && !error && filteredRoles.length === 0 && (
+          <div className="col-span-full text-center text-sm text-muted-foreground py-10">
+            No roles found. Try adjusting filters.
+          </div>
+        )}
       </div>
     </div>
   );
