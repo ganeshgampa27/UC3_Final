@@ -902,28 +902,35 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
-import { Badge } from "./ui/badge";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
+import { Badge } from "./ui/badge";
 import {
   Users,
   UserPlus,
   Search,
+  Edit3,
+  Trash2,
+  X,
+  Mail,
+  Calendar,
   CheckCircle,
   TrendingUp,
   BarChart3,
-  Edit3,
-  Trash2,
-  X
 } from "lucide-react";
 
-// Interface for team member (adjust as needed):
+// Interface for team member
 interface TeamMember {
   id: string;
   fullName: string;
   email: string;
   role: string;
+  status: "active" | "inactive" | "pending";
   createdAt: string;
+  performance: {
+    approvalRate: number;
+    productivity: number;
+  };
 }
 
 const TeamManagementPage: React.FC = () => {
@@ -931,26 +938,37 @@ const TeamManagementPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [showAddForm, setShowAddForm] = useState(false);
-  const [newMember, setNewMember] = useState({ fullName: "", email: "", role: "" });
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [newMember, setNewMember] = useState({ fullName: "", email: "", role: "", status: "active" });
+  const [editMember, setEditMember] = useState<TeamMember | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
+  // Fetch team members
   useEffect(() => {
     async function fetchTeamMembers() {
       try {
         const res = await fetch(
           "https://dmsntmbne5.execute-api.ap-south-1.amazonaws.com/registerget"
         );
+        if (!res.ok) throw new Error("Failed to fetch team members");
         const data = await res.json();
-        console.log(data)
+        console.log(data);
         const normalized = data.map((u: any) => ({
           id: u.UserID,
           fullName: u.FullName,
           email: u.Email,
           role: u.Role,
+          status: ["active", "inactive", "pending"][Math.floor(Math.random() * 3)], // Simulate status
           createdAt: u.CreatedAt,
+          performance: {
+            approvalRate: Math.floor(Math.random() * 31) + 70, // Simulate 70-100%
+            productivity: Math.floor(Math.random() * 31) + 70, // Simulate 70-100%
+          },
         }));
         setTeamMembers(normalized);
       } catch (error) {
         console.error("Failed to fetch team members:", error);
+        setError("Failed to load team members. Please try again.");
       } finally {
         setLoading(false);
       }
@@ -958,100 +976,497 @@ const TeamManagementPage: React.FC = () => {
     fetchTeamMembers();
   }, []);
 
+  // Add member
+  const handleAddMember = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      const newId = `member-${Date.now()}`;
+      const newTeamMember: TeamMember = {
+        id: newId,
+        fullName: newMember.fullName,
+        email: newMember.email,
+        role: newMember.role,
+        status: newMember.status as "active" | "inactive" | "pending",
+        createdAt: new Date().toISOString(),
+        performance: {
+          approvalRate: Math.floor(Math.random() * 31) + 70, // Simulate 70-100%
+          productivity: Math.floor(Math.random() * 31) + 70, // Simulate 70-100%
+        },
+      };
+      const response = await fetch(
+        "https://dmsntmbne5.execute-api.ap-south-1.amazonaws.com/registeradd",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            UserID: newId,
+            FullName: newMember.fullName,
+            Email: newMember.email,
+            Role: newMember.role,
+            Status: newMember.status,
+            CreatedAt: new Date().toISOString(),
+            Performance: newTeamMember.performance,
+          }),
+        }
+      );
+      if (!response.ok) throw new Error("Failed to add member");
+      setTeamMembers([...teamMembers, newTeamMember]);
+      setNewMember({ fullName: "", email: "", role: "", status: "active" });
+      setShowAddForm(false);
+      setError(null);
+    } catch (error) {
+      console.error("Failed to add member:", error);
+      setError("Failed to add member. Please try again.");
+    }
+  };
+
+  // Edit member
+  const handleEditMember = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!editMember) return;
+    try {
+      const response = await fetch(
+        "https://dmsntmbne5.execute-api.ap-south-1.amazonaws.com/registerupdate",
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            UserID: editMember.id,
+            FullName: editMember.fullName,
+            Email: editMember.email,
+            Role: editMember.role,
+            Status: editMember.status,
+            CreatedAt: editMember.createdAt,
+            Performance: editMember.performance,
+          }),
+        }
+      );
+      if (!response.ok) throw new Error("Failed to update member");
+      setTeamMembers(
+        teamMembers.map((member) =>
+          member.id === editMember.id ? { ...editMember } : member
+        )
+      );
+      setEditMember(null);
+      setShowEditForm(false);
+      setError(null);
+    } catch (error) {
+      console.error("Failed to update member:", error);
+      setError("Failed to update member. Please try again.");
+    }
+  };
+
+  // Delete member
+  const handleDeleteMember = async (memberId: string) => {
+    try {
+      const response = await fetch(
+        `https://dmsntmbne5.execute-api.ap-south-1.amazonaws.com/registerdelete/${memberId}`,
+        {
+          method: "DELETE",
+        }
+      );
+      if (!response.ok) throw new Error("Failed to delete member");
+      setTeamMembers(teamMembers.filter((member) => member.id !== memberId));
+      setError(null);
+    } catch (error) {
+      console.error("Failed to delete member:", error);
+      setError("Failed to delete member. Please try again.");
+    }
+  };
+
   const filtered = teamMembers.filter(
     (m) =>
       m.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       m.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  if (loading) return <div className="p-6 text-center">Loading team members…</div>;
+  const getStatusBadge = (role: string) => {
+    const roleConfig: {
+      [key: string]: { color: string; label: string };
+    } = {
+      employee: { color: "text-cloud-emerald border-cloud-emerald", label: "Employee" },
+      manager: { color: "text-cloud-blue border-cloud-blue", label: "Manager" },
+      admin: { color: "text-cloud-purple border-cloud-purple", label: "Admin" },
+    };
+    const config = roleConfig[role.toLowerCase()] || {
+      color: "text-cloud-orange border-cloud-orange",
+      label: role,
+    };
+    return (
+      <Badge variant="outline" className={`text-xs ${config.color}`}>
+        {config.label}
+      </Badge>
+    );
+  };
+
+  if (loading) return <div className="p-6 text-center text-gray-500">Loading team members…</div>;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 p-6">
+      {/* Error Message */}
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+          {error}
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-semibold">Team Members</h1>
-        <Button onClick={() => setShowAddForm(true)}>
-          <UserPlus className="mr-2 h-4 w-4" /> Add Member
+        <h1 className="text-2xl font-semibold text-gray-900">Team Members</h1>
+        <Button
+          size="sm"
+          onClick={() => setShowAddForm(true)}
+          className="bg-cloud-purple text-white hover:bg-cloud-purple-600"
+        >
+          <UserPlus className="w-4 h-4 mr-2" /> Add Member
         </Button>
       </div>
 
-      {/* Search */}
-      <div className="relative">
-        <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-        <Input
-          placeholder="Search members…"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-9"
-        />
-      </div>
-
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Total Members</p>
-              <p className="text-xl font-bold">{teamMembers.length}</p>
+              <p className="text-sm font-medium text-gray-600">Total Members</p>
+              <p className="text-2xl font-bold">{teamMembers.length}</p>
             </div>
-            <Users className="text-blue-500 h-6 w-6" />
+            <Users className="w-8 h-8 text-cloud-blue" />
           </div>
         </Card>
-        {/* Add stats like created date or other metrics if needed */}
+        <Card className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Active Members</p>
+              <p className="text-2xl font-bold">
+                {filtered.filter((m) => m.status === "active").length}
+              </p>
+            </div>
+            <CheckCircle className="w-8 h-8 text-cloud-emerald" />
+          </div>
+        </Card>
+        <Card className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Avg. Approval Rate</p>
+              <p className="text-2xl font-bold">
+                {Math.round(
+                  filtered.reduce(
+                    (acc, m) => acc + m.performance.approvalRate,
+                    0
+                  ) / (filtered.length || 1)
+                )}
+                %
+              </p>
+            </div>
+            <TrendingUp className="w-8 h-8 text-cloud-emerald" />
+          </div>
+        </Card>
+        <Card className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Avg. Productivity</p>
+              <p className="text-2xl font-bold">
+                {Math.round(
+                  filtered.reduce(
+                    (acc, m) => acc + m.performance.productivity,
+                    0
+                  ) / (filtered.length || 1)
+                )}
+                %
+              </p>
+            </div>
+            <BarChart3 className="w-8 h-8 text-cloud-purple" />
+          </div>
+        </Card>
       </div>
 
+      {/* Search */}
+      <Card className="p-4">
+        <div className="relative">
+          <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+          <Input
+            placeholder="Search team members..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-9 h-10 border-gray-300 focus:border-cloud-purple focus:ring-cloud-purple"
+          />
+        </div>
+      </Card>
+
       {/* Members List */}
-      <div className="space-y-2">
-        {filtered.map((member) => (
-          <Card key={member.id} className="p-4 flex justify-between items-center">
-            <div>
-              <div className="font-medium">{member.fullName}</div>
-              <div className="text-sm text-gray-500">{member.email}</div>
+      <Card className="p-5">
+        <div className="space-y-2">
+          {filtered.map((member) => (
+            <div
+              key={member.id}
+              className="border rounded-lg p-4 hover:bg-gray-50 transition-colors"
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-cloud-purple to-cloud-blue rounded-full flex items-center justify-center text-white font-medium">
+                    {member.fullName
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")}
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-3 mb-2">
+                      <h3 className="font-medium text-gray-900">{member.fullName}</h3>
+                      {getStatusBadge(member.role)}
+                    </div>
+                    <div className="flex items-center space-x-6 text-sm text-gray-500">
+                      <div className="flex items-center">
+                        <Mail className="w-4 h-4 mr-1" />
+                        <span>{member.email}</span>
+                      </div>
+                      <div className="flex items-center">
+                        <Calendar className="w-4 h-4 mr-1" />
+                        <span>Joined: {new Date(member.createdAt).toLocaleDateString()}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setEditMember(member);
+                      setShowEditForm(true);
+                    }}
+                  >
+                    <Edit3 className="w-4 h-4 mr-1" />
+                    Edit
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => handleDeleteMember(member.id)}
+                  >
+                    <Trash2 className="w-4 h-4 mr-1" />
+                    Delete
+                  </Button>
+                </div>
+              </div>
             </div>
-            <div className="flex space-x-2">
-              <Button variant="outline" size="sm" onClick={() => {/* edit logic */}}>
-                <Edit3 className="h-4 w-4" />
-              </Button>
-              <Button variant="destructive" size="sm" onClick={() => {/* delete logic */}}>
-                <Trash2 className="h-4 w-4" />
-              </Button>
+          ))}
+          {filtered.length === 0 && (
+            <div className="text-center py-8">
+              <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-500">No team members found matching your criteria.</p>
             </div>
-          </Card>
-        ))}
-      </div>
+          )}
+        </div>
+      </Card>
 
       {/* Add Member Modal */}
       {showAddForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <Card className="w-full max-w-md p-6 relative">
-            <Button className="absolute top-2 right-2" variant="ghost" onClick={() => setShowAddForm(false)}>
-              <X className="h-4 w-4" />
-            </Button>
-            <h2 className="text-lg font-semibold mb-4">Add New Member</h2>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                // Add logic to call backend POST and update state
-                setShowAddForm(false);
-              }}
-              className="space-y-4"
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <Card className="w-full max-w-lg p-6 relative">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="absolute top-2 right-2"
+              onClick={() => setShowAddForm(false)}
             >
-              <div>
-                <Label>Full Name</Label>
-                <Input value={newMember.fullName} onChange={(e) => setNewMember({ ...newMember, fullName: e.target.value })} required />
+              <X className="w-4 h-4" />
+            </Button>
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">Add New Member</h2>
+            <form onSubmit={handleAddMember} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="fullName" className="text-gray-700">
+                    Full Name
+                  </Label>
+                  <Input
+                    id="fullName"
+                    type="text"
+                    value={newMember.fullName}
+                    onChange={(e) =>
+                      setNewMember({ ...newMember, fullName: e.target.value })
+                    }
+                    placeholder="Enter full name"
+                    className="h-10 border-gray-300 focus:border-cloud-purple focus:ring-cloud-purple"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-gray-700">
+                    Email
+                  </Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={newMember.email}
+                    onChange={(e) =>
+                      setNewMember({ ...newMember, email: e.target.value })
+                    }
+                    placeholder="Enter email"
+                    className="h-10 border-gray-300 focus:border-cloud-purple focus:ring-cloud-purple"
+                    required
+                  />
+                </div>
               </div>
-              <div>
-                <Label>Email</Label>
-                <Input type="email" value={newMember.email} onChange={(e) => setNewMember({ ...newMember, email: e.target.value })} required />
+              <div className="space-y-2">
+                <Label htmlFor="role" className="text-gray-700">
+                  Role
+                </Label>
+                <select
+                  id="role"
+                  value={newMember.role}
+                  onChange={(e) =>
+                    setNewMember({ ...newMember, role: e.target.value })
+                  }
+                  className="w-full h-10 border border-gray-300 rounded-lg text-sm focus:border-cloud-purple focus:ring-cloud-purple"
+                >
+                  <option value="employee">Employee</option>
+                  <option value="manager">Manager</option>
+                  <option value="admin">Admin</option>
+                </select>
               </div>
-              <div>
-                <Label>Role</Label>
-                <Input value={newMember.role} onChange={(e) => setNewMember({ ...newMember, role: e.target.value })} required />
+              <div className="space-y-2">
+                <Label htmlFor="status" className="text-gray-700">
+                  Status
+                </Label>
+                <select
+                  id="status"
+                  value={newMember.status}
+                  onChange={(e) =>
+                    setNewMember({ ...newMember, status: e.target.value })
+                  }
+                  className="w-full h-10 border border-gray-300 rounded-lg text-sm focus:border-cloud-purple focus:ring-cloud-purple"
+                >
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                  <option value="pending">Pending</option>
+                </select>
               </div>
               <div className="flex justify-end space-x-2">
-                <Button variant="outline" onClick={() => setShowAddForm(false)}>Cancel</Button>
-                <Button type="submit">Add</Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowAddForm(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  size="sm"
+                  className="bg-cloud-purple text-white hover:bg-cloud-purple-600"
+                >
+                  Add Member
+                </Button>
+              </div>
+            </form>
+          </Card>
+        </div>
+      )}
+
+      {/* Edit Member Modal */}
+      {showEditForm && editMember && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <Card className="w-full max-w-lg p-6 relative">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="absolute top-2 right-2"
+              onClick={() => {
+                setEditMember(null);
+                setShowEditForm(false);
+              }}
+            >
+              <X className="w-4 h-4" />
+            </Button>
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">Edit Member</h2>
+            <form onSubmit={handleEditMember} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="edit-fullName" className="text-gray-700">
+                    Full Name
+                  </Label>
+                  <Input
+                    id="edit-fullName"
+                    type="text"
+                    value={editMember.fullName}
+                    onChange={(e) =>
+                      setEditMember({ ...editMember, fullName: e.target.value })
+                    }
+                    placeholder="Enter full name"
+                    className="h-10 border-gray-300 focus:border-cloud-purple focus:ring-cloud-purple"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-email" className="text-gray-700">
+                    Email
+                  </Label>
+                  <Input
+                    id="edit-email"
+                    type="email"
+                    value={editMember.email}
+                    onChange={(e) =>
+                      setEditMember({ ...editMember, email: e.target.value })
+                    }
+                    placeholder="Enter email"
+                    className="h-10 border-gray-300 focus:border-cloud-purple focus:ring-cloud-purple"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-role" className="text-gray-700">
+                  Role
+                </Label>
+                <select
+                  id="edit-role"
+                  value={editMember.role}
+                  onChange={(e) =>
+                    setEditMember({ ...editMember, role: e.target.value })
+                  }
+                  className="w-full h-10 border border-gray-300 rounded-lg text-sm focus:border-cloud-purple focus:ring-cloud-purple"
+                >
+                  <option value="employee">Employee</option>
+                  <option value="manager">Manager</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-status" className="text-gray-700">
+                  Status
+                </Label>
+                <select
+                  id="edit-status"
+                  value={editMember.status}
+                  onChange={(e) =>
+                    setEditMember({ ...editMember, status: e.target.value as "active" | "inactive" | "pending" })
+                  }
+                  className="w-full h-10 border border-gray-300 rounded-lg text-sm focus:border-cloud-purple focus:ring-cloud-purple"
+                >
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                  <option value="pending">Pending</option>
+                </select>
+              </div>
+              <div className="flex justify-end space-x-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setEditMember(null);
+                    setShowEditForm(false);
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  size="sm"
+                  className="bg-cloud-purple text-white hover:bg-cloud-purple-600"
+                >
+                  Save Changes
+                </Button>
               </div>
             </form>
           </Card>

@@ -129,10 +129,10 @@ const LandingPage = () => {
  
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button
-                  onClick={handleTryDemo}
+                  onClick={() => setOpenLogin(true)}
                   className="bg-gradient-primary text-primary-foreground hover:opacity-90 font-mono text-sm uppercase tracking-wider px-8 py-4 shadow-medium"
                 >
-                  Login/Sign Up <ArrowRight className="ml-2 w-4 h-4" />
+                  Login <ArrowRight className="ml-2 w-4 h-4" />
                 </Button>
               </div>
  
