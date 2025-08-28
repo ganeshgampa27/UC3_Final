@@ -917,6 +917,8 @@
 
 
 
+
+
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
@@ -991,13 +993,10 @@ const RoleManagement = () => {
     const newRoleData: Role = {
       id: `role-${Date.now()}`,
       name: newRole.name,
-      description: newRole.description || `Custom role: ${newRole.name}`,
-      permissions: newRole.permissions
-        .split(",")
-        .map((p) => p.trim())
-        .filter((p) => p),
+      description: newRole.description,
+      permissions: newRole.permissions.split(',').map(p => p.trim()).filter(p => p),
       userCount: 0,
-      provider: newRole.provider,
+      provider: newRole.provider
     };
 
     try {
@@ -1065,7 +1064,7 @@ const RoleManagement = () => {
     <div className="space-y-6">
       {/* Add Form */}
       {showAddForm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <Card className="w-full max-w-lg p-6 relative">
             <Button variant="ghost" size="sm" className="absolute top-2 right-2" onClick={handleCancel}>
               <X className="w-4 h-4" />
@@ -1108,7 +1107,7 @@ const RoleManagement = () => {
 
       {/* Edit Form */}
       {showEditForm && editRole && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <Card className="w-full max-w-lg p-6 relative">
             <Button variant="ghost" size="sm" className="absolute top-2 right-2" onClick={handleCancel}>
               <X className="w-4 h-4" />
@@ -1189,7 +1188,6 @@ const RoleManagement = () => {
                     Edit
                   </Button>
                   <Button variant="destructive" size="sm" onClick={() => handleDeleteRole(role.id)}>
-                  <Button variant="destructive" size="sm" onClick={() => handleDeleteRole(role.id)}>
                     <Trash2 className="w-4 h-4 mr-1" />
                     Delete
                   </Button>
@@ -1214,12 +1212,6 @@ const RoleManagement = () => {
             </CardContent>
           </Card>
         ))}
-
-        {!loading && !error && filteredRoles.length === 0 && (
-          <div className="col-span-full text-center text-sm text-muted-foreground py-10">
-            No roles found. Try adjusting filters.
-          </div>
-        )}
       </div>
     </div>
   );
