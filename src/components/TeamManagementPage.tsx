@@ -1091,8 +1091,10 @@ interface TeamMember {
   fullName: string;
   email: string;
   role: string;
+
   status: "active" | "inactive" | "pending";
   createdAt: string;
+
   performance: {
     approvalRate: number;
     productivity: number;
@@ -1126,11 +1128,12 @@ const TeamManagementPage: React.FC = () => {
           email: u.Email,
           role: u.Role,
           status: ["active", "inactive", "pending"][Math.floor(Math.random() * 3)], // Simulate status
-          createdAt: u.CreatedAt,
+         
           performance: {
             approvalRate: Math.floor(Math.random() * 31) + 70, // Simulate 70-100%
             productivity: Math.floor(Math.random() * 31) + 70, // Simulate 70-100%
           },
+        
         }));
         setTeamMembers(normalized);
       } catch (error) {
@@ -1437,7 +1440,7 @@ const TeamManagementPage: React.FC = () => {
               className="absolute top-2 right-2"
               onClick={() => setShowAddForm(false)}
             >
-        <X className="w-4 h-4" />
+              <X className="w-4 h-4" />
             </Button>
             <h2 className="text-lg font-semibold text-gray-800 mb-4">Add New Member</h2>
             <form onSubmit={handleAddMember} className="space-y-4">
@@ -1546,6 +1549,7 @@ const TeamManagementPage: React.FC = () => {
             >
               <X className="w-4 h-4" />
             </Button>
+            
             <h2 className="text-lg font-semibold text-gray-800 mb-4">Edit Member</h2>
             <form onSubmit={handleEditMember} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
