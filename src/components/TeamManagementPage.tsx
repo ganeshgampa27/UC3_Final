@@ -1063,15 +1063,12 @@
 
 // export default TeamManagementPage;
 
-
-
 import React, { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Badge } from "./ui/badge";
-
 import {
   Users,
   UserPlus,
@@ -1085,17 +1082,17 @@ import {
   TrendingUp,
   BarChart3,
 } from "lucide-react";
-
+ 
 // Interface for team member
 interface TeamMember {
   id: string;
   fullName: string;
   email: string;
   role: string;
-
+ 
   status: "active" | "inactive" | "pending";
   createdAt: string;
-
+ 
   performance: {
     approvalRate: number;
     productivity: number;
@@ -1111,7 +1108,7 @@ const TeamManagementPage: React.FC = () => {
   const [newMember, setNewMember] = useState({ fullName: "", email: "", role: "", status: "active" });
   const [editMember, setEditMember] = useState<TeamMember | null>(null);
   const [error, setError] = useState<string | null>(null);
-
+ 
   // Fetch team members
   useEffect(() => {
     async function fetchTeamMembers() {
@@ -1134,7 +1131,7 @@ const TeamManagementPage: React.FC = () => {
             approvalRate: Math.floor(Math.random() * 31) + 70, // Simulate 70-100%
             productivity: Math.floor(Math.random() * 31) + 70, // Simulate 70-100%
           },
-        
+       
         }));
         setTeamMembers(normalized);
       } catch (error) {
@@ -1147,7 +1144,7 @@ const TeamManagementPage: React.FC = () => {
     }
     fetchTeamMembers();
   }, []);
-
+ 
   // Add member
   const handleAddMember = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -1191,7 +1188,7 @@ const TeamManagementPage: React.FC = () => {
       setError("Failed to add member. Please try again.");
     }
   };
-
+ 
   // Edit member
   const handleEditMember = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -1227,7 +1224,7 @@ const TeamManagementPage: React.FC = () => {
       setError("Failed to update member. Please try again.");
     }
   };
-
+ 
   // Delete member
   const handleDeleteMember = async (memberId: string) => {
     try {
@@ -1245,13 +1242,13 @@ const TeamManagementPage: React.FC = () => {
       setError("Failed to delete member. Please try again.");
     }
   };
-
+ 
   const filtered = teamMembers.filter(
     (m) =>
       m.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       m.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
+ 
   const getStatusBadge = (role: string) => {
     const roleConfig: {
       [key: string]: { color: string; label: string };
@@ -1270,9 +1267,9 @@ const TeamManagementPage: React.FC = () => {
       </Badge>
     );
   };
-
+ 
   if (loading) return <div className="p-6 text-center text-gray-500">Loading team members…</div>;
-
+ 
   return (
     <div className="space-y-3 p-6">
       {/* Error Message */}
@@ -1281,7 +1278,7 @@ const TeamManagementPage: React.FC = () => {
           {error}
         </div>
       )}
-
+ 
       {/* Header */}
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-semibold text-gray-900">Team Members</h1>
@@ -1293,7 +1290,7 @@ const TeamManagementPage: React.FC = () => {
           <UserPlus className="w-4 h-4 mr-2" /> Add Member
         </Button>
       </div>
-
+ 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="p-4">
@@ -1351,7 +1348,7 @@ const TeamManagementPage: React.FC = () => {
           </div>
         </Card>
       </div>
-
+ 
       {/* Search */}
       <Card className="p-4">
         <div className="relative">
@@ -1364,7 +1361,7 @@ const TeamManagementPage: React.FC = () => {
           />
         </div>
       </Card>
-
+ 
       {/* Members List */}
       <Card className="p-5">
         <div className="space-y-2">
@@ -1430,7 +1427,7 @@ const TeamManagementPage: React.FC = () => {
           )}
         </div>
       </Card>
-
+ 
       {/* Add Member Modal */}
       {showAddForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -1534,7 +1531,7 @@ const TeamManagementPage: React.FC = () => {
           </Card>
         </div>
       )}
-
+ 
       {/* Edit Member Modal */}
       {showEditForm && editMember && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -1550,7 +1547,7 @@ const TeamManagementPage: React.FC = () => {
             >
               <X className="w-4 h-4" />
             </Button>
-            
+           
             <h2 className="text-lg font-semibold text-gray-800 mb-4">Edit Member</h2>
             <form onSubmit={handleEditMember} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1640,24 +1637,6 @@ const TeamManagementPage: React.FC = () => {
                 >
                   Save Changes
                 </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setEditMember(null);
-                    setShowEditForm(false);
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  size="sm"
-                  className="bg-cloud-purple text-white hover:bg-cloud-purple-600"
-                >
-                  Save Changes
-                </Button>
               </div>
             </form>
           </Card>
@@ -1668,3 +1647,4 @@ const TeamManagementPage: React.FC = () => {
 };
  
 export default TeamManagementPage;
+ 

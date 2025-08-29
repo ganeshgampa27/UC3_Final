@@ -806,9 +806,16 @@ const LoginModal = ({ open, onOpenChange, onSwitchToRegister, onForgotPassword }
         onOpenChange(false);
         if (role === "Manager") {
           navigate('/manager-dashboard');
-        } else if (["Devops", "Developer", "Data Analyst"].includes(role)) {
+        } 
+        if(role==="Admin"){
+          navigate('/admin-dashboard')
+        }
+        
+        else if (["Devops", "Developer", "Data Analyst"].includes(role)) {
           navigate('/dashboard');
-        } else {
+        } 
+        
+        else {
           setError("Unknown role");
         }
       } else {
