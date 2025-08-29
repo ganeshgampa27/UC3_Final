@@ -1071,16 +1071,10 @@ import { Card } from "./ui/card";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Badge } from "./ui/badge";
-import { Badge } from "./ui/badge";
 import {
   Users,
   UserPlus,
   Search,
-  Edit3,
-  Trash2,
-  X,
-  Mail,
-  Calendar,
   Edit3,
   Trash2,
   X,
@@ -1098,12 +1092,7 @@ interface TeamMember {
   email: string;
   role: string;
   status: "active" | "inactive" | "pending";
-  status: "active" | "inactive" | "pending";
   createdAt: string;
-  performance: {
-    approvalRate: number;
-    productivity: number;
-  };
   performance: {
     approvalRate: number;
     productivity: number;
@@ -1137,12 +1126,7 @@ const TeamManagementPage: React.FC = () => {
           email: u.Email,
           role: u.Role,
           status: ["active", "inactive", "pending"][Math.floor(Math.random() * 3)], // Simulate status
-          status: ["active", "inactive", "pending"][Math.floor(Math.random() * 3)], // Simulate status
           createdAt: u.CreatedAt,
-          performance: {
-            approvalRate: Math.floor(Math.random() * 31) + 70, // Simulate 70-100%
-            productivity: Math.floor(Math.random() * 31) + 70, // Simulate 70-100%
-          },
           performance: {
             approvalRate: Math.floor(Math.random() * 31) + 70, // Simulate 70-100%
             productivity: Math.floor(Math.random() * 31) + 70, // Simulate 70-100%
@@ -1303,13 +1287,6 @@ const TeamManagementPage: React.FC = () => {
           className="bg-cloud-purple text-white hover:bg-cloud-purple-600"
         >
           <UserPlus className="w-4 h-4 mr-2" /> Add Member
-        <h1 className="text-2xl font-semibold text-gray-900">Team Members</h1>
-        <Button
-          size="sm"
-          onClick={() => setShowAddForm(true)}
-          className="bg-cloud-purple text-white hover:bg-cloud-purple-600"
-        >
-          <UserPlus className="w-4 h-4 mr-2" /> Add Member
         </Button>
       </div>
 
@@ -1460,16 +1437,7 @@ const TeamManagementPage: React.FC = () => {
               className="absolute top-2 right-2"
               onClick={() => setShowAddForm(false)}
             >
-              <X className="w-4 h-4" />
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <Card className="w-full max-w-lg p-6 relative">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="absolute top-2 right-2"
-              onClick={() => setShowAddForm(false)}
-            >
-              <X className="w-4 h-4" />
+        <X className="w-4 h-4" />
             </Button>
             <h2 className="text-lg font-semibold text-gray-800 mb-4">Add New Member</h2>
             <form onSubmit={handleAddMember} className="space-y-4">
@@ -1647,98 +1615,8 @@ const TeamManagementPage: React.FC = () => {
                   <option value="inactive">Inactive</option>
                   <option value="pending">Pending</option>
                 </select>
-            >
-              <X className="w-4 h-4" />
-            </Button>
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Edit Member</h2>
-            <form onSubmit={handleEditMember} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="edit-fullName" className="text-gray-700">
-                    Full Name
-                  </Label>
-                  <Input
-                    id="edit-fullName"
-                    type="text"
-                    value={editMember.fullName}
-                    onChange={(e) =>
-                      setEditMember({ ...editMember, fullName: e.target.value })
-                    }
-                    placeholder="Enter full name"
-                    className="h-10 border-gray-300 focus:border-cloud-purple focus:ring-cloud-purple"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="edit-email" className="text-gray-700">
-                    Email
-                  </Label>
-                  <Input
-                    id="edit-email"
-                    type="email"
-                    value={editMember.email}
-                    onChange={(e) =>
-                      setEditMember({ ...editMember, email: e.target.value })
-                    }
-                    placeholder="Enter email"
-                    className="h-10 border-gray-300 focus:border-cloud-purple focus:ring-cloud-purple"
-                    required
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="edit-role" className="text-gray-700">
-                  Role
-                </Label>
-                <select
-                  id="edit-role"
-                  value={editMember.role}
-                  onChange={(e) =>
-                    setEditMember({ ...editMember, role: e.target.value })
-                  }
-                  className="w-full h-10 border border-gray-300 rounded-lg text-sm focus:border-cloud-purple focus:ring-cloud-purple"
-                >
-                  <option value="employee">Employee</option>
-                  <option value="manager">Manager</option>
-                  <option value="admin">Admin</option>
-                </select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="edit-status" className="text-gray-700">
-                  Status
-                </Label>
-                <select
-                  id="edit-status"
-                  value={editMember.status}
-                  onChange={(e) =>
-                    setEditMember({ ...editMember, status: e.target.value as "active" | "inactive" | "pending" })
-                  }
-                  className="w-full h-10 border border-gray-300 rounded-lg text-sm focus:border-cloud-purple focus:ring-cloud-purple"
-                >
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
-                  <option value="pending">Pending</option>
-                </select>
               </div>
               <div className="flex justify-end space-x-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setEditMember(null);
-                    setShowEditForm(false);
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  size="sm"
-                  className="bg-cloud-purple text-white hover:bg-cloud-purple-600"
-                >
-                  Save Changes
-                </Button>
                 <Button
                   type="button"
                   variant="outline"
