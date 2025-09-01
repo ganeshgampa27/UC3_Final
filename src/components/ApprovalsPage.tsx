@@ -376,13 +376,326 @@
 // export default ApprovalsPage;
 
 
+// import React, { useState, useEffect } from "react";
+// import { Card, CardContent } from "./ui/card";
+// import { Button } from "./ui/button";
+// import { Badge } from "./ui/badge";
+// import { Input } from "./ui/input";
+// import { Textarea } from "./ui/textarea";
+// import { Search, CheckCircle, XCircle, Eye } from "lucide-react";
+// import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
+
+// interface Request {
+//   RequestID: string;
+//   Username: string;
+//   Service: string;
+//   Role: string;
+//   Status: string;
+//   Reason: string;
+//   RequestTime: string;
+//   AccessLevel: string;
+//   Cloud: string;
+// }
+
+// const ApprovalsPage = () => {
+//   const [searchTerm, setSearchTerm] = useState("");
+//   const [selectedRequest, setSelectedRequest] = useState<Request | null>(null);
+//   const [approvalComment, setApprovalComment] = useState("");
+//   const [requests, setRequests] = useState<Request[]>([]);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState("");
+
+//   // Fetch requests
+//   useEffect(() => {
+//     const fetchRequests = async () => {
+//       try {
+//         setLoading(true);
+//         const res = await fetch(
+//           "https://9y40j38nv9.execute-api.ap-south-1.amazonaws.com/list_requests"
+//         );
+//         if (!res.ok) throw new Error("Failed to fetch requests");
+//         const data = await res.json();
+
+//         const filtered = data.requests.filter(
+//           (req: Request) => req.Status === "pending"
+//         );
+//         setRequests(filtered);
+//       } catch (err) {
+//         setError("Unable to load requests. Please try again later.");
+//         console.error("Error fetching requests:", err);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     fetchRequests();
+//   }, []);
+
+//   // Helpers
+//   const getPriorityColor = (accessLevel: string) => {
+//     const level = accessLevel.toLowerCase();
+//     if (level.includes("full") || level.includes("admin")) {
+//       return "bg-red-500 text-white";
+//     } else if (level.includes("write") || level.includes("modify")) {
+//       return "bg-orange-500 text-white";
+//     } else if (level.includes("read")) {
+//       return "bg-green-500 text-white";
+//     } else {
+//       return "bg-gray-500 text-white";
+//     }
+//   };
+
+//   const formatDate = (dateString: string) => {
+//     const date = new Date(dateString);
+//     return date.toLocaleString("en-IN", {
+//       month: "short",
+//       day: "numeric",
+//       year: "numeric",
+//       hour: "2-digit",
+//       minute: "2-digit",
+//       hour12: true,
+//     });
+//   };
+
+//   const handleApprove = async (request: Request) => {
+//     try {
+//       const payload = {
+//         ...request,
+//         Status: "approved",
+//         Notes: approvalComment,
+//       };
+
+//       const res = await fetch(
+//         `https://zfn7ztag31.execute-api.ap-south-1.amazonaws.com/dev/approve_access/${request.RequestID}`,
+//         {
+//           method: "POST",
+//           headers: { "Content-Type": "application/json" },
+//           body: JSON.stringify(payload),
+//         }
+//       );
+
+//       if (!res.ok) throw new Error("Failed to approve request");
+
+//       setRequests((prev) =>
+//         prev.filter((r) => r.RequestID !== request.RequestID)
+//       );
+//       setSelectedRequest(null);
+//       setApprovalComment("");
+//     } catch (error) {
+//       console.error("Approval error:", error);
+//     }
+//   };
+
+//   const handleReject = async (request: Request) => {
+//     try {
+//       const payload = {
+//         ...request,
+//         Status: "rejected",
+//         Notes: approvalComment,
+//       };
+
+//       const res = await fetch(
+//         `https://zfn7ztag31.execute-api.ap-south-1.amazonaws.com/dev/approve_access/${request.RequestID}`,
+//         {
+//           method: "POST",
+//           headers: { "Content-Type": "application/json" },
+//           body: JSON.stringify(payload),
+//         }
+//       );
+
+//       if (!res.ok) throw new Error("Failed to reject request");
+
+//       setRequests((prev) =>
+//         prev.filter((r) => r.RequestID !== request.RequestID)
+//       );
+//       setSelectedRequest(null);
+//       setApprovalComment("");
+//     } catch (error) {
+//       console.error("Rejection error:", error);
+//     }
+//   };
+
+//   // Derived Data
+//   const filteredRequests = requests.filter((request) => {
+//     return (
+//       request.Service.toLowerCase().includes(searchTerm.toLowerCase()) ||
+//       request.Username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+//       request.AccessLevel.toLowerCase().includes(searchTerm.toLowerCase())
+//     );
+//   });
+
+//   // UI
+//   if (loading) return <p>Loading requests...</p>;
+//   if (error) return <p className="text-red-500">{error}</p>;
+
+//   return (
+//     <div className="space-y-8">
+//       {/* Search */}
+//       <Card>
+//         <CardContent className="p-4">
+//           <div className="relative">
+//             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
+//             <Input
+//               placeholder="Search requests by service, user, or access..."
+//               value={searchTerm}
+//               onChange={(e) => setSearchTerm(e.target.value)}
+//               className="pl-10"
+//             />
+//           </div>
+//         </CardContent>
+//       </Card>
+
+//       {/* Requests Table */}
+//       {filteredRequests.length > 0 ? (
+//         <div className="overflow-x-auto">
+//           <table className="w-full border-collapse border border-gray-200">
+//             <thead className="bg-gray-100">
+//               <tr className="text-left">
+//                 <th className="p-3">Service</th>
+//                 <th className="p-3">User</th>
+//                 <th className="p-3">Access</th>
+//                 <th className="p-3">Requested</th>
+//                 <th className="p-3">Action</th>
+//               </tr>
+//             </thead>
+//             <tbody>
+//               {filteredRequests.map((req) => (
+//                 <tr key={req.RequestID} className="border-b hover:bg-gray-50">
+//                   <td className="p-3 font-medium">
+//                     {req.Service.replace(/\b\w/g, (char) => char.toUpperCase())}
+//                   </td>
+//                   <td className="p-3">{req.Username}</td>
+//                   <td className="p-3">
+//                     <Badge className={getPriorityColor(req.AccessLevel)}>
+//                       {req.AccessLevel}
+//                     </Badge>
+//                   </td>
+//                   <td className="p-3">{formatDate(req.RequestTime)}</td>
+//                   <td className="p-3">
+//                     <Dialog>
+//                       <DialogTrigger asChild>
+//                         <Button
+//                           size="sm"
+//                           variant="outline"
+//                           onClick={() => setSelectedRequest(req)}
+//                         >
+//                           <Eye className="w-4 h-4 mr-1" />
+//                           Review
+//                         </Button>
+//                       </DialogTrigger>
+//                       <DialogContent className="max-w-2xl"> {/* wider modal */}
+//                         <DialogHeader>
+//                           <DialogTitle>
+//                             Access Request for {req.Username}
+//                           </DialogTitle>
+//                         </DialogHeader>
+
+//                         {selectedRequest && (
+//                           <div className="space-y-6 text-sm mt-2">
+//                             {/* Grid layout */}
+//                             <div className="grid grid-cols-2 gap-y-3 gap-x-6">
+//                               <div>
+//                                 <strong>Requester:</strong> {req.Username}
+//                               </div>
+//                               <div>
+//                                 <strong>Request Date:</strong>{" "}
+//                                 {formatDate(req.RequestTime)}
+//                               </div>
+//                               <div>
+//                                 <strong>Cloud Service:</strong> {req.Cloud}
+//                               </div>
+//                               <div>
+//                                 <strong>Resource Type:</strong>{" "}
+//                                 {req.Service.charAt(0).toUpperCase() +
+//                                   req.Service.slice(1)}
+//                               </div>
+//                               <div>
+//                                 <strong>Access Level:</strong> {req.AccessLevel}
+//                               </div>
+//                               <div>
+//                                 <strong>Role:</strong> {req.Role}
+//                               </div>
+//                             </div>
+
+//                             {/* Business Justification */}
+//                             <div>
+//                               <strong>Business Justification:</strong>
+//                               <p className="mt-1 p-2 bg-gray-100 rounded">
+//                                 {req.Reason}
+//                               </p>
+//                             </div>
+
+//                             {/* Manager Comment */}
+//                             <div>
+//                               <strong>Manager Comment:</strong>
+//                               <Textarea
+//                                 placeholder="Add your comments here..."
+//                                 value={approvalComment}
+//                                 onChange={(e) =>
+//                                   setApprovalComment(e.target.value)
+//                                 }
+//                                 className="mt-1"
+//                               />
+//                             </div>
+
+//                             {/* Action buttons */}
+//                             <div className="flex justify-end space-x-3 pt-4">
+//                               <Button
+//                                 variant="outline"
+//                                 onClick={() => setSelectedRequest(null)}
+//                               >
+//                                 Cancel
+//                               </Button>
+//                               <Button
+//                                 onClick={() => handleReject(req)}
+//                                 variant="destructive"
+//                               >
+//                                 <XCircle className="w-4 h-4 mr-2" />
+//                                 Reject
+//                               </Button>
+//                               <Button
+//                                 onClick={() => handleApprove(req)}
+//                                 className="bg-green-600 hover:bg-green-700 text-white"
+//                               >
+//                                 <CheckCircle className="w-4 h-4 mr-2" />
+//                                 Approve
+//                               </Button>
+//                             </div>
+//                           </div>
+//                         )}
+//                       </DialogContent>
+//                     </Dialog>
+//                   </td>
+//                 </tr>
+//               ))}
+//             </tbody>
+//           </table>
+//         </div>
+//       ) : (
+//         <Card>
+//           <CardContent className="p-12 text-center">
+//             <CheckCircle className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+//             <h3 className="text-lg font-medium">No pending approvals</h3>
+//             <p className="text-muted-foreground">
+//               All requests have been processed. 🎉
+//             </p>
+//           </CardContent>
+//         </Card>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default ApprovalsPage;
+
+
 import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
-import { Search, CheckCircle, XCircle, Eye } from "lucide-react";
+import { Search, CheckCircle, XCircle, Eye, User, Clock } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
 
 interface Request {
@@ -435,13 +748,13 @@ const ApprovalsPage = () => {
   const getPriorityColor = (accessLevel: string) => {
     const level = accessLevel.toLowerCase();
     if (level.includes("full") || level.includes("admin")) {
-      return "bg-red-500 text-white";
+      return "text-red-600 border-red-500 bg-red-50";
     } else if (level.includes("write") || level.includes("modify")) {
-      return "bg-orange-500 text-white";
+      return "text-orange-600 border-orange-500 bg-orange-50";
     } else if (level.includes("read")) {
-      return "bg-green-500 text-white";
+      return "text-green-600 border-green-500 bg-green-50";
     } else {
-      return "bg-gray-500 text-white";
+      return "text-gray-600 border-gray-500 bg-gray-50";
     }
   };
 
@@ -455,6 +768,11 @@ const ApprovalsPage = () => {
       minute: "2-digit",
       hour12: true,
     });
+  };
+
+  const capitalizeFirstLetter = (str: string): string => {
+    if (!str) return str;
+    return str.charAt(0).toUpperCase() + str.slice(1);
   };
 
   const handleApprove = async (request: Request) => {
@@ -525,167 +843,214 @@ const ApprovalsPage = () => {
   });
 
   // UI
-  if (loading) return <p>Loading requests...</p>;
-  if (error) return <p className="text-red-500">{error}</p>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
+          <p>Loading requests...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return <p className="text-red-500">{error}</p>;
+  }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Search */}
-      <Card>
-        <CardContent className="p-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
-            <Input
-              placeholder="Search requests by service, user, or access..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-        </CardContent>
-      </Card>
+      <div className="bg-white p-4 rounded-lg shadow border">
+        <div className="relative">
+          <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+          <Input
+            type="text"
+            placeholder="Search by username, service, or access level..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
+      </div>
 
       {/* Requests Table */}
-      {filteredRequests.length > 0 ? (
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse border border-gray-200">
-            <thead className="bg-gray-100">
-              <tr className="text-left">
-                <th className="p-3">Service</th>
-                <th className="p-3">User</th>
-                <th className="p-3">Access</th>
-                <th className="p-3">Requested</th>
-                <th className="p-3">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredRequests.map((req) => (
-                <tr key={req.RequestID} className="border-b hover:bg-gray-50">
-                  <td className="p-3 font-medium">
-                    {req.Service.replace(/\b\w/g, (char) => char.toUpperCase())}
-                  </td>
-                  <td className="p-3">{req.Username}</td>
-                  <td className="p-3">
-                    <Badge className={getPriorityColor(req.AccessLevel)}>
-                      {req.AccessLevel}
-                    </Badge>
-                  </td>
-                  <td className="p-3">{formatDate(req.RequestTime)}</td>
-                  <td className="p-3">
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => setSelectedRequest(req)}
-                        >
-                          <Eye className="w-4 h-4 mr-1" />
-                          Review
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="max-w-2xl"> {/* wider modal */}
-                        <DialogHeader>
-                          <DialogTitle>
-                            Access Request for {req.Username}
-                          </DialogTitle>
-                        </DialogHeader>
+      <div className="bg-white p-6 rounded-lg shadow border">
+        {filteredRequests.length > 0 ? (
+          <div className="w-full">
+            <div className="max-h-[500px] overflow-y-auto">
+              <table className="table-auto w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50 sticky top-0">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Username
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Service
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Role
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Access Level
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Cloud
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Requested
+                    </th>
+                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {filteredRequests.map((req) => (
+                    <tr key={req.RequestID} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                        <div className="flex items-center">
+                          <User className="w-4 h-4 mr-2 text-gray-400" />
+                          {req.Username}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-900">
+                        {capitalizeFirstLetter(req.Service)}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-500">
+                        {req.Role}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-500">
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getPriorityColor(req.AccessLevel)}`}>
+                          {req.AccessLevel}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-500 uppercase">
+                        {req.Cloud}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-500">
+                        <div className="flex items-center">
+                          <Clock className="w-4 h-4 mr-1 text-gray-400" />
+                          {formatDate(req.RequestTime)}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <button
+                              onClick={() => setSelectedRequest(req)}
+                              className="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+                            >
+                              <Eye className="w-4 h-4 mr-1" />
+                              Review
+                            </button>
+                          </DialogTrigger>
+                          <DialogContent className="max-w-2xl">
+                            <DialogHeader>
+                              <DialogTitle>
+                                Access Request for {req.Username}
+                              </DialogTitle>
+                            </DialogHeader>
 
-                        {selectedRequest && (
-                          <div className="space-y-6 text-sm mt-2">
-                            {/* Grid layout */}
-                            <div className="grid grid-cols-2 gap-y-3 gap-x-6">
-                              <div>
-                                <strong>Requester:</strong> {req.Username}
-                              </div>
-                              <div>
-                                <strong>Request Date:</strong>{" "}
-                                {formatDate(req.RequestTime)}
-                              </div>
-                              <div>
-                                <strong>Cloud Service:</strong> {req.Cloud}
-                              </div>
-                              <div>
-                                <strong>Resource Type:</strong>{" "}
-                                {req.Service.charAt(0).toUpperCase() +
-                                  req.Service.slice(1)}
-                              </div>
-                              <div>
-                                <strong>Access Level:</strong> {req.AccessLevel}
-                              </div>
-                              <div>
-                                <strong>Role:</strong> {req.Role}
-                              </div>
-                            </div>
+                            {selectedRequest && (
+                              <div className="space-y-6 text-sm mt-2">
+                                {/* Grid layout */}
+                                <div className="grid grid-cols-2 gap-y-3 gap-x-6">
+                                  <div>
+                                    <strong className="text-gray-700">Requester:</strong> 
+                                    <span className="ml-2">{req.Username}</span>
+                                  </div>
+                                  <div>
+                                    <strong className="text-gray-700">Request Date:</strong>{" "}
+                                    <span className="ml-2">{formatDate(req.RequestTime)}</span>
+                                  </div>
+                                  <div>
+                                    <strong className="text-gray-700">Cloud Service:</strong> 
+                                    <span className="ml-2 uppercase">{req.Cloud}</span>
+                                  </div>
+                                  <div>
+                                    <strong className="text-gray-700">Resource Type:</strong>{" "}
+                                    <span className="ml-2">{capitalizeFirstLetter(req.Service)}</span>
+                                  </div>
+                                  <div>
+                                    <strong className="text-gray-700">Access Level:</strong> 
+                                    <span className="ml-2">{req.AccessLevel}</span>
+                                  </div>
+                                  <div>
+                                    <strong className="text-gray-700">Role:</strong> 
+                                    <span className="ml-2">{req.Role}</span>
+                                  </div>
+                                </div>
 
-                            {/* Business Justification */}
-                            <div>
-                              <strong>Business Justification:</strong>
-                              <p className="mt-1 p-2 bg-gray-100 rounded">
-                                {req.Reason}
-                              </p>
-                            </div>
+                                {/* Business Justification */}
+                                <div>
+                                  <strong className="text-gray-700">Business Justification:</strong>
+                                  <p className="mt-2 p-3 bg-gray-50 rounded-md text-gray-600 min-h-[60px]">
+                                    {req.Reason}
+                                  </p>
+                                </div>
 
-                            {/* Manager Comment */}
-                            <div>
-                              <strong>Manager Comment:</strong>
-                              <Textarea
-                                placeholder="Add your comments here..."
-                                value={approvalComment}
-                                onChange={(e) =>
-                                  setApprovalComment(e.target.value)
-                                }
-                                className="mt-1"
-                              />
-                            </div>
+                                {/* Manager Comment */}
+                                <div>
+                                  <strong className="text-gray-700">Manager Comment:</strong>
+                                  <Textarea
+                                    placeholder="Add your comments here..."
+                                    value={approvalComment}
+                                    onChange={(e) =>
+                                      setApprovalComment(e.target.value)
+                                    }
+                                    className="mt-2"
+                                    rows={3}
+                                  />
+                                </div>
 
-                            {/* Action buttons */}
-                            <div className="flex justify-end space-x-3 pt-4">
-                              <Button
-                                variant="outline"
-                                onClick={() => setSelectedRequest(null)}
-                              >
-                                Cancel
-                              </Button>
-                              <Button
-                                onClick={() => handleReject(req)}
-                                variant="destructive"
-                              >
-                                <XCircle className="w-4 h-4 mr-2" />
-                                Reject
-                              </Button>
-                              <Button
-                                onClick={() => handleApprove(req)}
-                                className="bg-green-600 hover:bg-green-700 text-white"
-                              >
-                                <CheckCircle className="w-4 h-4 mr-2" />
-                                Approve
-                              </Button>
-                            </div>
-                          </div>
-                        )}
-                      </DialogContent>
-                    </Dialog>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      ) : (
-        <Card>
-          <CardContent className="p-12 text-center">
-            <CheckCircle className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-medium">No pending approvals</h3>
-            <p className="text-muted-foreground">
+                                {/* Action buttons */}
+                                <div className="flex justify-end space-x-3 pt-4 border-t">
+                                  <Button
+                                    variant="outline"
+                                    onClick={() => setSelectedRequest(null)}
+                                  >
+                                    Cancel
+                                  </Button>
+                                  <Button
+                                    onClick={() => handleReject(req)}
+                                    variant="destructive"
+                                    className="bg-red-600 hover:bg-red-700"
+                                  >
+                                    <XCircle className="w-4 h-4 mr-2" />
+                                    Reject
+                                  </Button>
+                                  <Button
+                                    onClick={() => handleApprove(req)}
+                                    className="bg-green-600 hover:bg-green-700 text-white"
+                                  >
+                                    <CheckCircle className="w-4 h-4 mr-2" />
+                                    Approve
+                                  </Button>
+                                </div>
+                              </div>
+                            )}
+                          </DialogContent>
+                        </Dialog>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <CheckCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900">No pending approvals</h3>
+            <p className="text-gray-500 mt-2">
               All requests have been processed. 🎉
             </p>
-          </CardContent>
-        </Card>
-      )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
 
 export default ApprovalsPage;
-
-

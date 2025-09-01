@@ -1177,7 +1177,6 @@
 // export default RequestsPage;
 
 
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
@@ -1188,23 +1187,6 @@ import { Textarea } from './ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from './ui/dialog';
 import { useNavigate, useLocation } from 'react-router-dom';
-import {
-  Search,
-  Calendar,
-  User,
-  CheckCircle,
-  XCircle,
-  Clock,
-  FileText,
-  Eye,
-  X,
-  Loader2,
-  Shield,
-  AlertCircle,
-  Plus,
-  ChevronDown,
-  Check
-} from 'lucide-react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -1283,28 +1265,24 @@ const SearchableDropdown = ({
         <span className={selectedOption ? "text-foreground" : "text-muted-foreground"}>
           {selectedOption ? selectedOption.serviceName : placeholder}
         </span>
-        <ChevronDown className="h-4 w-4 opacity-50" />
+        <span className="text-xs">▼</span>
       </button>
       
       {isOpen && (
         <div className="absolute z-50 w-full mt-1 bg-popover border border-border rounded-md shadow-lg">
           <div className="p-2 border-b border-border">
-            <div className="relative">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search services..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-8 h-8"
-                autoFocus
-              />
-            </div>
+            <Input
+              placeholder="Search services..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="h-8"
+              autoFocus
+            />
           </div>
           <div className="max-h-48 overflow-y-auto">
             {isLoading ? (
               <div className="flex items-center justify-center py-4">
-                <Loader2 className="h-4 w-4 animate-spin" />
-                <span className="ml-2 text-sm text-muted-foreground">Loading services...</span>
+                <span className="text-sm text-muted-foreground">Loading services...</span>
               </div>
             ) : filteredOptions.length > 0 ? (
               filteredOptions.map((option) => (
@@ -1322,7 +1300,7 @@ const SearchableDropdown = ({
                     <div className="font-medium">{option.serviceName}</div>
                     <div className="text-xs text-muted-foreground">{option.serviceCode}</div>
                   </div>
-                  {value === option.serviceCode && <Check className="h-4 w-4" />}
+                  {value === option.serviceCode && <span className="text-xs">✓</span>}
                 </button>
               ))
             ) : (
@@ -1715,19 +1693,6 @@ const RequestsPage = () => {
 
   const filteredRequests = getFilteredRequests();
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'approved':
-        return <CheckCircle className="w-4 h-4 text-blue-500" />;
-      case 'applied':
-        return <Shield className="w-4 h-4 text-green-500" />;
-      case 'rejected':
-        return <XCircle className="w-4 h-4 text-red-500" />;
-      default:
-        return <Clock className="w-4 h-4 text-orange-500" />;
-    }
-  };
-
   const getStatusBadge = (status: string) => {
     const statusConfig: {
       [key: string]: { color: string; label: string };
@@ -1744,15 +1709,6 @@ const RequestsPage = () => {
         {config.label}
       </Badge>
     );
-  };
-
-  const getCloudIcon = (cloud: string) => {
-    const cloudIcons: { [key: string]: string } = {
-      aws: '🚀',
-      azure: '☁️',
-      gcp: '🔵',
-    };
-    return cloudIcons[cloud.toLowerCase()] || '☁️';
   };
 
   const handleViewRequest = (request: APIRequest) => {
@@ -1777,7 +1733,7 @@ const RequestsPage = () => {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" />
+          <div className="w-8 h-8 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-muted-foreground">Loading request history...</p>
         </div>
       </div>
@@ -1788,7 +1744,9 @@ const RequestsPage = () => {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+          <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span className="text-red-600 text-xl">!</span>
+          </div>
           <h3 className="text-lg font-semibold text-foreground mb-2">Error Loading Requests</h3>
           <p className="text-muted-foreground mb-4">{error}</p>
           <Button onClick={() => window.location.reload()}>
@@ -1805,21 +1763,17 @@ const RequestsPage = () => {
       <Card className="p-4">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1">
-            <div className="relative">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-              <Input
-                placeholder="Search by service, username, request ID, or reason..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9"
-              />
-            </div>
+            <Input
+              placeholder="Search by service, username, request ID, or reason..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
           <div className="flex gap-2">
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              className="px-3 py-2 border border-gray-300 rounded-lg text-sm min-w-[120px]"
             >
               <option value="all">All Status</option>
               <option value="applied">Applied</option>
@@ -1832,7 +1786,6 @@ const RequestsPage = () => {
             <Dialog open={isNewRequestOpen} onOpenChange={setIsNewRequestOpen}>
               <DialogTrigger asChild>
                 <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
-                  <Plus className="w-4 h-4 mr-2" />
                   New Request
                 </Button>
               </DialogTrigger>
@@ -1921,7 +1874,7 @@ const RequestsPage = () => {
                                     </SelectItem>
                                   )}
                                   <SelectItem value="__create_new__" key="__create_new__">
-                                    + Create new resource...
+                                    Create new resource...
                                   </SelectItem>
                                 </SelectContent>
                               </Select>
@@ -2052,14 +2005,7 @@ const RequestsPage = () => {
                         disabled={isLoading}
                         className="bg-primary hover:bg-primary/90"
                       >
-                        {isLoading ? (
-                          <>
-                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                            Submitting...
-                          </>
-                        ) : (
-                          'Submit Request'
-                        )}
+                        {isLoading ? 'Submitting...' : 'Submit Request'}
                       </Button>
                     </div>
                   </form>
@@ -2073,68 +2019,50 @@ const RequestsPage = () => {
       {/* Requests Table */}
       <Card className="p-6">
         <div className="overflow-x-auto">
-          <table className="table-auto w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Service
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Cloud
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Access Level
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Requested
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-gray-200">
+                <th className="text-left py-3 px-4 font-medium text-gray-700">Service</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-700">Cloud</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-700">Access Level</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-700">Status</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-700">Requested</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-700">Actions</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredRequests.map((request) => (
-                <tr key={request.RequestID} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                    <div className="flex items-center">
-                      <div className="w-2 h-2 rounded-full bg-blue-500 mr-3"></div>
+            <tbody>
+              {filteredRequests.map((request, index) => (
+                <tr key={request.RequestID} className={`border-b border-gray-100 hover:bg-gray-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}`}>
+                  <td className="py-4 px-4">
+                    <div className="font-medium text-gray-900">
                       {capitalizeService(request.Service)}
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">
-                    <div className="flex items-center">
-                      <span className="mr-2">{getCloudIcon(request.Cloud)}</span>
-                      {request.Cloud.toUpperCase()}
-                    </div>
+                  <td className="py-4 px-4">
+                    <span className="text-gray-600 uppercase text-sm">
+                      {request.Cloud}
+                    </span>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">
+                  <td className="py-4 px-4">
                     <Badge variant="secondary" className="text-xs">
                       {request.AccessLevel}
                     </Badge>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">
-                    <div className="flex items-center space-x-2">
-                      {getStatusIcon(request.Status)}
-                      {getStatusBadge(request.Status)}
-                    </div>
+                  <td className="py-4 px-4">
+                    {getStatusBadge(request.Status)}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">
-                    <div className="flex items-center">
-                      <Calendar className="w-4 h-4 mr-2" />
+                  <td className="py-4 px-4">
+                    <span className="text-gray-600 text-sm">
                       {formatDate(request.RequestTime)}
-                    </div>
+                    </span>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">
+                  <td className="py-4 px-4">
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => handleViewRequest(request)}
+                      className="text-sm"
                     >
-                      <Eye className="w-4 h-4 mr-1" />
                       View
                     </Button>
                   </td>
@@ -2145,13 +2073,14 @@ const RequestsPage = () => {
         </div>
 
         {filteredRequests.length === 0 && (
-          <div className="text-center py-8">
-            <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-500">No requests found matching your criteria.</p>
+          <div className="text-center py-12">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-gray-400 text-2xl">📄</span>
+            </div>
+            <p className="text-gray-500 mb-4">No requests found matching your criteria.</p>
             {filterStatus !== 'all' && (
               <Button
                 variant="outline"
-                className="mt-4"
                 onClick={() => setFilterStatus('all')}
               >
                 Show All Requests
@@ -2168,32 +2097,30 @@ const RequestsPage = () => {
             <Button
               variant="ghost"
               size="sm"
-              className="absolute top-2 right-2"
+              className="absolute top-4 right-4"
               onClick={handleCloseModal}
             >
-              <X className="w-4 h-4" />
+              ×
             </Button>
 
             <div className="mb-6">
               <h2 className="text-xl font-semibold text-gray-800 mb-2">Request Details</h2>
-              <div className="flex items-center space-x-2 mb-4">
-                {getStatusIcon(selectedRequest.Status)}
+              <div className="mb-4">
                 {getStatusBadge(selectedRequest.Status)}
               </div>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-gray-700 font-medium">Request ID</Label>
-                  <div className="p-2 bg-gray-100 rounded-lg font-mono text-sm">
+                  <div className="p-3 bg-gray-100 rounded-lg font-mono text-sm">
                     {selectedRequest.RequestID}
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label className="text-gray-700 font-medium">Username</Label>
-                  <div className="p-2 bg-gray-100 rounded-lg text-sm flex items-center">
-                    <User className="w-4 h-4 mr-2" />
+                  <div className="p-3 bg-gray-100 rounded-lg text-sm">
                     {selectedRequest.Username}
                   </div>
                 </div>
@@ -2202,14 +2129,13 @@ const RequestsPage = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-gray-700 font-medium">Cloud Provider</Label>
-                  <div className="p-2 bg-gray-100 rounded-lg text-sm flex items-center">
-                    <span className="mr-2">{getCloudIcon(selectedRequest.Cloud)}</span>
-                    {selectedRequest.Cloud.toUpperCase()}
+                  <div className="p-3 bg-gray-100 rounded-lg text-sm uppercase">
+                    {selectedRequest.Cloud}
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label className="text-gray-700 font-medium">Service</Label>
-                  <div className="p-2 bg-gray-100 rounded-lg text-sm">
+                  <div className="p-3 bg-gray-100 rounded-lg text-sm">
                     {capitalizeService(selectedRequest.Service)}
                   </div>
                 </div>
@@ -2218,13 +2144,13 @@ const RequestsPage = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-gray-700 font-medium">Access Level</Label>
-                  <div className="p-2 bg-gray-100 rounded-lg text-sm">
+                  <div className="p-3 bg-gray-100 rounded-lg text-sm">
                     <Badge variant="secondary">{selectedRequest.AccessLevel}</Badge>
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label className="text-gray-700 font-medium">Manager</Label>
-                  <div className="p-2 bg-gray-100 rounded-lg text-sm">
+                  <div className="p-3 bg-gray-100 rounded-lg text-sm">
                     {selectedRequest.Manager}
                   </div>
                 </div>
@@ -2240,16 +2166,14 @@ const RequestsPage = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-gray-700 font-medium">Request Time</Label>
-                  <div className="p-2 bg-gray-100 rounded-lg text-sm flex items-center">
-                    <Calendar className="w-4 h-4 mr-2" />
+                  <div className="p-3 bg-gray-100 rounded-lg text-sm">
                     {formatDate(selectedRequest.RequestTime)}
                   </div>
                 </div>
                 {selectedRequest.ApplicationTime && (
                   <div className="space-y-2">
                     <Label className="text-gray-700 font-medium">Application Time</Label>
-                    <div className="p-2 bg-gray-100 rounded-lg text-sm flex items-center">
-                      <Calendar className="w-4 h-4 mr-2" />
+                    <div className="p-3 bg-gray-100 rounded-lg text-sm">
                       {formatDate(selectedRequest.ApplicationTime)}
                     </div>
                   </div>
@@ -2259,8 +2183,7 @@ const RequestsPage = () => {
               {selectedRequest.PolicyExpiry && (
                 <div className="space-y-2">
                   <Label className="text-gray-700 font-medium">Policy Expiry</Label>
-                  <div className="p-2 bg-yellow-100 border border-yellow-300 rounded-lg text-sm flex items-center">
-                    <AlertCircle className="w-4 h-4 mr-2 text-yellow-600" />
+                  <div className="p-3 bg-yellow-100 border border-yellow-300 rounded-lg text-sm">
                     {formatDate(selectedRequest.PolicyExpiry)}
                   </div>
                 </div>
