@@ -1,8 +1,12 @@
-// import React, { useState, useEffect } from 'react';
-// import {
-//   Database,
-//   Plus,
-//   Search,
+// import React, { useState } from 'react';
+// import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+// import { Button } from '../ui/button';
+// import { Badge } from '../ui/badge';
+// import { Input } from '../ui/input';
+// import { 
+//   Database, 
+//   Plus, 
+//   Search, 
 //   MoreHorizontal,
 //   FolderOpen,
 //   Download,
@@ -420,14 +424,29 @@
 // };
  
 // export default S3ServicePage;
- 
 
 
-// import React, { useState, useEffect } from 'react';
-// import {
-//   Database,
-//   Plus,
-//   Search,
+
+
+
+
+
+
+
+
+
+
+
+
+// import React, { useState } from 'react';
+// import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+// import { Button } from '../ui/button';
+// import { Badge } from '../ui/badge';
+// import { Input } from '../ui/input';
+// import { 
+//   Database, 
+//   Plus, 
+//   Search, 
 //   MoreHorizontal,
 //   FolderOpen,
 //   Download,
@@ -860,10 +879,7 @@
  
 // export default S3ServicePage;
 
-
-
-import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
 import {
   Database,
   Plus,
@@ -874,17 +890,10 @@ import {
   Upload,
   Download,
   Loader2,
-  X,
-  Users,
-  BarChart3,
-  FileText,
-  Activity,
-  RefreshCw,
-  AlertCircle
-} from "lucide-react";
-
-const GenericServicePage: React.FC = () => {
-  const { serviceId } = useParams<{ serviceId: string }>();
+  X
+} from 'lucide-react';
+ 
+const S3ServicePage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [items, setItems] = useState<any[]>([]);
@@ -894,150 +903,128 @@ const GenericServicePage: React.FC = () => {
   const [showDropdown, setShowDropdown] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: '',
-    description: '',
-    type: 'standard',
-    status: 'active'
+    region: 'us-east-1',
+    versioning: 'Disabled',
   });
-
-  // Service configuration based on serviceId
-  const getServiceConfig = (id: string) => {
-    const configs: { [key: string]: any } = {
-      'analytics': {
-        title: 'Analytics Dashboard',
-        description: 'Monitor and analyze your data insights',
-        icon: BarChart3,
-        iconColor: 'text-blue-600',
-        bgColor: 'bg-blue-100',
-        itemName: 'Report',
-        itemNamePlural: 'Reports',
-        mockItems: [
-          { id: 1, name: 'Monthly Sales Report', type: 'Sales Analytics', status: 'Active', created: '2024-01-15', items: 1250 },
-          { id: 2, name: 'User Engagement Analysis', type: 'User Analytics', status: 'Active', created: '2024-01-10', items: 890 },
-          { id: 3, name: 'Revenue Trends', type: 'Financial Analytics', status: 'Processing', created: '2024-01-08', items: 2340 }
-        ]
-      },
-      'users': {
-        title: 'User Management',
-        description: 'Manage user accounts and permissions',
-        icon: Users,
-        iconColor: 'text-green-600',
-        bgColor: 'bg-green-100',
-        itemName: 'User',
-        itemNamePlural: 'Users',
-        mockItems: [
-          { id: 1, name: 'John Smith', type: 'Administrator', status: 'Active', created: '2024-01-20', items: 45 },
-          { id: 2, name: 'Sarah Johnson', type: 'Editor', status: 'Active', created: '2024-01-18', items: 23 },
-          { id: 3, name: 'Mike Davis', type: 'Viewer', status: 'Inactive', created: '2024-01-15', items: 12 }
-        ]
-      },
-      'reports': {
-        title: 'Reports Center',
-        description: 'Generate and manage your reports',
-        icon: FileText,
-        iconColor: 'text-purple-600',
-        bgColor: 'bg-purple-100',
-        itemName: 'Report',
-        itemNamePlural: 'Reports',
-        mockItems: [
-          { id: 1, name: 'Q1 Performance Report', type: 'Quarterly', status: 'Completed', created: '2024-01-25', items: 156 },
-          { id: 2, name: 'Weekly Analytics Summary', type: 'Weekly', status: 'Generating', created: '2024-01-22', items: 89 },
-          { id: 3, name: 'Customer Feedback Report', type: 'Custom', status: 'Draft', created: '2024-01-20', items: 234 }
-        ]
-      },
-      'default': {
-        title: 'Service Dashboard',
-        description: 'Manage your service resources',
-        icon: Database,
-        iconColor: 'text-gray-600',
-        bgColor: 'bg-gray-100',
-        itemName: 'Item',
-        itemNamePlural: 'Items',
-        mockItems: [
-          { id: 1, name: 'Sample Resource 1', type: 'Standard', status: 'Active', created: '2024-01-20', items: 45 },
-          { id: 2, name: 'Sample Resource 2', type: 'Premium', status: 'Active', created: '2024-01-18', items: 23 },
-          { id: 3, name: 'Sample Resource 3', type: 'Basic', status: 'Inactive', created: '2024-01-15', items: 12 }
-        ]
-      }
-    };
-    return configs[id?.toLowerCase() || ''] || configs['default'];
-  };
-
-  const config = getServiceConfig(serviceId || '');
-  const IconComponent = config.icon;
-
-  // Simulate API calls
-  const fetchItems = async () => {
+ 
+  // API endpoints
+  const API_BASE = 'https://gjo6zkvzob.execute-api.ap-south-1.amazonaws.com';
+  const CREATE_API_BASE = 'https://q9rsioedc1.execute-api.ap-south-1.amazonaws.com';
+ 
+  // Fetch buckets from API
+  const fetchBuckets = async () => {
     try {
       setLoading(true);
       setError(null);
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setItems(config.mockItems);
+      const response = await fetch(`${API_BASE}/buckets`);
+     
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+     
+      const data = await response.json();
+     
+      // Transform API data to match component format
+      const transformedBuckets = data.buckets.map((bucket, index) => ({
+        id: `bucket-${index}`,
+        name: bucket.name,
+        region: bucket.region,
+        created: new Date(bucket.creationDate).toLocaleDateString(),
+        objects: Math.floor(Math.random() * 10000), // Placeholder since not in API
+        size: generateRandomSize(), // Placeholder since not in API
+        versioning: Math.random() > 0.5 ? 'Enabled' : 'Disabled' // Placeholder
+      }));
+     
+      setBuckets(transformedBuckets);
     } catch (err) {
-      setError('Failed to fetch items');
+      console.error('Error fetching buckets:', err);
+      setError(`Failed to fetch buckets: ${err.message}`);
     } finally {
       setLoading(false);
     }
   };
-
-  const createItem = async (itemData: any) => {
+ 
+  // Generate random size for display (placeholder)
+  const generateRandomSize = () => {
+    const sizes = ['156 MB', '2.3 GB', '4.7 GB', '892 MB', '1.2 GB', '345 MB'];
+    return sizes[Math.floor(Math.random() * sizes.length)];
+  };
+ 
+  // Create new bucket
+  const createBucket = async (bucketData) => {
     try {
       setCreating(true);
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      const newItem = {
-        id: Date.now(),
-        name: itemData.name,
-        type: itemData.type,
-        status: itemData.status,
-        created: new Date().toLocaleDateString(),
-        items: Math.floor(Math.random() * 100)
-      };
-      
-      setItems(prev => [...prev, newItem]);
-      return newItem;
+      const response = await fetch(`${CREATE_API_BASE}/S3CreateBucket`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          bucketName: bucketData.name,
+          region: bucketData.region,
+          versioning: bucketData.versioning
+        }),
+      });
+ 
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+ 
+      const result = await response.json();
+      console.log('Bucket created successfully:', result);
+     
+      // Refresh buckets list after creation
+      await fetchBuckets();
+     
+      return result;
     } catch (err) {
-      throw new Error('Failed to create item');
+      console.error('Error creating bucket:', err);
+      throw err;
     } finally {
       setCreating(false);
     }
   };
-
+ 
+  // Load buckets on component mount
   useEffect(() => {
-    fetchItems();
-  }, [serviceId]);
-
-  const filteredItems = items.filter(item =>
-    item.name.toLowerCase().includes(searchTerm.toLowerCase())
+    fetchBuckets();
+  }, []);
+ 
+  const filteredBuckets = buckets.filter(bucket =>
+    bucket.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+ 
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async () => {
     if (!formData.name.trim()) {
-      alert(`Please enter a ${config.itemName.toLowerCase()} name`);
+      alert('Please enter a bucket name');
       return;
     }
 
     try {
       await createItem(formData);
       setIsModalOpen(false);
-      setFormData({ name: '', description: '', type: 'standard', status: 'active' });
-      alert(`${config.itemName} created successfully!`);
-    } catch (err: any) {
-      alert(`Failed to create ${config.itemName.toLowerCase()}: ${err.message}`);
+      setFormData({ name: '', region: 'us-east-1', versioning: 'Disabled' });
+      alert('Bucket created successfully!');
+    } catch (err) {
+      alert(`Failed to create bucket: ${err.message}`);
     }
   };
-
-  // Calculate stats
-  const totalItems = items.length;
-  const activeItems = items.filter(item => item.status.toLowerCase() === 'active').length;
-  const totalSubItems = items.reduce((sum, item) => sum + (item.items || 0), 0);
-
+ 
+  // Calculate stats from real data
+  const totalBuckets = buckets.length;
+  const totalObjects = buckets.reduce((sum, bucket) => sum + bucket.objects, 0);
+  const formatObjectCount = (count) => {
+    if (count >= 1000) {
+      return `${(count / 1000).toFixed(1)}K`;
+    }
+    return count.toString();
+  };
+ 
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -1053,10 +1040,7 @@ const GenericServicePage: React.FC = () => {
     return (
       <div className="space-y-6 p-6">
         <div className="text-center py-8">
-          <div className="text-red-500 mb-4 text-lg font-semibold">
-            <AlertCircle className="w-6 h-6 inline mr-2" />
-            Error Loading Data
-          </div>
+          <div className="text-red-500 mb-4 text-lg font-semibold">⚠️ Error Loading Buckets</div>
           <p className="text-gray-600 mb-4">{error}</p>
           <button
             onClick={fetchItems}
@@ -1071,12 +1055,12 @@ const GenericServicePage: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6 p-6 max-w-7xl mx-auto">
+    <div className="space-y-3 p-0 max-w-7xl mx-auto">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">{config.title}</h1>
-          <p className="text-gray-600">{config.description}</p>
+          <h1 className="text-3xl font-bold text-gray-900">S3 Buckets</h1>
+          <p className="text-gray-600">Manage your AWS S3 storage buckets</p>
         </div>
         <div className="flex gap-2">
           <button
@@ -1095,14 +1079,14 @@ const GenericServicePage: React.FC = () => {
           </button>
         </div>
       </div>
-
-      {/* Create Item Modal */}
+ 
+      {/* Create Bucket Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
           <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
             <div className="px-6 py-4 border-b border-gray-200">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-medium text-gray-900">Create New {config.itemName}</h3>
+                <h3 className="text-lg font-medium text-gray-900">Create New S3 Bucket</h3>
                 <button
                   onClick={() => setIsModalOpen(false)}
                   className="text-gray-400 hover:text-gray-600 focus:outline-none"
@@ -1114,7 +1098,7 @@ const GenericServicePage: React.FC = () => {
             <div className="px-6 py-4 space-y-4">
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                  {config.itemName} Name
+                  Bucket Name
                 </label>
                 <input
                   id="name"
@@ -1127,22 +1111,8 @@ const GenericServicePage: React.FC = () => {
                 />
               </div>
               <div>
-                <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
-                  Description
-                </label>
-                <input
-                  id="description"
-                  name="description"
-                  type="text"
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  placeholder="Enter description (optional)"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-              <div>
-                <label htmlFor="type" className="block text-sm font-medium text-gray-700 mb-1">
-                  Type
+                <label htmlFor="region" className="block text-sm font-medium text-gray-700 mb-1">
+                  Region
                 </label>
                 <select
                   id="type"
@@ -1158,8 +1128,8 @@ const GenericServicePage: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
-                  Status
+                <label htmlFor="versioning" className="block text-sm font-medium text-gray-700 mb-1">
+                  Versioning
                 </label>
                 <select
                   id="status"
@@ -1194,7 +1164,7 @@ const GenericServicePage: React.FC = () => {
                     Creating...
                   </>
                 ) : (
-                  `Create ${config.itemName}`
+                  'Create Bucket'
                 )}
               </button>
             </div>
@@ -1204,7 +1174,7 @@ const GenericServicePage: React.FC = () => {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Total {config.itemNamePlural}</p>
@@ -1213,37 +1183,37 @@ const GenericServicePage: React.FC = () => {
             <IconComponent className={`w-8 h-8 ${config.iconColor}`} />
           </div>
         </div>
-
+ 
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Active Items</p>
-              <p className="text-3xl font-bold text-gray-900">{activeItems}</p>
+              <p className="text-sm font-medium text-gray-600">Total Objects</p>
+              <p className="text-3xl font-bold text-gray-900">{formatObjectCount(totalObjects)}</p>
             </div>
             <Activity className="w-8 h-8 text-green-500" />
           </div>
         </div>
-
+ 
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Total Records</p>
-              <p className="text-3xl font-bold text-gray-900">{totalSubItems.toLocaleString()}</p>
+              <p className="text-sm font-medium text-gray-600">Regions</p>
+              <p className="text-3xl font-bold text-gray-900">
+                {new Set(buckets.map(b => b.region)).size}
+              </p>
             </div>
             <BarChart3 className="w-8 h-8 text-purple-500" />
           </div>
         </div>
       </div>
-
-      {/* Items List */}
+ 
+      {/* Your S3 Buckets */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200">
         <div className="px-6 py-4 border-b border-gray-200">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <IconComponent className={`w-5 h-5 ${config.iconColor}`} />
-              <h3 className="text-lg font-medium text-gray-900">
-                Your {config.itemNamePlural} ({filteredItems.length})
-              </h3>
+              <Database className="w-5 h-5 text-blue-600" />
+              <h3 className="text-lg font-medium text-gray-900">Your S3 Buckets ({filteredBuckets.length})</h3>
             </div>
             <div className="relative w-64">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -1258,40 +1228,23 @@ const GenericServicePage: React.FC = () => {
               />
             </div>
           </div>
-          <p className="mt-1 text-sm text-gray-600">{config.description}</p>
+          <p className="mt-1 text-sm text-gray-600">Manage your AWS S3 storage buckets</p>
         </div>
         <div className="p-6">
-          {filteredItems.length === 0 ? (
-            <div className="text-center py-8">
-              <IconComponent className={`w-12 h-12 ${config.iconColor} mx-auto mb-4 opacity-50`} />
-              <div className="text-gray-500 mb-2">
-                {searchTerm ? `No ${config.itemNamePlural.toLowerCase()} match your search.` : `No ${config.itemNamePlural.toLowerCase()} found.`}
-              </div>
-              {!searchTerm && (
-                <p className="text-sm text-gray-400 mb-4">
-                  Get started by creating your first {config.itemName.toLowerCase()}
-                </p>
-              )}
-              {!searchTerm && (
-                <button
-                  onClick={() => setIsModalOpen(true)}
-                  className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Create {config.itemName}
-                </button>
-              )}
+          {filteredBuckets.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              {searchTerm ? 'No buckets match your search.' : 'No buckets found.'}
             </div>
           ) : (
             <div className="space-y-4">
-              {filteredItems.map((item) => (
-                <div key={item.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+              {filteredBuckets.map((bucket) => (
+                <div key={bucket.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
                   <div className="flex items-center space-x-4">
                     <div className={`w-10 h-10 ${config.bgColor} rounded-lg flex items-center justify-center`}>
                       <IconComponent className={`w-5 h-5 ${config.iconColor}`} />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900">{item.name}</h3>
+                      <h3 className="font-semibold text-gray-900">{bucket.name}</h3>
                       <div className="flex items-center space-x-4 text-sm text-gray-500">
                         <span>Type: {item.type}</span>
                         <span>Records: {item.items?.toLocaleString()}</span>
@@ -1301,19 +1254,15 @@ const GenericServicePage: React.FC = () => {
                   </div>
                   <div className="flex items-center space-x-3">
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      item.status.toLowerCase() === 'active'
+                      bucket.versioning === 'Enabled'
                         ? 'bg-green-100 text-green-800'
-                        : item.status.toLowerCase() === 'processing' || item.status.toLowerCase() === 'generating'
-                        ? 'bg-yellow-100 text-yellow-800'
-                        : item.status.toLowerCase() === 'completed'
-                        ? 'bg-blue-100 text-blue-800'
                         : 'bg-gray-100 text-gray-800'
                     }`}>
-                      {item.status}
+                      {bucket.versioning}
                     </span>
                     <div className="relative">
                       <button
-                        onClick={() => setShowDropdown(showDropdown === item.id.toString() ? null : item.id.toString())}
+                        onClick={() => setShowDropdown(showDropdown === bucket.id ? null : bucket.id)}
                         className="p-1 text-gray-400 hover:text-gray-600 focus:outline-none focus:text-gray-600"
                       >
                         <MoreHorizontal className="w-4 h-4" />
@@ -1351,5 +1300,6 @@ const GenericServicePage: React.FC = () => {
     </div>
   );
 };
-
-export default GenericServicePage;
+ 
+export default S3ServicePage;
+ 

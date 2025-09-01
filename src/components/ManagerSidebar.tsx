@@ -1,14 +1,14 @@
-import React from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { Button } from './ui/button';
-import { Badge } from './ui/badge';
-import { 
-  LayoutDashboard, 
-  Clock, 
+import React from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
+import {
+  LayoutDashboard,
+  Clock,
   AlertCircle,
   Users,
-  Shield
-} from 'lucide-react';
+  Shield,
+} from "lucide-react";
 
 interface ManagerSidebarProps {
   currentUser: any;
@@ -16,55 +16,55 @@ interface ManagerSidebarProps {
   setIsMobileMenuOpen: (open: boolean) => void;
 }
 
-const ManagerSidebar: React.FC<ManagerSidebarProps> = ({ 
-  currentUser, 
-  isMobileMenuOpen, 
-  setIsMobileMenuOpen 
+const ManagerSidebar: React.FC<ManagerSidebarProps> = ({
+  currentUser,
+  isMobileMenuOpen,
+  setIsMobileMenuOpen,
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
   const navItems = [
     {
-      id: 'dashboard',
-      label: 'Overview',
+      id: "dashboard",
+      label: "Overview",
       icon: LayoutDashboard,
       badge: null,
-    //   permissions: ['view_resources'],
-      path: '/manager-dashboard'
+      //   permissions: ['view_resources'],
+      path: "/manager-dashboard",
     },
     {
-      id: 'request-history', 
-      label: 'Request History',
+      id: "request-history",
+      label: "Request History",
       icon: Clock,
       badge: null,
-    //   permissions: ['view_resources'],
-      path: '/manager-dashboard/request-history'
+      //   permissions: ['view_resources'],
+      path: "/manager-dashboard/request-history",
     },
     {
-      id: 'approvals',
-      label: 'Approvals', 
+      id: "approvals",
+      label: "Approvals",
       icon: AlertCircle,
       badge: 8,
-    //   permissions: ['approve_requests'],
-      path: '/manager-dashboard/approvals'
+      //   permissions: ['approve_requests'],
+      path: "/manager-dashboard/approvals",
     },
     {
-      id: 'role-management',
-      label: 'Role Management',
+      id: "role-management",
+      label: "Role Management",
       icon: Users,
       badge: null,
-    //   permissions: ['manage_team'],
-      path: '/manager-dashboard/role-management'
+      //   permissions: ['manage_team'],
+      path: "/manager-dashboard/role-management",
     },
     {
-      id: 'team-management',
-      label: 'Team Management',
+      id: "team-management",
+      label: "Team Management",
       icon: Users,
       badge: null,
-    //   permissions: ['manage_team'],
-      path: '/manager-dashboard/team-management'
-    }
+      //   permissions: ['manage_team'],
+      path: "/manager-dashboard/team-management",
+    },
   ];
 
   const handleNavClick = (path: string) => {
@@ -78,20 +78,25 @@ const ManagerSidebar: React.FC<ManagerSidebarProps> = ({
     <div className="flex-1 flex flex-col overflow-y-auto">
       <div className="p-4">
         <div className="mb-6">
-          <div className="flex items-center space-x-2 mb-2">
+          <div className="flex items-center space-x-2 mb-2 ">
             <Shield className="w-5 h-5 text-primary" />
-            <span className="text-sm font-medium text-foreground">Manager Portal</span>
+            <span className="text-sm font-medium text-foreground">
+              Manager Portal
+            </span>
           </div>
-          <Badge variant="secondary" className="text-xs font-mono bg-primary-light text-primary">
+          {/* <Badge
+            variant="secondary"
+            className="text-xs font-mono bg-primary-light text-primary"
+          >
             {currentUser?.name}
-          </Badge>
+          </Badge> */}
         </div>
 
         <nav className="space-y-1">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
-            // const hasPermission = item.permissions.some(permission => 
+            // const hasPermission = item.permissions.some(permission =>
             //   currentUser?.permissions?.includes(permission)
             // );
 
@@ -100,21 +105,23 @@ const ManagerSidebar: React.FC<ManagerSidebarProps> = ({
             return (
               <Button
                 key={item.id}
-                variant={isActive ? 'default' : 'ghost'}
+                variant={isActive ? "default" : "ghost"}
                 className={`w-full justify-start h-10 px-3 ${
-                  isActive 
-                    ? 'bg-primary text-primary-foreground shadow-soft' 
-                    : 'text-muted-foreground hover:bg-accent hover:text-foreground'
+                  isActive
+                    ? "bg-primary text-primary-foreground shadow-soft"
+                    : "text-muted-foreground hover:bg-accent hover:text-foreground"
                 }`}
                 onClick={() => handleNavClick(item.path)}
               >
                 <Icon className="w-4 h-4 mr-3" />
                 <span className="flex-1 text-left">{item.label}</span>
                 {item.badge && (
-                  <Badge 
-                    variant={isActive ? 'secondary' : 'outline'} 
+                  <Badge
+                    variant={isActive ? "secondary" : "outline"}
                     className={`text-xs ml-2 ${
-                      isActive ? 'bg-primary-foreground text-primary' : 'border-primary text-primary'
+                      isActive
+                        ? "bg-primary-foreground text-primary"
+                        : "border-primary text-primary"
                     }`}
                   >
                     {item.badge}

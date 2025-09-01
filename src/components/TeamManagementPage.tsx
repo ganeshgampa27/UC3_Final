@@ -898,7 +898,6 @@
 
 // export default TeamManagementPage;
 
-
 // import React, { useState, useEffect } from "react";
 // import { Button } from "./ui/button";
 // import { Card } from "./ui/card";
@@ -1082,33 +1081,38 @@ import {
   TrendingUp,
   BarChart3,
 } from "lucide-react";
- 
+
 // Interface for team member
 interface TeamMember {
   id: string;
   fullName: string;
   email: string;
   role: string;
- 
+
   status: "active" | "inactive" | "pending";
   createdAt: string;
- 
+
   performance: {
     approvalRate: number;
     productivity: number;
   };
 }
- 
+
 const TeamManagementPage: React.FC = () => {
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [showAddForm, setShowAddForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
-  const [newMember, setNewMember] = useState({ fullName: "", email: "", role: "", status: "active" });
+  const [newMember, setNewMember] = useState({
+    fullName: "",
+    email: "",
+    role: "",
+    status: "active",
+  });
   const [editMember, setEditMember] = useState<TeamMember | null>(null);
   const [error, setError] = useState<string | null>(null);
- 
+
   // Fetch team members
   useEffect(() => {
     async function fetchTeamMembers() {
@@ -1119,19 +1123,20 @@ const TeamManagementPage: React.FC = () => {
         if (!res.ok) throw new Error("Failed to fetch team members");
         if (!res.ok) throw new Error("Failed to fetch team members");
         const data = await res.json();
-        console.log(data);;
+        console.log(data);
         const normalized = data.map((u: any) => ({
           id: u.UserID,
           fullName: u.FullName,
           email: u.Email,
           role: u.Role,
-          status: ["active", "inactive", "pending"][Math.floor(Math.random() * 3)], // Simulate status
-         
+          status: ["active", "inactive", "pending"][
+            Math.floor(Math.random() * 3)
+          ], // Simulate status
+
           performance: {
             approvalRate: Math.floor(Math.random() * 31) + 70, // Simulate 70-100%
             productivity: Math.floor(Math.random() * 31) + 70, // Simulate 70-100%
           },
-       
         }));
         setTeamMembers(normalized);
       } catch (error) {
@@ -1144,7 +1149,7 @@ const TeamManagementPage: React.FC = () => {
     }
     fetchTeamMembers();
   }, []);
- 
+
   // Add member
   const handleAddMember = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -1188,7 +1193,7 @@ const TeamManagementPage: React.FC = () => {
       setError("Failed to add member. Please try again.");
     }
   };
- 
+
   // Edit member
   const handleEditMember = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -1224,7 +1229,7 @@ const TeamManagementPage: React.FC = () => {
       setError("Failed to update member. Please try again.");
     }
   };
- 
+
   // Delete member
   const handleDeleteMember = async (memberId: string) => {
     try {
@@ -1242,18 +1247,21 @@ const TeamManagementPage: React.FC = () => {
       setError("Failed to delete member. Please try again.");
     }
   };
- 
+
   const filtered = teamMembers.filter(
     (m) =>
       m.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       m.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
- 
+
   const getStatusBadge = (role: string) => {
     const roleConfig: {
       [key: string]: { color: string; label: string };
     } = {
-      employee: { color: "text-cloud-emerald border-cloud-emerald", label: "Employee" },
+      employee: {
+        color: "text-cloud-emerald border-cloud-emerald",
+        label: "Employee",
+      },
       manager: { color: "text-cloud-blue border-cloud-blue", label: "Manager" },
       admin: { color: "text-cloud-purple border-cloud-purple", label: "Admin" },
     };
@@ -1267,18 +1275,24 @@ const TeamManagementPage: React.FC = () => {
       </Badge>
     );
   };
- 
-  if (loading) return <div className="p-6 text-center text-gray-500">Loading team members…</div>;
- 
+
+  if (loading)
+    return (
+      <div className="p-6 text-center text-gray-500">Loading team members…</div>
+    );
+
   return (
-    <div className="space-y-3 p-6">
+    <div className="space-y-3 p-0">
       {/* Error Message */}
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+        <div
+          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+          role="alert"
+        >
           {error}
         </div>
       )}
- 
+
       {/* Header */}
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-semibold text-gray-900">Team Members</h1>
@@ -1290,7 +1304,7 @@ const TeamManagementPage: React.FC = () => {
           <UserPlus className="w-4 h-4 mr-2" /> Add Member
         </Button>
       </div>
- 
+
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="p-4">
@@ -1305,7 +1319,9 @@ const TeamManagementPage: React.FC = () => {
         <Card className="p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Active Members</p>
+              <p className="text-sm font-medium text-gray-600">
+                Active Members
+              </p>
               <p className="text-2xl font-bold">
                 {filtered.filter((m) => m.status === "active").length}
               </p>
@@ -1316,7 +1332,9 @@ const TeamManagementPage: React.FC = () => {
         <Card className="p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Avg. Approval Rate</p>
+              <p className="text-sm font-medium text-gray-600">
+                Avg. Approval Rate
+              </p>
               <p className="text-2xl font-bold">
                 {Math.round(
                   filtered.reduce(
@@ -1333,7 +1351,9 @@ const TeamManagementPage: React.FC = () => {
         <Card className="p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Avg. Productivity</p>
+              <p className="text-sm font-medium text-gray-600">
+                Avg. Productivity
+              </p>
               <p className="text-2xl font-bold">
                 {Math.round(
                   filtered.reduce(
@@ -1348,7 +1368,7 @@ const TeamManagementPage: React.FC = () => {
           </div>
         </Card>
       </div>
- 
+
       {/* Search */}
       <Card className="p-4">
         <div className="relative">
@@ -1361,7 +1381,7 @@ const TeamManagementPage: React.FC = () => {
           />
         </div>
       </Card>
- 
+
       {/* Members List */}
       <Card className="p-5">
         <div className="space-y-2">
@@ -1380,7 +1400,9 @@ const TeamManagementPage: React.FC = () => {
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center space-x-3 mb-2">
-                      <h3 className="font-medium text-gray-900">{member.fullName}</h3>
+                      <h3 className="font-medium text-gray-900">
+                        {member.fullName}
+                      </h3>
                       {getStatusBadge(member.role)}
                     </div>
                     <div className="flex items-center space-x-6 text-sm text-gray-500">
@@ -1390,7 +1412,10 @@ const TeamManagementPage: React.FC = () => {
                       </div>
                       <div className="flex items-center">
                         <Calendar className="w-4 h-4 mr-1" />
-                        <span>Joined: {new Date(member.createdAt).toLocaleDateString()}</span>
+                        <span>
+                          Joined:{" "}
+                          {new Date(member.createdAt).toLocaleDateString()}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -1422,12 +1447,14 @@ const TeamManagementPage: React.FC = () => {
           {filtered.length === 0 && (
             <div className="text-center py-8">
               <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500">No team members found matching your criteria.</p>
+              <p className="text-gray-500">
+                No team members found matching your criteria.
+              </p>
             </div>
           )}
         </div>
       </Card>
- 
+
       {/* Add Member Modal */}
       {showAddForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -1440,7 +1467,9 @@ const TeamManagementPage: React.FC = () => {
             >
               <X className="w-4 h-4" />
             </Button>
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Add New Member</h2>
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">
+              Add New Member
+            </h2>
             <form onSubmit={handleAddMember} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -1531,7 +1560,7 @@ const TeamManagementPage: React.FC = () => {
           </Card>
         </div>
       )}
- 
+
       {/* Edit Member Modal */}
       {showEditForm && editMember && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -1547,8 +1576,10 @@ const TeamManagementPage: React.FC = () => {
             >
               <X className="w-4 h-4" />
             </Button>
-           
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Edit Member</h2>
+
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">
+              Edit Member
+            </h2>
             <form onSubmit={handleEditMember} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -1609,7 +1640,13 @@ const TeamManagementPage: React.FC = () => {
                   id="edit-status"
                   value={editMember.status}
                   onChange={(e) =>
-                    setEditMember({ ...editMember, status: e.target.value as "active" | "inactive" | "pending" })
+                    setEditMember({
+                      ...editMember,
+                      status: e.target.value as
+                        | "active"
+                        | "inactive"
+                        | "pending",
+                    })
                   }
                   className="w-full h-10 border border-gray-300 rounded-lg text-sm focus:border-cloud-purple focus:ring-cloud-purple"
                 >
@@ -1645,6 +1682,5 @@ const TeamManagementPage: React.FC = () => {
     </div>
   );
 };
- 
+
 export default TeamManagementPage;
- 
