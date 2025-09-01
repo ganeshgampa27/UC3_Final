@@ -114,8 +114,8 @@ function AdminDashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const userRole = localStorage.getItem('userRole');
-    const userName = localStorage.getItem('userName');
+    const userRole = localStorage.getItem('role');
+    const userName = localStorage.getItem('fullName');
     
     if (!userRole) {
       navigate('/login');
@@ -123,7 +123,7 @@ function AdminDashboard() {
     }
 
     // For Admin Dashboard, ensure user is an admin
-    if (userRole !== 'admin') {
+    if (userRole !== 'Admin') {
       navigate('/dashboard'); // Redirect to regular dashboard if not admin
       return;
     }
@@ -184,7 +184,7 @@ return (
       {/* Fixed Header */}
       <div className="fixed top-0 left-0 right-0 z-50">
         <Header 
-          currentUser={currentUser}
+          // currentUser={currentUser}
           selectedProvider={selectedProvider}
           onProviderChange={handleProviderChange}
           onLogout={handleLogout}

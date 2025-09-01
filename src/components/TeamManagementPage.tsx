@@ -1063,8 +1063,6 @@
 
 // export default TeamManagementPage;
 
-
-
 import React, { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
@@ -1091,8 +1089,10 @@ interface TeamMember {
   fullName: string;
   email: string;
   role: string;
+ 
   status: "active" | "inactive" | "pending";
   createdAt: string;
+ 
   performance: {
     approvalRate: number;
     productivity: number;
@@ -1117,23 +1117,26 @@ const TeamManagementPage: React.FC = () => {
           "https://dmsntmbne5.execute-api.ap-south-1.amazonaws.com/registerget"
         );
         if (!res.ok) throw new Error("Failed to fetch team members");
+        if (!res.ok) throw new Error("Failed to fetch team members");
         const data = await res.json();
-        console.log(data);
+        console.log(data);;
         const normalized = data.map((u: any) => ({
           id: u.UserID,
           fullName: u.FullName,
           email: u.Email,
           role: u.Role,
           status: ["active", "inactive", "pending"][Math.floor(Math.random() * 3)], // Simulate status
-          createdAt: u.CreatedAt,
+         
           performance: {
             approvalRate: Math.floor(Math.random() * 31) + 70, // Simulate 70-100%
             productivity: Math.floor(Math.random() * 31) + 70, // Simulate 70-100%
           },
+       
         }));
         setTeamMembers(normalized);
       } catch (error) {
         console.error("Failed to fetch team members:", error);
+        setError("Failed to load team members. Please try again.");
         setError("Failed to load team members. Please try again.");
       } finally {
         setLoading(false);
@@ -1544,6 +1547,7 @@ const TeamManagementPage: React.FC = () => {
             >
               <X className="w-4 h-4" />
             </Button>
+           
             <h2 className="text-lg font-semibold text-gray-800 mb-4">Edit Member</h2>
             <form onSubmit={handleEditMember} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
