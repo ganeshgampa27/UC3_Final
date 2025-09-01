@@ -1,11 +1,11 @@
 // import React from 'react';
 // import { Button } from './ui/button';
 // import { Badge } from './ui/badge';
-// import { 
-//   Globe, 
-//   ChevronDown, 
-//   Menu, 
-//   LogOut, 
+// import {
+//   Globe,
+//   ChevronDown,
+//   Menu,
+//   LogOut,
 //   Plus,
 //   Cloud
 // } from 'lucide-react';
@@ -66,7 +66,7 @@
 //           >
 //             <Menu className="w-5 h-5" />
 //           </Button>
-          
+
 //           <div className="flex items-center space-x-2">
 //             <div className="w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center">
 //               <Globe className="w-4 h-4" />
@@ -137,7 +137,7 @@
 //               {currentUser?.name}
 //             </div>
 //           </div>
-          
+
 //           <DropdownMenu>
 //             <DropdownMenuTrigger asChild>
 //               <Button variant="ghost" size="sm" className="h-8 w-8 rounded-full">
@@ -161,7 +161,6 @@
 
 // export default Header;
 
-
 // import React from 'react';
 // import { Button } from './ui/button';
 // import { Badge } from './ui/badge';
@@ -170,8 +169,6 @@
 // import { Globe, Menu, LogOut, Settings } from 'lucide-react';
 // import { cloudProviders } from '../mock/data';
 // import AccountDetailsModal from "@/components/AccountDetailsModal";
-
-
 
 // interface HeaderProps {
 //   currentUser: any;
@@ -204,13 +201,13 @@
 //             >
 //               <Menu className="w-5 h-5" />
 //             </Button>
-            
+
 //             <div className="flex items-center space-x-2">
 //               <div className="w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center">
 //                 <Globe className="w-5 h-5" />
 //               </div>
 //               <span className="font-semibold text-foreground text-lg hidden sm:block">UC3</span>
-        
+
 //             </div>
 //           </div>
 
@@ -251,7 +248,7 @@
 //                 {currentUser?.username}
 //               </div>
 //             </div>
-            
+
 //             <Avatar className="w-8 h-8">
 //               <AvatarFallback className="bg-primary text-primary-foreground text-sm">
 //                 {currentUser?.name?.charAt(0) || 'U'}
@@ -276,22 +273,17 @@
 
 // export default Header;
 
-
-
-
-
 import React, { useState } from "react";
 import { Button } from "./ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { Avatar, AvatarFallback } from "./ui/avatar";
 import {
-  Globe,
-  Menu,
-  LogOut,
-  Settings,
-  User,
-  X,
-} from "lucide-react";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import { Avatar, AvatarFallback } from "./ui/avatar";
+import { Globe, Menu, LogOut, Settings, User, X } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -377,7 +369,9 @@ const Header: React.FC<HeaderProps> = ({
                 <div className="w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center">
                   <Globe className="w-5 h-5" />
                 </div>
-                <span className="font-semibold text-foreground text-lg hidden sm:block">Unifyd Cloud</span>
+                <span className="font-semibold text-foreground text-lg hidden sm:block">
+                  Unifyd Cloud
+                </span>
               </div>
             </div>
 
@@ -387,7 +381,7 @@ const Header: React.FC<HeaderProps> = ({
                 Cloud Provider:
               </div>
               <Select value={selectedProvider} onValueChange={onProviderChange}>
-                <SelectTrigger className="w-[180px] border-border">
+                <SelectTrigger className="w-[210px] border-border">
                   <SelectValue placeholder="Select provider" />
                 </SelectTrigger>
                 <SelectContent>
@@ -396,7 +390,9 @@ const Header: React.FC<HeaderProps> = ({
                       <div className="flex items-center space-x-2">
                         <div
                           className={`w-2 h-2 rounded-full ${
-                            provider.status === "connected" ? "bg-cloud-emerald" : "bg-cloud-red"
+                            provider.status === "connected"
+                              ? "bg-cloud-emerald"
+                              : "bg-cloud-red"
                           }`}
                         />
                         <span>{provider.name}</span>
@@ -413,14 +409,15 @@ const Header: React.FC<HeaderProps> = ({
                 <div className="text-sm font-medium text-foreground">
                   {fullName}
                 </div>
-                <div className="text-xs text-muted-foreground">
-                  {email}
-                </div>
+                <div className="text-xs text-muted-foreground">{email}</div>
               </div>
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                  <Button
+                    variant="ghost"
+                    className="relative h-10 w-10 rounded-full"
+                  >
                     <Avatar className="h-10 w-10">
                       <AvatarFallback className="bg-primary text-primary-foreground text-sm">
                         {initials}
@@ -489,7 +486,10 @@ const Header: React.FC<HeaderProps> = ({
               className="w-full border px-3 py-2 rounded text-sm mb-4"
             />
             <div className="flex justify-end space-x-2">
-              <Button variant="outline" onClick={() => setShowSwitchModal(false)}>
+              <Button
+                variant="outline"
+                onClick={() => setShowSwitchModal(false)}
+              >
                 Cancel
               </Button>
               <Button className="bg-blue-600" onClick={handleSwitchAccount}>

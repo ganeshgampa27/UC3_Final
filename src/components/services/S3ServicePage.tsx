@@ -3,10 +3,10 @@
 // import { Button } from '../ui/button';
 // import { Badge } from '../ui/badge';
 // import { Input } from '../ui/input';
-// import { 
-//   Database, 
-//   Plus, 
-//   Search, 
+// import {
+//   Database,
+//   Plus,
+//   Search,
 //   MoreHorizontal,
 //   FolderOpen,
 //   Download,
@@ -184,28 +184,15 @@
 
 // export default S3ServicePage;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 // import React, { useState } from 'react';
 // import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 // import { Button } from '../ui/button';
 // import { Badge } from '../ui/badge';
 // import { Input } from '../ui/input';
-// import { 
-//   Database, 
-//   Plus, 
-//   Search, 
+// import {
+//   Database,
+//   Plus,
+//   Search,
 //   MoreHorizontal,
 //   FolderOpen,
 //   Download,
@@ -474,7 +461,7 @@
 
 // export default S3ServicePage;
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Database,
   Plus,
@@ -484,11 +471,11 @@ import {
   Download,
   Upload,
   Loader2,
-  X
-} from 'lucide-react';
- 
+  X,
+} from "lucide-react";
+
 const S3ServicePage = () => {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [buckets, setBuckets] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -496,28 +483,29 @@ const S3ServicePage = () => {
   const [error, setError] = useState(null);
   const [showDropdown, setShowDropdown] = useState(null);
   const [formData, setFormData] = useState({
-    name: '',
-    region: 'us-east-1',
-    versioning: 'Disabled',
+    name: "",
+    region: "us-east-1",
+    versioning: "Disabled",
   });
- 
+
   // API endpoints
-  const API_BASE = 'https://gjo6zkvzob.execute-api.ap-south-1.amazonaws.com';
-  const CREATE_API_BASE = 'https://q9rsioedc1.execute-api.ap-south-1.amazonaws.com';
- 
+  const API_BASE = "https://gjo6zkvzob.execute-api.ap-south-1.amazonaws.com";
+  const CREATE_API_BASE =
+    "https://q9rsioedc1.execute-api.ap-south-1.amazonaws.com";
+
   // Fetch buckets from API
   const fetchBuckets = async () => {
     try {
       setLoading(true);
       setError(null);
       const response = await fetch(`${API_BASE}/buckets`);
-     
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-     
+
       const data = await response.json();
-     
+
       // Transform API data to match component format
       const transformedBuckets = data.buckets.map((bucket, index) => ({
         id: `bucket-${index}`,
@@ -526,89 +514,89 @@ const S3ServicePage = () => {
         created: new Date(bucket.creationDate).toLocaleDateString(),
         objects: Math.floor(Math.random() * 10000), // Placeholder since not in API
         size: generateRandomSize(), // Placeholder since not in API
-        versioning: Math.random() > 0.5 ? 'Enabled' : 'Disabled' // Placeholder
+        versioning: Math.random() > 0.5 ? "Enabled" : "Disabled", // Placeholder
       }));
-     
+
       setBuckets(transformedBuckets);
     } catch (err) {
-      console.error('Error fetching buckets:', err);
+      console.error("Error fetching buckets:", err);
       setError(`Failed to fetch buckets: ${err.message}`);
     } finally {
       setLoading(false);
     }
   };
- 
+
   // Generate random size for display (placeholder)
   const generateRandomSize = () => {
-    const sizes = ['156 MB', '2.3 GB', '4.7 GB', '892 MB', '1.2 GB', '345 MB'];
+    const sizes = ["156 MB", "2.3 GB", "4.7 GB", "892 MB", "1.2 GB", "345 MB"];
     return sizes[Math.floor(Math.random() * sizes.length)];
   };
- 
+
   // Create new bucket
   const createBucket = async (bucketData) => {
     try {
       setCreating(true);
       const response = await fetch(`${CREATE_API_BASE}/S3CreateBucket`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           bucketName: bucketData.name,
           region: bucketData.region,
-          versioning: bucketData.versioning
+          versioning: bucketData.versioning,
         }),
       });
- 
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
- 
+
       const result = await response.json();
-      console.log('Bucket created successfully:', result);
-     
+      console.log("Bucket created successfully:", result);
+
       // Refresh buckets list after creation
       await fetchBuckets();
-     
+
       return result;
     } catch (err) {
-      console.error('Error creating bucket:', err);
+      console.error("Error creating bucket:", err);
       throw err;
     } finally {
       setCreating(false);
     }
   };
- 
+
   // Load buckets on component mount
   useEffect(() => {
     fetchBuckets();
   }, []);
- 
-  const filteredBuckets = buckets.filter(bucket =>
+
+  const filteredBuckets = buckets.filter((bucket) =>
     bucket.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
- 
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
- 
+
   const handleSubmit = async () => {
     if (!formData.name.trim()) {
-      alert('Please enter a bucket name');
+      alert("Please enter a bucket name");
       return;
     }
- 
+
     try {
       await createBucket(formData);
       setIsModalOpen(false);
-      setFormData({ name: '', region: 'us-east-1', versioning: 'Disabled' });
-      alert('Bucket created successfully!');
+      setFormData({ name: "", region: "us-east-1", versioning: "Disabled" });
+      alert("Bucket created successfully!");
     } catch (err) {
       alert(`Failed to create bucket: ${err.message}`);
     }
   };
- 
+
   // Calculate stats from real data
   const totalBuckets = buckets.length;
   const totalObjects = buckets.reduce((sum, bucket) => sum + bucket.objects, 0);
@@ -618,7 +606,7 @@ const S3ServicePage = () => {
     }
     return count.toString();
   };
- 
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -629,12 +617,14 @@ const S3ServicePage = () => {
       </div>
     );
   }
- 
+
   if (error) {
     return (
       <div className="space-y-6 p-6">
         <div className="text-center py-8">
-          <div className="text-red-500 mb-4 text-lg font-semibold">⚠️ Error Loading Buckets</div>
+          <div className="text-red-500 mb-4 text-lg font-semibold">
+            ⚠️ Error Loading Buckets
+          </div>
           <p className="text-gray-600 mb-4">{error}</p>
           <button
             onClick={fetchBuckets}
@@ -647,14 +637,16 @@ const S3ServicePage = () => {
       </div>
     );
   }
- 
+
   return (
-    <div className="space-y-6 p-6 max-w-7xl mx-auto">
+    <div className="space-y-3 p-0 max-w-7xl mx-auto">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">S3 Buckets</h1>
-          <p className="text-gray-600">Manage your AWS S3 storage buckets</p>
+          <h1 className="text-2xl font-bold text-gray-900">S3 Buckets</h1>
+          <p className="text-gray-600 text-sm">
+            Manage your AWS S3 storage buckets
+          </p>
         </div>
         <div className="flex gap-2">
           <button
@@ -673,14 +665,16 @@ const S3ServicePage = () => {
           </button>
         </div>
       </div>
- 
+
       {/* Create Bucket Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
           <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
             <div className="px-6 py-4 border-b border-gray-200">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-medium text-gray-900">Create New S3 Bucket</h3>
+                <h3 className="text-lg font-medium text-gray-900">
+                  Create New S3 Bucket
+                </h3>
                 <button
                   onClick={() => setIsModalOpen(false)}
                   className="text-gray-400 hover:text-gray-600 focus:outline-none"
@@ -691,7 +685,10 @@ const S3ServicePage = () => {
             </div>
             <div className="px-6 py-4 space-y-4">
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="name"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Bucket Name
                 </label>
                 <input
@@ -705,7 +702,10 @@ const S3ServicePage = () => {
                 />
               </div>
               <div>
-                <label htmlFor="region" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="region"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Region
                 </label>
                 <select
@@ -724,7 +724,10 @@ const S3ServicePage = () => {
                 </select>
               </div>
               <div>
-                <label htmlFor="versioning" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="versioning"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Versioning
                 </label>
                 <select
@@ -758,17 +761,17 @@ const S3ServicePage = () => {
                     Creating...
                   </>
                 ) : (
-                  'Create Bucket'
+                  "Create Bucket"
                 )}
               </button>
             </div>
           </div>
         </div>
       )}
- 
+
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Total Buckets</p>
@@ -777,37 +780,41 @@ const S3ServicePage = () => {
             <Database className="w-8 h-8 text-blue-500" />
           </div>
         </div>
- 
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Total Objects</p>
-              <p className="text-3xl font-bold text-gray-900">{formatObjectCount(totalObjects)}</p>
+              <p className="text-3xl font-bold text-gray-900">
+                {formatObjectCount(totalObjects)}
+              </p>
             </div>
             <FolderOpen className="w-8 h-8 text-green-500" />
           </div>
         </div>
- 
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Regions</p>
               <p className="text-3xl font-bold text-gray-900">
-                {new Set(buckets.map(b => b.region)).size}
+                {new Set(buckets.map((b) => b.region)).size}
               </p>
             </div>
             <Database className="w-8 h-8 text-purple-500" />
           </div>
         </div>
       </div>
- 
+
       {/* Your S3 Buckets */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200">
         <div className="px-6 py-4 border-b border-gray-200">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <Database className="w-5 h-5 text-blue-600" />
-              <h3 className="text-lg font-medium text-gray-900">Your S3 Buckets ({filteredBuckets.length})</h3>
+              <h3 className="text-lg font-medium text-gray-900">
+                Your S3 Buckets ({filteredBuckets.length})
+              </h3>
             </div>
             <div className="relative w-64">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -822,23 +829,32 @@ const S3ServicePage = () => {
               />
             </div>
           </div>
-          <p className="mt-1 text-sm text-gray-600">Manage your AWS S3 storage buckets</p>
+          <p className="mt-1 text-sm text-gray-600">
+            Manage your AWS S3 storage buckets
+          </p>
         </div>
         <div className="p-6">
           {filteredBuckets.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
-              {searchTerm ? 'No buckets match your search.' : 'No buckets found.'}
+              {searchTerm
+                ? "No buckets match your search."
+                : "No buckets found."}
             </div>
           ) : (
             <div className="space-y-4">
               {filteredBuckets.map((bucket) => (
-                <div key={bucket.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                <div
+                  key={bucket.id}
+                  className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                >
                   <div className="flex items-center space-x-4">
                     <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
                       <Database className="w-5 h-5 text-blue-600" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900">{bucket.name}</h3>
+                      <h3 className="font-semibold text-gray-900">
+                        {bucket.name}
+                      </h3>
                       <div className="flex items-center space-x-4 text-sm text-gray-500">
                         <span>Region: {bucket.region}</span>
                         <span>Objects: {bucket.objects.toLocaleString()}</span>
@@ -848,16 +864,22 @@ const S3ServicePage = () => {
                     </div>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      bucket.versioning === 'Enabled'
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-gray-100 text-gray-800'
-                    }`}>
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        bucket.versioning === "Enabled"
+                          ? "bg-green-100 text-green-800"
+                          : "bg-gray-100 text-gray-800"
+                      }`}
+                    >
                       {bucket.versioning}
                     </span>
                     <div className="relative">
                       <button
-                        onClick={() => setShowDropdown(showDropdown === bucket.id ? null : bucket.id)}
+                        onClick={() =>
+                          setShowDropdown(
+                            showDropdown === bucket.id ? null : bucket.id
+                          )
+                        }
                         className="p-1 text-gray-400 hover:text-gray-600 focus:outline-none focus:text-gray-600"
                       >
                         <MoreHorizontal className="w-4 h-4" />
@@ -894,6 +916,5 @@ const S3ServicePage = () => {
     </div>
   );
 };
- 
+
 export default S3ServicePage;
- 
