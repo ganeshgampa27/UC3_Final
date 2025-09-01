@@ -1401,6 +1401,11 @@ const RequestsPage = () => {
     gcp: ['compute', 'storage'],
   };
 
+  // Helper function to capitalize first letter of service name
+  const capitalizeService = (serviceName: string) => {
+    return serviceName.charAt(0).toUpperCase() + serviceName.slice(1);
+  };
+
   // Fetch resource types from API
   const fetchResourceTypes = async () => {
     if (!form.getValues('cloud')) {
@@ -2071,25 +2076,22 @@ const RequestsPage = () => {
           <table className="table-auto w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Request ID
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Service
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Cloud
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Access Level
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Requested
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -2097,41 +2099,36 @@ const RequestsPage = () => {
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredRequests.map((request) => (
                 <tr key={request.RequestID} className="hover:bg-gray-50">
-                  <td className="px-4 py-4 text-sm text-gray-500 truncate max-w-[120px]">
-                    <div className="font-mono text-xs">
-                      {request.RequestID.substring(0, 8)}...
+                  <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                    <div className="flex items-center">
+                      <div className="w-2 h-2 rounded-full bg-blue-500 mr-3"></div>
+                      {capitalizeService(request.Service)}
                     </div>
                   </td>
-                  <td className="px-4 py-4 text-sm font-medium text-gray-900">
+                  <td className="px-6 py-4 text-sm text-gray-500">
                     <div className="flex items-center">
-                      <div className="w-2 h-2 rounded-full bg-blue-500 mr-2"></div>
-                      {request.Service}
-                    </div>
-                  </td>
-                  <td className="px-4 py-4 text-sm text-gray-500">
-                    <div className="flex items-center">
-                      <span className="mr-1">{getCloudIcon(request.Cloud)}</span>
+                      <span className="mr-2">{getCloudIcon(request.Cloud)}</span>
                       {request.Cloud.toUpperCase()}
                     </div>
                   </td>
-                  <td className="px-4 py-4 text-sm text-gray-500">
+                  <td className="px-6 py-4 text-sm text-gray-500">
                     <Badge variant="secondary" className="text-xs">
                       {request.AccessLevel}
                     </Badge>
                   </td>
-                  <td className="px-4 py-4 text-sm text-gray-500">
+                  <td className="px-6 py-4 text-sm text-gray-500">
                     <div className="flex items-center space-x-2">
                       {getStatusIcon(request.Status)}
                       {getStatusBadge(request.Status)}
                     </div>
                   </td>
-                  <td className="px-4 py-4 text-sm text-gray-500">
+                  <td className="px-6 py-4 text-sm text-gray-500">
                     <div className="flex items-center">
-                      <Calendar className="w-4 h-4 mr-1" />
+                      <Calendar className="w-4 h-4 mr-2" />
                       {formatDate(request.RequestTime)}
                     </div>
                   </td>
-                  <td className="px-4 py-4 text-sm text-gray-500">
+                  <td className="px-6 py-4 text-sm text-gray-500">
                     <Button
                       variant="outline"
                       size="sm"
@@ -2213,7 +2210,7 @@ const RequestsPage = () => {
                 <div className="space-y-2">
                   <Label className="text-gray-700 font-medium">Service</Label>
                   <div className="p-2 bg-gray-100 rounded-lg text-sm">
-                    {selectedRequest.Service}
+                    {capitalizeService(selectedRequest.Service)}
                   </div>
                 </div>
               </div>
