@@ -695,7 +695,7 @@ import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
-import { Search, CheckCircle, XCircle, Eye } from "lucide-react";
+import { Search, CheckCircle, XCircle, Eye, User, Clock } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
 import { useCloudProvider } from "@/context/CloudProviderContext";
 
@@ -761,13 +761,13 @@ const ApprovalsPage = () => {
   const getPriorityColor = (accessLevel: string) => {
     const level = accessLevel.toLowerCase();
     if (level.includes("full") || level.includes("admin")) {
-      return "bg-red-500 text-white";
+      return "text-red-600 border-red-500 bg-red-50";
     } else if (level.includes("write") || level.includes("modify")) {
-      return "bg-orange-500 text-white";
+      return "text-orange-600 border-orange-500 bg-orange-50";
     } else if (level.includes("read")) {
-      return "bg-green-500 text-white";
+      return "text-green-600 border-green-500 bg-green-50";
     } else {
-      return "bg-gray-500 text-white";
+      return "text-gray-600 border-gray-500 bg-gray-50";
     }
   };
 
@@ -781,6 +781,11 @@ const ApprovalsPage = () => {
       minute: "2-digit",
       hour12: true,
     });
+  };
+
+  const capitalizeFirstLetter = (str: string): string => {
+    if (!str) return str;
+    return str.charAt(0).toUpperCase() + str.slice(1);
   };
 
   const handleApprove = async (request: Request) => {
@@ -860,11 +865,23 @@ const ApprovalsPage = () => {
   }, [requests, searchTerm, cloudProvider]);
 
   // UI
-  if (loading) return <p>Loading requests...</p>;
-  if (error) return <p className="text-red-500">{error}</p>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
+          <p>Loading requests...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return <p className="text-red-500">{error}</p>;
+  }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Search */}
       <Card>
         <CardContent className="p-4">
@@ -880,13 +897,6 @@ const ApprovalsPage = () => {
         </CardContent>
       </Card>
 
-      {/* Results Counter
-      {cloudProvider !== "all" && (
-        <div className="text-sm text-gray-600">
-          Showing {filteredRequests.length} of {requests.length} pending requests for {cloudProvider}
-        </div>
-      )} */}
-
       {/* Requests Table */}
       {filteredRequests.length > 0 ? (
         <div className="overflow-x-auto">
@@ -895,7 +905,6 @@ const ApprovalsPage = () => {
               <tr className="text-left">
                 <th className="p-3">Service</th>
                 <th className="p-3">User</th>
-                <th className="p-3">Cloud</th>
                 <th className="p-3">Access</th>
                 <th className="p-3">Requested</th>
                 <th className="p-3">Action</th>
@@ -908,11 +917,6 @@ const ApprovalsPage = () => {
                     {req.Service.replace(/\b\w/g, (char) => char.toUpperCase())}
                   </td>
                   <td className="p-3">{req.Username}</td>
-                  <td className="p-3">
-                    <Badge variant="outline" className="text-xs">
-                      {req.Cloud}
-                    </Badge>
-                  </td>
                   <td className="p-3">
                     <Badge className={getPriorityColor(req.AccessLevel)}>
                       {req.AccessLevel}
@@ -931,60 +935,64 @@ const ApprovalsPage = () => {
                           Review
                         </Button>
                       </DialogTrigger>
-                      <DialogContent className="max-w-2xl">
+                      <DialogContent className="max-w-2xl"> {/* wider modal */}
                         <DialogHeader>
                           <DialogTitle>
                             Access Request for {req.Username}
                           </DialogTitle>
                         </DialogHeader>
 
-                        {selectedRequest && (
-                          <div className="space-y-6 text-sm mt-2">
-                            {/* Grid layout */}
-                            <div className="grid grid-cols-2 gap-y-3 gap-x-6">
-                              <div>
-                                <strong>Requester:</strong> {req.Username}
-                              </div>
-                              <div>
-                                <strong>Request Date:</strong>{" "}
-                                {formatDate(req.RequestTime)}
-                              </div>
-                              <div>
-                                <strong>Cloud Service:</strong> {req.Cloud}
-                              </div>
-                              <div>
-                                <strong>Resource Type:</strong>{" "}
-                                {req.Service.charAt(0).toUpperCase() +
-                                  req.Service.slice(1)}
-                              </div>
-                              <div>
-                                <strong>Access Level:</strong> {req.AccessLevel}
-                              </div>
-                              <div>
-                                <strong>Role:</strong> {req.Role}
-                              </div>
-                            </div>
+                            {selectedRequest && (
+                              <div className="space-y-6 text-sm mt-2">
+                                {/* Grid layout */}
+                                <div className="grid grid-cols-2 gap-y-3 gap-x-6">
+                                  <div>
+                                    <strong className="text-gray-700">Requester:</strong> 
+                                    <span className="ml-2">{req.Username}</span>
+                                  </div>
+                                  <div>
+                                    <strong className="text-gray-700">Request Date:</strong>{" "}
+                                    <span className="ml-2">{formatDate(req.RequestTime)}</span>
+                                  </div>
+                                  <div>
+                                    <strong className="text-gray-700">Cloud Service:</strong> 
+                                    <span className="ml-2 uppercase">{req.Cloud}</span>
+                                  </div>
+                                  <div>
+                                    <strong className="text-gray-700">Resource Type:</strong>{" "}
+                                    <span className="ml-2">{capitalizeFirstLetter(req.Service)}</span>
+                                  </div>
+                                  <div>
+                                    <strong className="text-gray-700">Access Level:</strong> 
+                                    <span className="ml-2">{req.AccessLevel}</span>
+                                  </div>
+                                  <div>
+                                    <strong className="text-gray-700">Role:</strong> 
+                                    <span className="ml-2">{req.Role}</span>
+                                  </div>
+                                </div>
 
-                            {/* Business Justification */}
-                            <div>
-                              <strong>Business Justification:</strong>
-                              <p className="mt-1 p-2 bg-gray-100 rounded">
-                                {req.Reason}
-                              </p>
-                            </div>
+                                {/* Business Justification */}
+                                <div>
+                                  <strong className="text-gray-700">Business Justification:</strong>
+                                  <p className="mt-2 p-3 bg-gray-50 rounded-md text-gray-600 min-h-[60px]">
+                                    {req.Reason}
+                                  </p>
+                                </div>
 
-                            {/* Manager Comment */}
-                            <div>
-                              <strong>Manager Comment:</strong>
-                              <Textarea
-                                placeholder="Add your comments here..."
-                                value={approvalComment}
-                                onChange={(e) =>
-                                  setApprovalComment(e.target.value)
-                                }
-                                className="mt-1"
-                              />
-                            </div>
+                                {/* Manager Comment */}
+                                <div>
+                                  <strong className="text-gray-700">Manager Comment:</strong>
+                                  <Textarea
+                                    placeholder="Add your comments here..."
+                                    value={approvalComment}
+                                    onChange={(e) =>
+                                      setApprovalComment(e.target.value)
+                                    }
+                                    className="mt-2"
+                                    rows={3}
+                                  />
+                                </div>
 
                             {/* Action buttons */}
                             <div className="flex justify-end space-x-3 pt-4">
@@ -1023,18 +1031,13 @@ const ApprovalsPage = () => {
         <Card>
           <CardContent className="p-12 text-center">
             <CheckCircle className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-medium">
-              {requests.length === 0 ? "No pending approvals" : "No matching requests"}
-            </h3>
+            <h3 className="text-lg font-medium">No pending approvals</h3>
             <p className="text-muted-foreground">
-              {requests.length === 0 
-                ? "All requests have been processed. 🎉"
-                : "Try adjusting your search or filter criteria."
-              }
+              All requests have been processed. 🎉
             </p>
-          </CardContent>
-        </Card>
-      )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

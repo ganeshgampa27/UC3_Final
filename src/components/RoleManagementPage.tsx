@@ -1204,10 +1204,10 @@ const RoleManagement = () => {
                     ))}
                   </div>
                 </div>
-                <div className="flex justify-between items-center">
+                {/* <div className="flex justify-between items-center">
                   <span className="text-sm text-muted-foreground">{role.userCount ?? 0} users assigned</span>
                   <Badge variant="outline">{role.provider?.toUpperCase() ?? 'ALL'}</Badge>
-                </div>
+                </div> */}
               </div>
             </CardContent>
           </Card>

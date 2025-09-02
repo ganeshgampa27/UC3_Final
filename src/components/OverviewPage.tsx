@@ -2,10 +2,10 @@
 // import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 // import { Button } from './ui/button';
 // import { Badge } from './ui/badge';
-// import { 
-//   TrendingUp, 
-//   DollarSign, 
-//   Server, 
+// import {
+//   TrendingUp,
+//   DollarSign,
+//   Server,
 //   Clock,
 //   ArrowRight,
 //   Cloud,
@@ -126,26 +126,26 @@
 //         </CardHeader>
 //         <CardContent>
 //           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-//             <Button 
-//               variant="outline" 
+//             <Button
+//               variant="outline"
 //               className="h-20 flex flex-col space-y-2"
 //               onClick={() => setActiveTab('infrastructure')}
 //             >
 //               <Cloud className="w-6 h-6" />
 //               <span>Browse Services</span>
 //             </Button>
-            
-//             <Button 
-//               variant="outline" 
+
+//             <Button
+//               variant="outline"
 //               className="h-20 flex flex-col space-y-2"
 //               onClick={() => setActiveTab('requests')}
 //             >
 //               <Clock className="w-6 h-6" />
 //               <span>View Requests</span>
 //             </Button>
-            
-//             <Button 
-//               variant="outline" 
+
+//             <Button
+//               variant="outline"
 //               className="h-20 flex flex-col space-y-2"
 //               onClick={() => setActiveTab('approved-services')}
 //             >
@@ -160,8 +160,8 @@
 //       <Card>
 //         <CardHeader className="flex flex-row items-center justify-between">
 //           <CardTitle>Recent Requests</CardTitle>
-//           <Button 
-//             variant="ghost" 
+//           <Button
+//             variant="ghost"
 //             size="sm"
 //             onClick={() => setActiveTab('requests')}
 //           >
@@ -183,7 +183,7 @@
 //                 </div>
 //                 <div className="flex items-center space-x-4">
 //                   <span className="text-sm font-medium text-foreground">{request.cost}</span>
-//                   <Badge 
+//                   <Badge
 //                     variant={request.status === 'approved' ? 'default' : 'secondary'}
 //                     className={request.status === 'approved' ? 'bg-green-500 text-white' : ''}
 //                   >
@@ -249,54 +249,6 @@
 // };
 
 // export default OverviewPage;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // import { ReactNode, useState } from 'react';
 // import { Button } from './ui/button';
@@ -830,11 +782,8 @@
 
 // export default OverviewPage;
 
-
-
 //--------------------
 
-
 // import { ReactNode, useState } from 'react';
 // import { Button } from './ui/button';
 // import { Card } from './ui/card';
@@ -1105,7 +1054,7 @@
 
 //   const handleQuickAction = (action: QuickAction): void => {
 //     setActiveAction(action.id);
-    
+
 //     if (action.action === 'openDialog') {
 //       // Switch to requests tab first
 //       setActiveTab('requests');
@@ -1384,8 +1333,6 @@
 
 // export default OverviewPage;
 
-
-
 // import { ReactNode, useState } from 'react';
 // import { Button } from './ui/button';
 // import { Card } from './ui/card';
@@ -1656,7 +1603,7 @@
 
 //   const handleQuickAction = (action: QuickAction): void => {
 //     setActiveAction(action.id);
-    
+
 //     if (action.action === 'openDialog') {
 //       // Switch to requests tab first
 //       setActiveTab('requests');
@@ -1934,8 +1881,6 @@
 // };
 
 // export default OverviewPage;
-
-
 
 // import React, { useState, useEffect } from 'react';
 // import { useNavigate } from 'react-router-dom';
@@ -1943,11 +1888,11 @@
 // import { Button } from './ui/button';
 // import { Badge } from './ui/badge';
 // import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-// import { 
-//   BarChart3, 
-//   Clock, 
-//   AlertTriangle, 
-//   CheckCircle, 
+// import {
+//   BarChart3,
+//   Clock,
+//   AlertTriangle,
+//   CheckCircle,
 //   XCircle,
 //   Filter,
 //   TrendingUp,
@@ -1992,7 +1937,7 @@
 //   useEffect(() => {
 //     const userRole = localStorage.getItem('role');
 //     const userName = localStorage.getItem('fullName');
-    
+
 //     if (userRole && userName) {
 //       setCurrentUser({
 //         role: userRole,
@@ -2008,11 +1953,11 @@
 //       try {
 //         setLoading(true);
 //         const response = await fetch('https://9y40j38nv9.execute-api.ap-south-1.amazonaws.com/list_requests');
-        
+
 //         if (!response.ok) {
 //           throw new Error('Failed to fetch requests');
 //         }
-        
+
 //         const data: ApiResponse = await response.json();
 //         setRequests(data.requests || []);
 //       } catch (err) {
@@ -2026,8 +1971,8 @@
 //   }, []);
 
 //   // Filter requests based on selected provider
-//   const filteredRequests = selectedProvider === 'all' 
-//     ? requests 
+//   const filteredRequests = selectedProvider === 'all'
+//     ? requests
 //     : requests.filter(request => request.Cloud.toLowerCase() === selectedProvider.toLowerCase());
 
 //   // Calculate statistics
@@ -2113,7 +2058,6 @@
 
 //   return (
 //     <div className="space-y-6">
-     
 
 //       {/* Statistics Cards */}
 //       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -2172,7 +2116,7 @@
 
 //       {/* Quick Actions */}
 //       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-//         <Card className="cursor-pointer hover:shadow-md transition-shadow" 
+//         <Card className="cursor-pointer hover:shadow-md transition-shadow"
 //               onClick={() => navigate('/manager-dashboard/approvals')}>
 //           <CardHeader>
 //             <CardTitle className="flex items-center space-x-2">
@@ -2248,7 +2192,7 @@
 //               {recentRequests.map((request) => {
 //                 const StatusIcon = getStatusIcon(request.Status);
 //                 return (
-//                   <div key={request.RequestID} 
+//                   <div key={request.RequestID}
 //                        className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors">
 //                     <div className="flex items-center space-x-4">
 //                       <StatusIcon className="w-5 h-5 text-muted-foreground" />
@@ -2286,18 +2230,29 @@
 
 // export default OverviewPage;
 
-
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
-import { Button } from './ui/button';
-import { Badge } from './ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { 
-  BarChart3, 
-  Clock, 
-  AlertTriangle, 
-  CheckCircle, 
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
+import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import {
+  BarChart3,
+  Clock,
+  AlertTriangle,
+  CheckCircle,
   XCircle,
   Filter,
   TrendingUp,
@@ -2344,9 +2299,9 @@ const OverviewPage = () => {
 
   // Get current user from localStorage
   useEffect(() => {
-    const userRole = localStorage.getItem('role');
-    const userName = localStorage.getItem('fullName');
-    
+    const userRole = localStorage.getItem("role");
+    const userName = localStorage.getItem("fullName");
+
     if (userRole && userName) {
       setCurrentUser({
         role: userRole,
@@ -2361,16 +2316,18 @@ const OverviewPage = () => {
     const fetchRequests = async () => {
       try {
         setLoading(true);
-        const response = await fetch('https://9y40j38nv9.execute-api.ap-south-1.amazonaws.com/list_requests');
-        
+        const response = await fetch(
+          "https://9y40j38nv9.execute-api.ap-south-1.amazonaws.com/list_requests"
+        );
+
         if (!response.ok) {
-          throw new Error('Failed to fetch requests');
+          throw new Error("Failed to fetch requests");
         }
-        
+
         const data: ApiResponse = await response.json();
         setRequests(data.requests || []);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
+        setError(err instanceof Error ? err.message : "An error occurred");
       } finally {
         setLoading(false);
       }
@@ -2387,18 +2344,24 @@ const OverviewPage = () => {
   // Calculate statistics
   const stats = {
     total: filteredRequests.length,
-    pending: filteredRequests.filter(r => r.Status === 'pending').length,
-    approved: filteredRequests.filter(r => r.Status === 'applied').length,
-    rejected: filteredRequests.filter(r => r.Status === 'rejected').length
+    pending: filteredRequests.filter((r) => r.Status === "pending").length,
+    approved: filteredRequests.filter((r) => r.Status === "applied").length,
+    rejected: filteredRequests.filter((r) => r.Status === "rejected").length,
   };
 
   // Get recent requests (last 5)
   const recentRequests = filteredRequests
-    .sort((a, b) => new Date(b.RequestTime).getTime() - new Date(a.RequestTime).getTime())
+    .sort(
+      (a, b) =>
+        new Date(b.RequestTime).getTime() - new Date(a.RequestTime).getTime()
+    )
     .slice(0, 5);
 
   // Get unique cloud providers for filter
-  const cloudProviders = ['all', ...new Set(requests.map(r => r.Cloud.toLowerCase()))];
+  const cloudProviders = [
+    "all",
+    ...new Set(requests.map((r) => r.Cloud.toLowerCase())),
+  ];
 
   const handleProviderChange = (provider: string) => {
     setSelectedProvider(provider);
@@ -2406,47 +2369,47 @@ const OverviewPage = () => {
 
   // Navigation handlers for statistics cards
   const handleTotalRequestsClick = () => {
-    navigate('/manager-dashboard/request-history');
+    navigate("/manager-dashboard/request-history");
   };
 
   const handlePendingClick = () => {
-    navigate('/manager-dashboard/request-history', { 
-      state: { defaultFilter: 'pending' } 
+    navigate("/manager-dashboard/request-history", {
+      state: { defaultFilter: "pending" },
     });
   };
 
   const handleApprovedClick = () => {
-    navigate('/manager-dashboard/request-history', { 
-      state: { defaultFilter: 'applied' } 
+    navigate("/manager-dashboard/request-history", {
+      state: { defaultFilter: "applied" },
     });
   };
 
   const handleRejectedClick = () => {
-    navigate('/manager-dashboard/request-history', { 
-      state: { defaultFilter: 'rejected' } 
+    navigate("/manager-dashboard/request-history", {
+      state: { defaultFilter: "rejected" },
     });
   };
 
   const getStatusBadgeVariant = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'pending':
-        return 'outline';
-      case 'applied':
-        return 'default';
-      case 'rejected':
-        return 'destructive';
+      case "pending":
+        return "outline";
+      case "applied":
+        return "default";
+      case "rejected":
+        return "destructive";
       default:
-        return 'secondary';
+        return "secondary";
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'pending':
+      case "pending":
         return Clock;
-      case 'applied':
+      case "applied":
         return CheckCircle;
-      case 'rejected':
+      case "rejected":
         return XCircle;
       default:
         return AlertTriangle;
@@ -2454,12 +2417,12 @@ const OverviewPage = () => {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
@@ -2479,10 +2442,10 @@ const OverviewPage = () => {
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
           <AlertTriangle className="w-12 h-12 text-destructive mx-auto mb-4" />
-          <p className="text-destructive mb-4">Error loading requests: {error}</p>
-          <Button onClick={() => window.location.reload()}>
-            Try Again
-          </Button>
+          <p className="text-destructive mb-4">
+            Error loading requests: {error}
+          </p>
+          <Button onClick={() => window.location.reload()}>Try Again</Button>
         </div>
       </div>
     );
@@ -2492,126 +2455,153 @@ const OverviewPage = () => {
     <div className="space-y-6">
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-105" 
-              onClick={handleTotalRequestsClick}>
+        <Card
+          className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-105"
+          onClick={handleTotalRequestsClick}
+        >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Requests</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total Requests
+            </CardTitle>
             <BarChart3 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.total}</div>
-            <p className="text-xs text-muted-foreground">
-              All access requests
-            </p>
+            <p className="text-xs text-muted-foreground">All access requests</p>
           </CardContent>
         </Card>
 
-        <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-105" 
-              onClick={handlePendingClick}>
+        <Card
+          className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-105"
+          onClick={handlePendingClick}
+        >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending Approval</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Pending Approval
+            </CardTitle>
             <Clock className="h-4 w-4 text-orange-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-orange-500">{stats.pending}</div>
+            <div className="text-2xl font-bold text-orange-500">
+              {stats.pending}
+            </div>
             <p className="text-xs text-muted-foreground">
               Awaiting your review
             </p>
           </CardContent>
         </Card>
 
-        <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-105" 
-              onClick={handleApprovedClick}>
+        <Card
+          className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-105"
+          onClick={handleApprovedClick}
+        >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Approved</CardTitle>
             <CheckCircle className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-500">{stats.approved}</div>
+            <div className="text-2xl font-bold text-green-500">
+              {stats.approved}
+            </div>
             <p className="text-xs text-muted-foreground">
               Successfully applied
             </p>
           </CardContent>
         </Card>
 
-        <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-105" 
-              onClick={handleRejectedClick}>
+        <Card
+          className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-105"
+          onClick={handleRejectedClick}
+        >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Rejected</CardTitle>
             <XCircle className="h-4 w-4 text-red-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-500">{stats.rejected}</div>
-            <p className="text-xs text-muted-foreground">
-              Denied requests
-            </p>
+            <div className="text-2xl font-bold text-red-500">
+              {stats.rejected}
+            </div>
+            <p className="text-xs text-muted-foreground">Denied requests</p>
           </CardContent>
         </Card>
       </div>
-      
+
       <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center space-x-2">
-          <Filter className="w-5 h-5 text-primary" />
-          <span>Quick Actions</span>
-        </CardTitle>
-        <CardDescription>
-          Common actions for managing requests and your team
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <Card className="cursor-pointer hover:shadow-md transition-shadow p-4" 
-                onClick={() => navigate('/manager-dashboard/approvals')}>
-            <div className="flex items-start space-x-3">
-              <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                <AlertTriangle className="w-5 h-5 text-orange-500" />
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Filter className="w-5 h-5 text-primary" />
+            <span>Quick Actions</span>
+          </CardTitle>
+          <CardDescription>
+            Common actions for managing requests and your team
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <Card
+              className="cursor-pointer hover:shadow-md transition-shadow p-4"
+              onClick={() => navigate("/manager-dashboard/approvals")}
+            >
+              <div className="flex items-start space-x-3">
+                <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <AlertTriangle className="w-5 h-5 text-orange-500" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-semibold text-base mb-1">
+                    Review Pending Requests
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-3">
+                    {stats.pending} requests need your attention
+                  </p>
+                  <Button className="w-full">Go to Approvals</Button>
+                </div>
               </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-base mb-1">Review Pending Requests</h3>
-                <p className="text-sm text-gray-600 mb-3">{stats.pending} requests need your attention</p>
-                <Button className="w-full">
-                  Go to Approvals
-                </Button>
-              </div>
-            </div>
-          </Card>
+            </Card>
 
-          <Card className="cursor-pointer hover:shadow-md transition-shadow p-4"
-                onClick={() => navigate('/manager-dashboard/team-management')}>
-            <div className="flex items-start space-x-3">
-              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                <Users className="w-5 h-5 text-blue-500" />
+            <Card
+              className="cursor-pointer hover:shadow-md transition-shadow p-4"
+              onClick={() => navigate("/manager-dashboard/team-management")}
+            >
+              <div className="flex items-start space-x-3">
+                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Users className="w-5 h-5 text-blue-500" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-semibold text-base mb-1">Manage Team</h3>
+                  <p className="text-sm text-gray-600 mb-3">
+                    View and manage team members
+                  </p>
+                  <Button variant="outline" className="w-full">
+                    Team Management
+                  </Button>
+                </div>
               </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-base mb-1">Manage Team</h3>
-                <p className="text-sm text-gray-600 mb-3">View and manage team members</p>
-                <Button variant="outline" className="w-full">
-                  Team Management
-                </Button>
-              </div>
-            </div>
-          </Card>
+            </Card>
 
-          <Card className="cursor-pointer hover:shadow-md transition-shadow p-4"
-                onClick={() => navigate('/manager-dashboard/request-history')}>
-            <div className="flex items-start space-x-3">
-              <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                <TrendingUp className="w-5 h-5 text-purple-500" />
+            <Card
+              className="cursor-pointer hover:shadow-md transition-shadow p-4"
+              onClick={() => navigate("/manager-dashboard/request-history")}
+            >
+              <div className="flex items-start space-x-3">
+                <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <TrendingUp className="w-5 h-5 text-purple-500" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-semibold text-base mb-1">
+                    View Analytics
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-3">
+                    Request history and trends
+                  </p>
+                  <Button variant="outline" className="w-full">
+                    View History
+                  </Button>
+                </div>
               </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-base mb-1">View Analytics</h3>
-                <p className="text-sm text-gray-600 mb-3">Request history and trends</p>
-                <Button variant="outline" className="w-full">
-                  View History
-                </Button>
-              </div>
-            </div>
-          </Card>
-        </div>
-      </CardContent>
-    </Card>
-
+            </Card>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Recent Requests */}
       <Card>
@@ -2634,19 +2624,24 @@ const OverviewPage = () => {
               {recentRequests.map((request) => {
                 const StatusIcon = getStatusIcon(request.Status);
                 return (
-                  <div key={request.RequestID} 
-                       className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors">
+                  <div
+                    key={request.RequestID}
+                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors"
+                  >
                     <div className="flex items-center space-x-4">
                       <StatusIcon className="w-5 h-5 text-muted-foreground" />
                       <div>
                         <div className="flex items-center space-x-2">
-                          <span className="font-medium">{request.Username}</span>
+                          <span className="font-medium">
+                            {request.Username}
+                          </span>
                           <Badge variant="secondary" className="text-xs">
                             {request.Role}
                           </Badge>
                         </div>
                         <div className="text-sm text-muted-foreground">
-                          {request.Cloud} • {request.Service} • {request.AccessLevel} access
+                          {request.Cloud} • {request.Service} •{" "}
+                          {request.AccessLevel} access
                         </div>
                         <div className="text-xs text-muted-foreground">
                           {formatDate(request.RequestTime)}
@@ -2655,7 +2650,8 @@ const OverviewPage = () => {
                     </div>
                     <div className="flex items-center space-x-2">
                       <Badge variant={getStatusBadgeVariant(request.Status)}>
-                        {request.Status.charAt(0).toUpperCase() + request.Status.slice(1)}
+                        {request.Status.charAt(0).toUpperCase() +
+                          request.Status.slice(1)}
                       </Badge>
                       <Cloud className="w-4 h-4 text-muted-foreground" />
                     </div>

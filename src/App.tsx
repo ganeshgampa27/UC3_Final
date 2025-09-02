@@ -23,6 +23,7 @@ import S3ServicePage from "./components/services/S3ServicePage";
 import RDSServicePage from "./components/services/RDSServicePage";
 import LambdaServicePage from "./components/services/LambdaServicePage";
 import { CloudProviderProvider } from "./context/CloudProviderContext";
+import GenericServicePage from "./components/GenericServicePage";
 
 const queryClient = new QueryClient();
 
@@ -54,6 +55,10 @@ const App = () => (
                 <Route path="s3" element={<S3ServicePage/>} />
                  <Route path="rds" element={<RDSServicePage/>} /> {/*-----------no api created */}
                 <Route path="lambda" element={<LambdaServicePage/>} />  {/*---------no api created */}
+
+                
+                ✅ Fallback for all other services
+                <Route path=":serviceId" element={<GenericServicePage />} />
               </Route>
             </Route>
  
