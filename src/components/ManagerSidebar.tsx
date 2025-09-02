@@ -17,7 +17,7 @@ interface ManagerSidebarProps {
 }
 
 const ManagerSidebar: React.FC<ManagerSidebarProps> = ({
-  currentUser,
+  
   isMobileMenuOpen,
   setIsMobileMenuOpen,
 }) => {
@@ -45,7 +45,7 @@ const ManagerSidebar: React.FC<ManagerSidebarProps> = ({
       id: "approvals",
       label: "Approvals",
       icon: AlertCircle,
-      badge: 8,
+      badge: null,
       //   permissions: ['approve_requests'],
       path: "/manager-dashboard/approvals",
     },
