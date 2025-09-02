@@ -273,6 +273,10 @@
 
 // export default Header;
 
+
+
+
+
 // import React, { useState } from "react";
 // import { Button } from "./ui/button";
 // import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
@@ -517,7 +521,6 @@ import {
   LogOut,
   Settings,
   User,
-  X,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -637,11 +640,7 @@ const Header: React.FC<HeaderProps> = ({
                   {cloudProviders.map((provider) => (
                     <SelectItem key={provider.id} value={provider.id}>
                       <div className="flex items-center space-x-2">
-                        <div
-                          className={`w-2 h-2 rounded-full ${
-                            provider.status === "connected" ? "bg-cloud-emerald" : "bg-cloud-red"
-                          }`}
-                        />
+                        
                         <span>{provider.name}</span>
                       </div>
                     </SelectItem>

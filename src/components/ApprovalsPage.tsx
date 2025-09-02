@@ -699,8 +699,6 @@ import { Search, CheckCircle, XCircle, Eye, User, Clock } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
 import { useCloudProvider } from "@/context/CloudProviderContext";
 
-// Import your actual useCloudProvider hook
-// import { useCloudProvider } from 'path/to/your/hook';
 
 interface Request {
   RequestID: string;
@@ -1035,10 +1033,12 @@ const ApprovalsPage = () => {
             <p className="text-muted-foreground">
               All requests have been processed. 🎉
             </p>
-          </div>
+             </CardContent>
+//         </Card>
+         
         )}
       </div>
-    </div>
+   
   );
 };
 
