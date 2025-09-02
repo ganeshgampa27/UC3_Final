@@ -879,6 +879,9 @@
  
 // export default S3ServicePage;
 
+
+
+
 import React, { useState, useEffect } from 'react';
 import {
   Database,
@@ -886,9 +889,8 @@ import {
   Search,
   MoreHorizontal,
   FolderOpen,
-  Settings,
-  Upload,
   Download,
+  Upload,
   Loader2,
   X
 } from 'lucide-react';
@@ -896,11 +898,11 @@ import {
 const S3ServicePage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [items, setItems] = useState<any[]>([]);
+  const [buckets, setBuckets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [showDropdown, setShowDropdown] = useState<string | null>(null);
+  const [error, setError] = useState(null);
+  const [showDropdown, setShowDropdown] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
     region: 'us-east-1',
@@ -954,20 +956,28 @@ const S3ServicePage = () => {
   const createBucket = async (bucketData) => {
     try {
       setCreating(true);
+      
+      // Only send the fields that the Lambda function expects
+      const requestBody = {
+        bucketName: bucketData.name,
+        region: bucketData.region
+        // Note: versioning is not sent to the API as it's not handled by the Lambda
+      };
+      
+      console.log('Sending request:', requestBody); // Debug log
+      
       const response = await fetch(`${CREATE_API_BASE}/S3CreateBucket`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          bucketName: bucketData.name,
-          region: bucketData.region,
-          versioning: bucketData.versioning
-        }),
+        body: JSON.stringify(requestBody),
       });
  
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        console.log('Error response:', errorText); // Debug log
+        throw new Error(`HTTP error! status: ${response.status}, response: ${errorText}`);
       }
  
       const result = await response.json();
@@ -998,15 +1008,22 @@ const S3ServicePage = () => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
+ 
   const handleSubmit = async () => {
     if (!formData.name.trim()) {
       alert('Please enter a bucket name');
       return;
     }
 
+    // Validate bucket name format
+    const bucketNameRegex = /^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$/;
+    if (!bucketNameRegex.test(formData.name)) {
+      alert('Invalid bucket name format. Bucket name must be 3-63 characters long, contain only lowercase letters, numbers, dots, and hyphens, and start and end with a lowercase letter or number.');
+      return;
+    }
+ 
     try {
-      await createItem(formData);
+      await createBucket(formData);
       setIsModalOpen(false);
       setFormData({ name: '', region: 'us-east-1', versioning: 'Disabled' });
       alert('Bucket created successfully!');
@@ -1030,12 +1047,12 @@ const S3ServicePage = () => {
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="flex items-center gap-2 text-gray-600">
           <Loader2 className="w-6 h-6 animate-spin" />
-          <span>Loading {config.title.toLowerCase()}...</span>
+          <span>Loading S3 buckets...</span>
         </div>
       </div>
     );
   }
-
+ 
   if (error) {
     return (
       <div className="space-y-6 p-6">
@@ -1043,19 +1060,19 @@ const S3ServicePage = () => {
           <div className="text-red-500 mb-4 text-lg font-semibold">⚠️ Error Loading Buckets</div>
           <p className="text-gray-600 mb-4">{error}</p>
           <button
-            onClick={fetchItems}
+            onClick={fetchBuckets}
             className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
-            <RefreshCw className="w-4 h-4 mr-2" />
+            <Database className="w-4 h-4 mr-2" />
             Retry
           </button>
         </div>
       </div>
     );
   }
-
+ 
   return (
-    <div className="space-y-3 p-0 max-w-7xl mx-auto">
+    <div className="space-y-6 p-6 max-w-7xl mx-auto">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
@@ -1064,10 +1081,10 @@ const S3ServicePage = () => {
         </div>
         <div className="flex gap-2">
           <button
-            onClick={fetchItems}
+            onClick={fetchBuckets}
             className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
-            <RefreshCw className="w-4 h-4 mr-2" />
+            <Database className="w-4 h-4 mr-2" />
             Refresh
           </button>
           <button
@@ -1075,7 +1092,7 @@ const S3ServicePage = () => {
             className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
             <Plus className="w-4 h-4 mr-2" />
-            Create {config.itemName}
+            Create Bucket
           </button>
         </div>
       </div>
@@ -1106,43 +1123,41 @@ const S3ServicePage = () => {
                   type="text"
                   value={formData.name}
                   onChange={handleInputChange}
-                  placeholder={`Enter ${config.itemName.toLowerCase()} name`}
+                  placeholder="Enter bucket name (lowercase, 3-63 chars)"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
+                <p className="mt-1 text-xs text-gray-500">
+                  Must be 3-63 characters, lowercase letters, numbers, dots, and hyphens only
+                </p>
               </div>
               <div>
                 <label htmlFor="region" className="block text-sm font-medium text-gray-700 mb-1">
                   Region
                 </label>
                 <select
-                  id="type"
-                  name="type"
-                  value={formData.type}
+                  id="region"
+                  name="region"
+                  value={formData.region}
                   onChange={handleInputChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
-                  <option value="standard">Standard</option>
-                  <option value="premium">Premium</option>
-                  <option value="basic">Basic</option>
-                  <option value="custom">Custom</option>
+                 <option value="us-east-1">US East (N. Virginia) </option>
+                  <option value="us-east-2">US East (Ohio) </option>
+                  <option value="us-west-1">US West (N. California) </option>
+                   <option value="us-west-2">US West (Oregon) </option>
+                  <option value="ap-south-1">Asia Pacific (Mumbai) </option>
+                   <option value="ap-northeast-1">Asia Pacific (Tokyo) </option>
+                   <option value="ap-southeast-1">Asia Pacific (Singapore) </option>
+                   <option value="ap-southeast-2">Asia Pacific (Sydney) </option>
+                   <option value="eu-west-1">Europe (Ireland) </option>
+                   <option value="eu-central-1">Europe (Frankfurt) </option>
+                   <option value="sa-east-1">South America (São Paulo) </option>
                 </select>
               </div>
               <div>
-                <label htmlFor="versioning" className="block text-sm font-medium text-gray-700 mb-1">
-                  Versioning
-                </label>
-                <select
-                  id="status"
-                  name="status"
-                  value={formData.status}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
-                  <option value="draft">Draft</option>
-                  <option value="pending">Pending</option>
-                </select>
+                <p className="mt-1 text-xs text-gray-500">
+                  This setting is for display purposes only and won't affect the actual bucket creation
+                </p>
               </div>
             </div>
             <div className="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
@@ -1171,16 +1186,16 @@ const S3ServicePage = () => {
           </div>
         </div>
       )}
-
+ 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Total {config.itemNamePlural}</p>
-              <p className="text-3xl font-bold text-gray-900">{totalItems}</p>
+              <p className="text-sm font-medium text-gray-600">Total Buckets</p>
+              <p className="text-3xl font-bold text-gray-900">{totalBuckets}</p>
             </div>
-            <IconComponent className={`w-8 h-8 ${config.iconColor}`} />
+            <Database className="w-8 h-8 text-blue-500" />
           </div>
         </div>
  
@@ -1190,7 +1205,7 @@ const S3ServicePage = () => {
               <p className="text-sm font-medium text-gray-600">Total Objects</p>
               <p className="text-3xl font-bold text-gray-900">{formatObjectCount(totalObjects)}</p>
             </div>
-            <Activity className="w-8 h-8 text-green-500" />
+            <FolderOpen className="w-8 h-8 text-green-500" />
           </div>
         </div>
  
@@ -1202,7 +1217,7 @@ const S3ServicePage = () => {
                 {new Set(buckets.map(b => b.region)).size}
               </p>
             </div>
-            <BarChart3 className="w-8 h-8 text-purple-500" />
+            <Database className="w-8 h-8 text-purple-500" />
           </div>
         </div>
       </div>
@@ -1221,7 +1236,7 @@ const S3ServicePage = () => {
               </div>
               <input
                 type="text"
-                placeholder={`Search ${config.itemNamePlural.toLowerCase()}...`}
+                placeholder="Search buckets..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
@@ -1240,15 +1255,16 @@ const S3ServicePage = () => {
               {filteredBuckets.map((bucket) => (
                 <div key={bucket.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
                   <div className="flex items-center space-x-4">
-                    <div className={`w-10 h-10 ${config.bgColor} rounded-lg flex items-center justify-center`}>
-                      <IconComponent className={`w-5 h-5 ${config.iconColor}`} />
+                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <Database className="w-5 h-5 text-blue-600" />
                     </div>
                     <div>
                       <h3 className="font-semibold text-gray-900">{bucket.name}</h3>
                       <div className="flex items-center space-x-4 text-sm text-gray-500">
-                        <span>Type: {item.type}</span>
-                        <span>Records: {item.items?.toLocaleString()}</span>
-                        <span>Created: {item.created}</span>
+                        <span>Region: {bucket.region}</span>
+                        <span>Objects: {bucket.objects.toLocaleString()}</span>
+                        <span>Size: {bucket.size}</span>
+                        <span>Created: {bucket.created}</span>
                       </div>
                     </div>
                   </div>
@@ -1267,24 +1283,23 @@ const S3ServicePage = () => {
                       >
                         <MoreHorizontal className="w-4 h-4" />
                       </button>
-                      {showDropdown === item.id.toString() && (
+                      {showDropdown === bucket.id && (
                         <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200">
                           <div className="py-1">
                             <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                               <FolderOpen className="w-4 h-4 mr-2" />
-                              Open {config.itemName}
+                              Open Bucket
                             </button>
                             <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                              <Settings className="w-4 h-4 mr-2" />
-                              Settings
+                              <Upload className="w-4 h-4 mr-2" />
+                              Upload Files
                             </button>
                             <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                               <Download className="w-4 h-4 mr-2" />
-                              Export
+                              Download
                             </button>
-                            <div className="border-t border-gray-100"></div>
-                            <button className="flex items-center w-full px-4 py-2 text-sm text-red-700 hover:bg-red-50">
-                              Delete
+                            <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                              Properties
                             </button>
                           </div>
                         </div>
@@ -1302,4 +1317,3 @@ const S3ServicePage = () => {
 };
  
 export default S3ServicePage;
- 
