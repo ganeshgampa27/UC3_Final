@@ -1252,6 +1252,7 @@ import {
   X,
   Edit3
 } from 'lucide-react';
+import { useCloudProvider } from '@/context/CloudProviderContext';
 
 // Interfaces
 interface User {
@@ -1289,6 +1290,8 @@ const RequestHistoryPage = () => {
   const [editRequest, setEditRequest] = useState<Request | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [selectedProvider, setSelectedProvider] = useState('all');
+  const { cloudProvider, setCloudProvider } = useCloudProvider();
+
 
   // Handle navigation state to set default filter
   useEffect(() => {
@@ -1317,11 +1320,11 @@ const RequestHistoryPage = () => {
               filtered = filtered.filter((req) => req.Username === fullName);
             }
 
-            if (selectedProvider && selectedProvider !== "all") {
+            if (cloudProvider && cloudProvider !== "all") {
               filtered = filtered.filter(
                 (req) =>
                   req.Cloud.toLowerCase().trim() ===
-                  selectedProvider.toLowerCase().trim()
+                  cloudProvider.toLowerCase().trim()
               );
             }
 
@@ -1343,7 +1346,7 @@ const RequestHistoryPage = () => {
     };
 
     fetchRequests();
-  }, [selectedProvider]);
+  }, [cloudProvider]);
 
   const getFilteredRequests = (): Request[] => {
     let filtered = requests;

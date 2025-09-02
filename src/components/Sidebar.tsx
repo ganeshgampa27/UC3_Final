@@ -259,8 +259,8 @@ interface SidebarProps {
   userRole: string;
   isMobileMenuOpen: boolean;
   setIsMobileMenuOpen: (open: boolean) => void;
-  selectedProvider: string;
-  onCloudChange: (provider: string) => void;
+
+
 }
  
 const Sidebar: React.FC<SidebarProps> = ({
@@ -268,14 +268,13 @@ const Sidebar: React.FC<SidebarProps> = ({
   userRole,
   isMobileMenuOpen,
   setIsMobileMenuOpen,
-  selectedProvider,
-  onCloudChange
+
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [infrastructureOpen, setInfrastructureOpen] = React.useState(false);
   const [roleServices, setRoleServices] = React.useState<string[]>([]);
- 
+ const selectedProvider=localStorage.getItem("cloudProvider")
   React.useEffect(() => {
     const fetchRoles = async () => {
       try {
@@ -296,6 +295,14 @@ const Sidebar: React.FC<SidebarProps> = ({
     }
   }, [userRole]);
  
+
+
+
+
+
+
+
+
   const serviceMap: { [key: string]: { name: string; icon: any; route: string } } = {
     's3': { name: 'S3', icon: Database, route: '/dashboard/infrastructure/s3' },
     'athena': { name: 'Athena', icon: Database, route: '/dashboard/infrastructure/athena' },
@@ -317,13 +324,13 @@ const Sidebar: React.FC<SidebarProps> = ({
   };
  
   const getCloudServices = () => {
-    if (selectedProvider === 'azure') {
+    if (selectedProvider === 'Azure') {
       return [
         { id: 'vm', name: 'Virtual Machines', icon: Server, route: '/dashboard/infrastructure/vm' },
         { id: 'storage', name: 'Storage', icon: Database, route: '/dashboard/infrastructure/storage' },
         { id: 'sql', name: 'SQL Database', icon: Database, route: '/dashboard/infrastructure/sql' }
       ];
-    } else if (selectedProvider === 'gcp') {
+    } else if (selectedProvider === 'GCP') {
       return [
         { id: 'compute', name: 'Compute Engine', icon: Server, route: '/dashboard/infrastructure/compute' },
         { id: 'storage', name: 'Cloud Storage', icon: Database, route: '/dashboard/infrastructure/storage' },

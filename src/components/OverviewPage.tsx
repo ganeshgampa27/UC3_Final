@@ -2304,6 +2304,7 @@ import {
   Users,
   Cloud
 } from 'lucide-react';
+import { useCloudProvider } from '@/context/CloudProviderContext';
 
 interface Request {
   Role: string;
@@ -2335,8 +2336,11 @@ const OverviewPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedProvider, setSelectedProvider] = useState('all');
+  
   const [currentUser, setCurrentUser] = useState<any>(null);
   const navigate = useNavigate();
+
+  const { cloudProvider, setCloudProvider } = useCloudProvider();
 
   // Get current user from localStorage
   useEffect(() => {
@@ -2376,9 +2380,9 @@ const OverviewPage = () => {
   }, []);
 
   // Filter requests based on selected provider
-  const filteredRequests = selectedProvider === 'all' 
+  const filteredRequests = cloudProvider === 'all' 
     ? requests 
-    : requests.filter(request => request.Cloud.toLowerCase() === selectedProvider.toLowerCase());
+    : requests.filter(request => request.Cloud.toLowerCase() === cloudProvider.toLowerCase());
 
   // Calculate statistics
   const stats = {

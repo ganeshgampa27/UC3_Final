@@ -88,7 +88,7 @@ import Sidebar from './Sidebar';
 const DashboardPage = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [userRole, setUserRole] = useState(''); // Add state for userRole
-  const [selectedProvider, setSelectedProvider] = useState('all');
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -111,9 +111,7 @@ const DashboardPage = () => {
     navigate('/');
   };
 
-  const handleProviderChange = (provider) => {
-    setSelectedProvider(provider);
-  };
+
 
   if (!currentUser) {
     return (
@@ -130,8 +128,6 @@ const DashboardPage = () => {
     <div className="min-h-screen bg-gradient-hero">
       <Header
         currentUser={currentUser}
-        selectedProvider={selectedProvider}
-        onProviderChange={handleProviderChange}
         onLogout={handleLogout}
         isMobileMenuOpen={isMobileMenuOpen}
         setIsMobileMenuOpen={setIsMobileMenuOpen}
@@ -142,8 +138,7 @@ const DashboardPage = () => {
           userRole={userRole} // Pass dynamic userRole
           isMobileMenuOpen={isMobileMenuOpen}
           setIsMobileMenuOpen={setIsMobileMenuOpen}
-          selectedProvider={selectedProvider}
-          onCloudChange={handleProviderChange}
+    
         />
         <main className="flex-1 md:ml-64 mt-16 p-6">
           <Outlet />

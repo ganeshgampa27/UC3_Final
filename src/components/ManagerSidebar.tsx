@@ -11,13 +11,13 @@ import {
 } from 'lucide-react';
 
 interface ManagerSidebarProps {
-  currentUser: any;
+
   isMobileMenuOpen: boolean;
   setIsMobileMenuOpen: (open: boolean) => void;
 }
 
 const ManagerSidebar: React.FC<ManagerSidebarProps> = ({ 
-  currentUser, 
+ 
   isMobileMenuOpen, 
   setIsMobileMenuOpen 
 }) => {
@@ -74,6 +74,8 @@ const ManagerSidebar: React.FC<ManagerSidebarProps> = ({
     }
   };
 
+  const currentUser=localStorage.getItem("fullName")
+
   const SidebarContent = () => (
     <div className="flex-1 flex flex-col overflow-y-auto">
       <div className="p-4">
@@ -83,19 +85,18 @@ const ManagerSidebar: React.FC<ManagerSidebarProps> = ({
             <span className="text-sm font-medium text-foreground">Manager Portal</span>
           </div>
           <Badge variant="secondary" className="text-xs font-mono bg-primary-light text-primary">
-            {currentUser?.name}
+            {currentUser}
           </Badge>
         </div>
+
+
+        
 
         <nav className="space-y-1">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
-            // const hasPermission = item.permissions.some(permission => 
-            //   currentUser?.permissions?.includes(permission)
-            // );
-
-            // if (!hasPermission) return null;
+       
 
             return (
               <Button

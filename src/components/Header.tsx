@@ -280,7 +280,235 @@
 
 
 
-import React, { useState } from "react";
+// import React, { useState } from "react";
+// import { Button } from "./ui/button";
+// import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+// import { Avatar, AvatarFallback } from "./ui/avatar";
+// import {
+//   Globe,
+//   Menu,
+//   LogOut,
+//   Settings,
+//   User,
+//   X,
+// } from "lucide-react";
+// import {
+//   DropdownMenu,
+//   DropdownMenuContent,
+//   DropdownMenuItem,
+//   DropdownMenuLabel,
+//   DropdownMenuSeparator,
+//   DropdownMenuTrigger,
+// } from "./ui/dropdown-menu";
+// import AccountDetailsModal from "@/components/AccountDetailsModal";
+
+// interface HeaderProps {
+//   currentUser:string;
+//   selectedProvider: string;
+//   onProviderChange: (provider: string) => void;
+//   onLogout: () => void;
+//   isMobileMenuOpen: boolean;
+//   setIsMobileMenuOpen: (open: boolean) => void;
+// }
+
+// const Header: React.FC<HeaderProps> = ({
+//   currentUser,
+//   selectedProvider,
+//   onProviderChange,
+//   onLogout,
+//   isMobileMenuOpen,
+//   setIsMobileMenuOpen,
+// }) => {
+//   const [showAccountModal, setShowAccountModal] = useState(false);
+//   const [showSwitchModal, setShowSwitchModal] = useState(false);
+//   const [newAccountId, setNewAccountId] = useState("");
+
+//   // Fetch name and email from localStorage, same as Navbar
+//   const fullName = localStorage.getItem("fullName") ;
+//   const email = localStorage.getItem("email") ;
+
+//   // Debug localStorage values
+//   console.log("Header: localStorage values:", {
+//     fullName: localStorage.getItem("fullName"),
+//     email: localStorage.getItem("email"),
+//     userId: localStorage.getItem("userId"),
+//   });
+
+//   const cloudProviders = [
+//     { id: "all", name: "All Providers", status: "connected" },
+//     { id: "AWS", name: "Amazon Web Services", status: "connected" },
+//     { id: "Azure", name: "Microsoft Azure", status: "disconnected" },
+//     { id: "GCP", name: "Google Cloud Platform", status: "connected" },
+//   ];
+
+//   const initials = fullName
+//     ? fullName
+//         .split(" ")
+//         .map((word) => word[0])
+//         .join("")
+//         .toUpperCase()
+//         .slice(0, 2)
+//     : "U";
+
+//   const handleSwitchAccount = () => {
+//     if (newAccountId.trim()) {
+//       localStorage.setItem("accountId", newAccountId.trim());
+//       setShowSwitchModal(false);
+//       window.location.reload();
+//     } else {
+//       alert("Please enter a valid Account ID");
+//     }
+//   };
+
+//   return (
+//     <>
+//       <header className="fixed top-0 left-0 right-0 z-40 bg-background border-b border-border shadow-soft">
+//         <div className="px-6 py-4">
+//           <div className="flex items-center justify-between">
+//             {/* Left Section */}
+//             <div className="flex items-center space-x-4">
+//               <Button
+//                 variant="ghost"
+//                 size="sm"
+//                 className="md:hidden"
+//                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+//               >
+//                 <Menu className="w-5 h-5" />
+//               </Button>
+//               <div className="flex items-center space-x-2">
+//                 <div className="w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center">
+//                   <Globe className="w-5 h-5" />
+//                 </div>
+//                 <span className="font-semibold text-foreground text-lg hidden sm:block">Unifyd Cloud</span>
+//               </div>
+//             </div>
+
+//             {/* Center Section - Provider Selector */}
+//             <div className="flex items-center space-x-4">
+//               <div className="text-sm text-muted-foreground hidden sm:block">
+//                 Cloud Provider:
+//               </div>
+//               <Select value={selectedProvider} onValueChange={onProviderChange}>
+//                 <SelectTrigger className="w-[180px] border-border">
+//                   <SelectValue placeholder="Select provider" />
+//                 </SelectTrigger>
+//                 <SelectContent>
+//                   {cloudProviders.map((provider) => (
+//                     <SelectItem key={provider.id} value={provider.id}>
+//                       <div className="flex items-center space-x-2">
+//                         <div
+//                           className={`w-2 h-2 rounded-full ${
+//                             provider.status === "connected" ? "bg-cloud-emerald" : "bg-cloud-red"
+//                           }`}
+//                         />
+//                         <span>{provider.name}</span>
+//                       </div>
+//                     </SelectItem>
+//                   ))}
+//                 </SelectContent>
+//               </Select>
+//             </div>
+
+//             {/* Right Section */}
+//             <div className="flex items-center space-x-4">
+//               <div className="hidden sm:block text-right">
+//                 <div className="text-sm font-medium text-foreground">
+//                   {fullName}
+//                 </div>
+//                 <div className="text-xs text-muted-foreground">
+//                   {email}
+//                 </div>
+//               </div>
+
+//               <DropdownMenu>
+//                 <DropdownMenuTrigger asChild>
+//                   <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+//                     <Avatar className="h-10 w-10">
+//                       <AvatarFallback className="bg-primary text-primary-foreground text-sm">
+//                         {initials}
+//                       </AvatarFallback>
+//                     </Avatar>
+//                   </Button>
+//                 </DropdownMenuTrigger>
+//                 <DropdownMenuContent className="w-56" align="end" forceMount>
+//                   <DropdownMenuLabel>
+//                     <div className="flex flex-col space-y-1">
+//                       <p className="text-sm font-medium leading-none">
+//                         {fullName}
+//                       </p>
+//                       <p className="text-xs leading-none text-muted-foreground">
+//                         {email}
+//                       </p>
+//                     </div>
+//                   </DropdownMenuLabel>
+//                   <DropdownMenuSeparator />
+//                   <DropdownMenuItem onClick={() => setShowAccountModal(true)}>
+//                     <Settings className="mr-2 h-4 w-4" />
+//                     <span>Settings</span>
+//                   </DropdownMenuItem>
+//                   <DropdownMenuItem onClick={() => setShowSwitchModal(true)}>
+//                     <User className="mr-2 h-4 w-4" />
+//                     <span>Switch Account</span>
+//                   </DropdownMenuItem>
+//                   <DropdownMenuSeparator />
+//                   <DropdownMenuItem onClick={onLogout}>
+//                     <LogOut className="mr-2 h-4 w-4" />
+//                     <span>Logout</span>
+//                   </DropdownMenuItem>
+//                 </DropdownMenuContent>
+//               </DropdownMenu>
+
+//               {/* Logout Button - Rightmost */}
+//               <Button
+//                 variant="ghost"
+//                 size="sm"
+//                 onClick={onLogout}
+//                 className="text-muted-foreground hover:text-foreground"
+//               >
+//                 <LogOut className="w-4 h-4" />
+//                 <span className="hidden sm:ml-2 sm:inline">Logout</span>
+//               </Button>
+//             </div>
+//           </div>
+//         </div>
+//       </header>
+
+//       <AccountDetailsModal
+//         open={showAccountModal}
+//         onClose={() => setShowAccountModal(false)}
+//         userId={localStorage.getItem("userId") ?? ""}
+//       />
+
+//       {showSwitchModal && (
+//         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-40">
+//           <div className="bg-white rounded-lg shadow-lg p-6 w-[90%] max-w-md">
+//             <h2 className="text-lg font-semibold mb-4">Enter New Account ID</h2>
+//             <input
+//               type="text"
+//               placeholder="Account ID"
+//               value={newAccountId}
+//               onChange={(e) => setNewAccountId(e.target.value)}
+//               className="w-full border px-3 py-2 rounded text-sm mb-4"
+//             />
+//             <div className="flex justify-end space-x-2">
+//               <Button variant="outline" onClick={() => setShowSwitchModal(false)}>
+//                 Cancel
+//               </Button>
+//               <Button className="bg-blue-600" onClick={handleSwitchAccount}>
+//                 Switch
+//               </Button>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+//     </>
+//   );
+// };
+
+// export default Header;
+
+
+import React, { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Avatar, AvatarFallback } from "./ui/avatar";
@@ -290,7 +518,6 @@ import {
   LogOut,
   Settings,
   User,
-  X,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -301,18 +528,17 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import AccountDetailsModal from "@/components/AccountDetailsModal";
+import { useCloudProvider } from "@/context/CloudProviderContext";
 
 interface HeaderProps {
-  selectedProvider: string;
-  onProviderChange: (provider: string) => void;
+  currentUser: string;
   onLogout: () => void;
   isMobileMenuOpen: boolean;
   setIsMobileMenuOpen: (open: boolean) => void;
 }
 
 const Header: React.FC<HeaderProps> = ({
-  selectedProvider,
-  onProviderChange,
+  currentUser,
   onLogout,
   isMobileMenuOpen,
   setIsMobileMenuOpen,
@@ -321,22 +547,31 @@ const Header: React.FC<HeaderProps> = ({
   const [showSwitchModal, setShowSwitchModal] = useState(false);
   const [newAccountId, setNewAccountId] = useState("");
 
+  const { cloudProvider, setCloudProvider } = useCloudProvider();
+
   // Fetch name and email from localStorage, same as Navbar
-  const fullName = localStorage.getItem("fullName") ?? "User";
-  const email = localStorage.getItem("email") ?? "user@example.com";
+  const fullName = localStorage.getItem("fullName");
+  const email = localStorage.getItem("email");
+
+  // // On mount, read provider from localStorage
+  // useEffect(() => {
+  //   const storedProvider = localStorage.getItem("cloudProvider") || "all";
+  //   setSelectedProvider(storedProvider);
+  // }, []);
 
   // Debug localStorage values
   console.log("Header: localStorage values:", {
     fullName: localStorage.getItem("fullName"),
     email: localStorage.getItem("email"),
     userId: localStorage.getItem("userId"),
+    cloudProvider: localStorage.getItem("cloudProvider"),
   });
 
   const cloudProviders = [
-    { id: "all", name: "All Providers", status: "connected" },
-    { id: "AWS", name: "Amazon Web Services", status: "connected" },
-    { id: "Azure", name: "Microsoft Azure", status: "disconnected" },
-    { id: "GCP", name: "Google Cloud Platform", status: "connected" },
+    { id: "all", name: "All Providers" },
+    { id: "AWS", name: "Amazon Web Services"},
+    { id: "Azure", name: "Microsoft Azure" },
+    { id: "GCP", name: "Google Cloud Platform"},
   ];
 
   const initials = fullName
@@ -358,6 +593,11 @@ const Header: React.FC<HeaderProps> = ({
     }
   };
 
+  // const handleProviderChange = (provider: string) => {
+  //   setSelectedProvider(provider);
+  //   localStorage.setItem("cloudProvider", provider);
+  // };
+
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-40 bg-background border-b border-border shadow-soft">
@@ -377,7 +617,9 @@ const Header: React.FC<HeaderProps> = ({
                 <div className="w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center">
                   <Globe className="w-5 h-5" />
                 </div>
-                <span className="font-semibold text-foreground text-lg hidden sm:block">Unifyd Cloud</span>
+                <span className="font-semibold text-foreground text-lg hidden sm:block">
+                  Unifyd Cloud
+                </span>
               </div>
             </div>
 
@@ -386,19 +628,16 @@ const Header: React.FC<HeaderProps> = ({
               <div className="text-sm text-muted-foreground hidden sm:block">
                 Cloud Provider:
               </div>
-              <Select value={selectedProvider} onValueChange={onProviderChange}>
+              {/* <Select value={selectedProvider} onValueChange={handleProviderChange}> */}
+                <Select onValueChange={setCloudProvider} value={cloudProvider}>
                 <SelectTrigger className="w-[180px] border-border">
-                  <SelectValue placeholder="Select provider" />
+                  <SelectValue placeholder="All Providers" />
                 </SelectTrigger>
                 <SelectContent>
                   {cloudProviders.map((provider) => (
                     <SelectItem key={provider.id} value={provider.id}>
                       <div className="flex items-center space-x-2">
-                        <div
-                          className={`w-2 h-2 rounded-full ${
-                            provider.status === "connected" ? "bg-cloud-emerald" : "bg-cloud-red"
-                          }`}
-                        />
+                        
                         <span>{provider.name}</span>
                       </div>
                     </SelectItem>
@@ -413,9 +652,7 @@ const Header: React.FC<HeaderProps> = ({
                 <div className="text-sm font-medium text-foreground">
                   {fullName}
                 </div>
-                <div className="text-xs text-muted-foreground">
-                  {email}
-                </div>
+                <div className="text-xs text-muted-foreground">{email}</div>
               </div>
 
               <DropdownMenu>
@@ -431,12 +668,8 @@ const Header: React.FC<HeaderProps> = ({
                 <DropdownMenuContent className="w-56" align="end" forceMount>
                   <DropdownMenuLabel>
                     <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none">
-                        {fullName}
-                      </p>
-                      <p className="text-xs leading-none text-muted-foreground">
-                        {email}
-                      </p>
+                      <p className="text-sm font-medium leading-none">{fullName}</p>
+                      <p className="text-xs leading-none text-muted-foreground">{email}</p>
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />

@@ -779,7 +779,7 @@ const LoginModal = ({ open, onOpenChange, onSwitchToRegister, onForgotPassword }
       localStorage.removeItem("userId");
       localStorage.removeItem("userRole");
       localStorage.removeItem("userName");
-      localStorage.setItem("cloudProvider", "none");
+   
  
       // Send login request
       const response = await fetch('https://ww74mxtqw5.execute-api.ap-south-1.amazonaws.com/loginUser', {
@@ -792,15 +792,18 @@ const LoginModal = ({ open, onOpenChange, onSwitchToRegister, onForgotPassword }
  
       if (data.token) {
         localStorage.setItem("token", data.token);
+        
  
         const payloadBase64 = data.token.split('.')[1];
         const payload = JSON.parse(atob(payloadBase64));
  
         const role = payload.role;
+
         localStorage.setItem("role", role);
         localStorage.setItem("email", email);
         localStorage.setItem("fullName", payload.fullName);
         localStorage.setItem("userId", payload.sub);
+       
  
         // Close modal and navigate based on role
         onOpenChange(false);

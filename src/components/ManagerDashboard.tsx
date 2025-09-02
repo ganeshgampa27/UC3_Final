@@ -244,13 +244,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
-// import { userRoles } from '../mock/data';
 import Header from './Header';
 import ManagerSidebar from './ManagerSidebar';
 
 const ManagerDashboard = () => {
   const [currentUser, setCurrentUser] = useState<any>(null);
-  const [selectedProvider, setSelectedProvider] = useState('all');
+  
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -279,13 +278,7 @@ const ManagerDashboard = () => {
     navigate('/');
   };
 
-  const handleProviderChange = (provider: string) => {
-    setSelectedProvider(provider);
-    if (provider === 'add-new') {
-      console.log('Add new service functionality');
-      setSelectedProvider('all');
-    }
-  };
+ 
 
   if (!currentUser) {
     return (
@@ -302,8 +295,6 @@ const ManagerDashboard = () => {
     <div className="min-h-screen bg-gradient-hero">
       <Header 
         currentUser={currentUser}
-        selectedProvider={selectedProvider}
-        onProviderChange={handleProviderChange}
         onLogout={handleLogout}
         isMobileMenuOpen={isMobileMenuOpen}
         setIsMobileMenuOpen={setIsMobileMenuOpen}
@@ -311,7 +302,7 @@ const ManagerDashboard = () => {
       
       <div className="flex">
         <ManagerSidebar 
-          currentUser={currentUser}
+        
           isMobileMenuOpen={isMobileMenuOpen}
           setIsMobileMenuOpen={setIsMobileMenuOpen}
         />

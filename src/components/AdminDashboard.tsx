@@ -107,7 +107,7 @@ import { CloudServiceProvider } from './admin_components/CloudServiceProvider';
 
 function AdminDashboard() {
   const [currentUser, setCurrentUser] = useState<any>(null);
-  const [selectedProvider, setSelectedProvider] = useState('all');
+
   const [activeTab, setActiveTab] = useState('dashboard'); // This will control which component to show
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -138,13 +138,6 @@ function AdminDashboard() {
     navigate('/');
   };
 
-  const handleProviderChange = (provider: string) => {
-    setSelectedProvider(provider);
-    if (provider === 'add-new') {
-      console.log('Add new service functionality');
-      setSelectedProvider('all');
-    }
-  };
 
   // Function to handle navigation from sidebar
   const handleNavigation = (tab: string) => {
@@ -184,9 +177,7 @@ return (
       {/* Fixed Header */}
       <div className="fixed top-0 left-0 right-0 z-50">
         <Header 
-          // currentUser={currentUser}
-          selectedProvider={selectedProvider}
-          onProviderChange={handleProviderChange}
+          currentUser={currentUser}
           onLogout={handleLogout}
           isMobileMenuOpen={isMobileMenuOpen}
           setIsMobileMenuOpen={setIsMobileMenuOpen}
