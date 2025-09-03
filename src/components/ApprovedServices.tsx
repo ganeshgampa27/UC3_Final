@@ -1346,6 +1346,8 @@ const ApprovedServicesPage = () => {
   
   const fullName = localStorage.getItem('fullName');
 
+
+  
   // Fetch data from API
   useEffect(() => {
     const fetchRequests = async () => {
@@ -1378,7 +1380,8 @@ const ApprovedServicesPage = () => {
  
   // Filter only approved/applied requests (matching your API statuses)
   const approvedRequests = requests.filter(request =>
-    request.Status === 'approved' || request.Status === 'applied'
+    request.Status === 'approved' || request.Status === 'applied' && request.Username=== fullName
+  
   );
 
   // Helper function to capitalize first letter of service name

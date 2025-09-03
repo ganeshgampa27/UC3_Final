@@ -3902,53 +3902,98 @@ const RequestsPage = () => {
     setShowAWSServicesDropdown(false);
   };
 
-  const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    try {
-      setIsLoading(true);
-      const requestBody = {
-        Username: localStorage.getItem('fullName'),
-        Cloud: data.cloud,
-        Service: data.resourceType,
-        AccessLevel: data.accessLevel,
-        Role: localStorage.getItem('role'),
-        Manager: data.manager,
-        Reason: data.justification,
-      };
+  // const onSubmit = async (data: z.infer<typeof formSchema>) => {
+  //   try {
+  //     setIsLoading(true);
+  //     const requestBody = {
+  //       Username: localStorage.getItem('fullName'),
+  //       Cloud: data.cloud,
+  //       Service: data.resourceType,
+  //       AccessLevel: data.accessLevel,
+  //       Role: localStorage.getItem('role'),
+  //       Manager: data.manager,
+  //       Reason: data.justification,
+  //     };
 
-      const response = await fetch(
-        'https://lp6t2xn0q4.execute-api.ap-south-1.amazonaws.com/prod/request_access',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(requestBody),
-        }
-      );
+  //     const response = await fetch(
+  //       'https://lp6t2xn0q4.execute-api.ap-south-1.amazonaws.com/prod/request_access',
+  //       {
+  //         method: 'POST',
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //         },
+  //         body: JSON.stringify(requestBody),
+  //       }
+  //     );
 
-      if (response.ok) {
-        const responseData = await response.json();
-        console.log('Request submitted successfully:', responseData);
-        alert('Request submitted successfully!');
-        form.reset();
-        setShowAWSServicesDropdown(false);
-        setIsNewRequestOpen(false);
-        window.location.reload();
-      } else {
-        const errorData = await response.json().catch(() => null);
-        const errorMessage = errorData?.message || `HTTP ${response.status}: ${response.statusText}`;
-        console.error('Failed to submit request:', errorMessage);
-        alert(`Failed to submit request: ${errorMessage}`);
-      }
-    } catch (error) {
-      console.error('Error submitting request:', error);
-      alert(`Error submitting request: ${error.message}`);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  //     if (response.ok) {
+  //       const responseData = await response.json();
+  //       console.log('Request submitted successfully:', responseData);
+  //       alert('Request submitted successfully!');
+  //       form.reset();
+  //       setShowAWSServicesDropdown(false);
+  //       setIsNewRequestOpen(false);
+  //       window.location.reload();
+  //     } else {
+  //       const errorData = await response.json().catch(() => null);
+  //       const errorMessage = errorData?.message || `HTTP ${response.status}: ${response.statusText}`;
+  //       console.error('Failed to submit request:', errorMessage);
+  //       alert(`Failed to submit request: ${errorMessage}`);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error submitting request:', error);
+  //     alert(`Error submitting request: ${error.message}`);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   // Updated filtering function to include cloud provider filter
+  
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+  try {
+    setIsLoading(true);
+    const requestBody = {
+      Username: localStorage.getItem('fullName'),
+      Cloud: data.cloud,
+      Service: data.resourceType,
+      AccessLevel: data.accessLevel,
+      Role: localStorage.getItem('role'),
+      Manager: data.manager,
+      Reason: data.justification,
+    };
+
+    const response = await fetch(
+      'https://lp6t2xn0q4.execute-api.ap-south-1.amazonaws.com/prod/request_access',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody),
+      }
+    );
+
+    const responseData = await response.json();
+
+    if (response.ok) {
+      alert(responseData.message || 'Request submitted successfully!');
+      form.reset();
+      setShowAWSServicesDropdown(false);
+      setIsNewRequestOpen(false);
+      window.location.reload();
+    } else {
+      // Show duplicate or any error message
+      alert(responseData.message || `Failed: HTTP ${response.status}`);
+    }
+  } catch (error) {
+    console.error('Error submitting request:', error);
+    alert(`Error submitting request: ${error.message}`);
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+
+
   const getFilteredRequests = (): APIRequest[] => {
     let filtered = requests;
 
