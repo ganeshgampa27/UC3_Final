@@ -45,7 +45,7 @@ const App = () => (
               {/* Redirect /dashboard to /dashboard/overview */}
               <Route index element={<Navigate to="/dashboard/overview" replace />} />
               <Route path="overview" element={<OverviewPageUser />} />
-              <Route path="approved-services" element={<ApprovedServicesPage/>} />
+              <Route path="approved-services" element={<ApprovedServicesPage selectedProvider={undefined} fullName={undefined}/>} />
               <Route path="requests" element={<RequestsPage />} />
              
               {/* Add infrastructure routes if needed */}

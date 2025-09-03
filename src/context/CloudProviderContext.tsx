@@ -22,7 +22,7 @@ export const CloudProviderProvider = ({
 }) => {
   // Initialize state from localStorage or default to "AWS"
   const [cloudProvider, setCloudProvider] = useState<string>(() => {
-    return localStorage.getItem("cloudProvider") || "none";
+    return localStorage.getItem("cloudProvider") || "all";
   });
 
   // Persist cloudProvider to localStorage whenever it changes
