@@ -101,7 +101,8 @@ import AzureCostCenter from './services/admin services/AzureCostCenter';
 import AwsCostCenter from './services/admin services/AwsCostCenter';
 import GcpCostCenter from './services/admin services/Gcp';
 import Dashboard from './services/admin services/Dashboard';
-import { CloudServiceProvider } from './admin_components/CloudServiceProvider';
+import { CloudProviderProvider } from '@/context/CloudProviderContext';
+
 
 // Import your component pages (you'll need to create these)
 
@@ -172,7 +173,7 @@ function AdminDashboard() {
   }
       
 return (
-  <CloudServiceProvider>
+  <CloudProviderProvider>
     <div className="relative">
       {/* Fixed Header */}
       <div className="fixed top-0 left-0 right-0 z-50">
@@ -202,7 +203,7 @@ return (
         </div>
       </SidebarProvider>
     </div>
-  </CloudServiceProvider>
+  </CloudProviderProvider>
 );
 
 }
